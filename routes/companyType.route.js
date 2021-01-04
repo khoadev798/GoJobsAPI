@@ -7,7 +7,7 @@ route.post("/", dbConn.conn, companyTypeController.createCompanyType);
 
 route.get("/", companyTypeController.getAllCompanyTypes);
 
-route.put("/:coTypeId?/:coTypeName?", companyTypeController.updateCompanyType);
+route.put("/", dbConn.conn, companyTypeController.updateCompanyType);
 
 route.delete("/:coTypeId ", companyTypeController.deleteCompanyType);
 

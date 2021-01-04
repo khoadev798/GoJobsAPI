@@ -5,7 +5,8 @@ const CompanyTypeModel = mongoose.model("CompanyType", CompanyType);
 
 let coTypeCreate = async (coType) => {
   let isCoTpeExisted = await findCompanyTypeByName(coType);
-  if ((isCoTpeExisted.code = 404)) {
+  if (isCoTpeExisted.code == 404) {
+    coType["createdAt"] = new Date();
     let coTypeInstance = new CompanyTypeModel(coType);
     coTypeInstance.save((err, obj) => {
       if (err) return handleError(err);
@@ -16,12 +17,39 @@ let coTypeCreate = async (coType) => {
   }
 };
 
+let coTypeUpdate = async (coType) => {
+  let isCoTpeExisted = await findCompanyTypeByName(coType);
+
+  if (isCoTpeExisted.code == 404) {
+    return { code: 404, message: "Loai cong ty khong ton tai" };
+  } else {
+    let filter = {
+      coTypeName: coType.coTypeName,
+    };
+    let update = {
+      coTypeName: coType.newCoTypeName,
+      updatedBy: coType.updatedBy,
+      updatedAt: new Date(),
+    };
+
+    let doc = await CompanyTypeModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+    if (doc) {
+      return {
+        code: GLOBAL.SUCCESS_CODE,
+        message: "Ten loai cong ty da duoc cap nhat!",
+      };
+    }
+  }
+};
+
 let findCompanyTypeByName = async (coType) => {
   // const query = await CompanyTypeModel.findOne({
   //   coTypeName: coType.coTypeName,
   // });
   let found;
-  console.log(coType);
+
   await CompanyTypeModel.findOne(
     { coTypeName: coType.coTypeName },
     (err, coType1) => {
@@ -32,11 +60,15 @@ let findCompanyTypeByName = async (coType) => {
     }
   );
   if (found == undefined) {
+    // console.log("Kiem tra ton tai", found);
+
     return {
       code: GLOBAL.NOT_FOUND_CODE,
       message: "Company Type not found!",
     };
   } else {
+    // console.log("Kiem tra ton tai", found);
+
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Company Type existed!",
@@ -47,4 +79,5 @@ let findCompanyTypeByName = async (coType) => {
 
 module.exports = {
   coTypeCreate,
+  coTypeUpdate,
 };
