@@ -3,6 +3,14 @@ const GLOBAL = require("../global/global");
 const CompanyType = require("../model/coType");
 const CompanyTypeModel = mongoose.model("CompanyType", CompanyType);
 
+let getAllCompanyTypes = async () => {
+  await CompanyTypeModel.find({}, "_id coTypeName", (err, docs) => {
+    if (err) return handleError(err);
+    console.log(docs);
+    return "OK";
+  });
+};
+
 let coTypeCreate = async (coType) => {
   let isCoTpeExisted = await findCompanyTypeByName(coType);
   if (isCoTpeExisted.code == 404) {
@@ -45,11 +53,7 @@ let coTypeUpdate = async (coType) => {
 };
 
 let findCompanyTypeByName = async (coType) => {
-  // const query = await CompanyTypeModel.findOne({
-  //   coTypeName: coType.coTypeName,
-  // });
   let found;
-
   await CompanyTypeModel.findOne(
     { coTypeName: coType.coTypeName },
     (err, coType1) => {
@@ -60,15 +64,11 @@ let findCompanyTypeByName = async (coType) => {
     }
   );
   if (found == undefined) {
-    // console.log("Kiem tra ton tai", found);
-
     return {
       code: GLOBAL.NOT_FOUND_CODE,
       message: "Company Type not found!",
     };
   } else {
-    // console.log("Kiem tra ton tai", found);
-
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Company Type existed!",
@@ -78,6 +78,7 @@ let findCompanyTypeByName = async (coType) => {
 };
 
 module.exports = {
+  getAllCompanyTypes,
   coTypeCreate,
   coTypeUpdate,
 };

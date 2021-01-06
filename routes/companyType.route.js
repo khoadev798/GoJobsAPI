@@ -5,10 +5,10 @@ const dbConn = require("../middleware/dbConn.middle");
 
 route.post("/", dbConn.conn, companyTypeController.createCompanyType);
 
-route.get("/", companyTypeController.getAllCompanyTypes);
+route.get("/", dbConn.conn, companyTypeController.getAllCompanyTypes);
 
 route.put("/", dbConn.conn, companyTypeController.updateCompanyType);
 
-route.delete("/:coTypeId ", companyTypeController.deleteCompanyType);
+route.delete("/", dbConn.conn, companyTypeController.deleteCompanyType);
 
 module.exports = route;

@@ -11,8 +11,9 @@ let createCompanyType = async (req, res) => {
   res.status(coTypeCreateResult.code).send(coTypeCreateResult.message);
 };
 
-let getAllCompanyTypes = (req, res) => {
-  res.send("Get all coTypes here!");
+let getAllCompanyTypes = async (req, res) => {
+  let coTypeList = await coTypeService.getAllCompanyTypes();
+  res.status(200).send(coTypeList);
 };
 
 let updateCompanyType = async (req, res) => {
