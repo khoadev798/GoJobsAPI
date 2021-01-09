@@ -3,6 +3,7 @@ const route = express.Router();
 const userController = require("../controller/user.controller");
 const dbConn = require("../middleware/dbConn.middle");
 const infoValidator = require("../middleware/infoValidation.middle");
+const authMiddleware = require("../middleware/authMiddleware");
 
 route.post(
   "/register",
@@ -10,6 +11,10 @@ route.post(
   dbConn.conn,
   userController.register
 );
+
+route.get("/getAll",authMiddleware.isAuth, (req, res)=>{
+  res.send("Token OK!")
+})
 
 route.post("/login", dbConn.conn, userController.login);
 
