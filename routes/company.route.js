@@ -1,8 +1,9 @@
 const express = require("express");
 const companyController = require("../controller/company.controller");
 const route = express.Router();
+const dbConn = require("../middleware/dbConn.middle");
 
-route.post("/", companyController.registerCompany);
+route.post("/", dbConn.conn, companyController.registerCompany);
 
 route.get("/getAllCompanies", companyController.getAllCompanies);
 
