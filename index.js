@@ -7,6 +7,7 @@ const companyRoute = require("./routes/company.route");
 const companyTypeRoute = require("./routes/companyType.route");
 const empTypeRoute = require("./routes/empType.route");
 const jobTypeRoute = require("./routes/jobType.route");
+const employerRoute = require("./routes/employer.route");
 const GLOBAL = require("./global/global");
 
 const PORT = GLOBAL.PORT;
@@ -35,7 +36,9 @@ app.use("/company", companyRoute);
 
 app.use("/companyType", companyTypeRoute);
 
-app.use("/empType", companyTypeRoute);
+app.use("/empType", empTypeRoute);
+
+app.use("/employer", employerRoute);
 
 app.use("/jobType", jobTypeRoute);
 app.listen(PORT, () => {

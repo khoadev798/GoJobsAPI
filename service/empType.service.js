@@ -4,16 +4,21 @@ const EmpType = require("../model/empType");
 const EmpTypeModel = mongoose.model("EmpType", EmpType);
 
 let getAllEmpTypes = async () => {
+  let list = [];
   await EmpTypeModel.find({}, "_id empTypeName", (err, docs) => {
     if (err) return handleError(err);
-    console.log(docs);
-    return "OK";
+    list = [...docs];
   });
+
+  return {
+    code: 200,
+    empTypeList: list,
+  };
 };
 
 let empTypeCreate = async (empType) => {
-  let isempTypeExisted = await findEmpTypeByName(empType);
-  if (isempTypeExisted.code == 404) {
+  let isEmpTypeExisted = await findEmpTypeByName(empType);
+  if (isEmpTypeExisted.code == 404) {
     empType["createdAt"] = new Date();
     let empTypeInstance = new EmpTypeModel(empType);
     empTypeInstance.save((err, obj) => {

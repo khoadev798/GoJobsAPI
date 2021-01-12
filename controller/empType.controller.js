@@ -2,8 +2,8 @@ const empTypeService = require("../service/empType.service");
 
 let createEmpType = async (req, res) => {
   let { empTypeName, createdBy } = req.body;
-  console.log("New coType name:", empTypeName);
-  let empTypeCreateResult = await empTypeService.coTypeCreate({
+  console.log("New empType name:", empTypeName);
+  let empTypeCreateResult = await empTypeService.empTypeCreate({
     empTypeName,
     createdBy,
   });
@@ -12,8 +12,9 @@ let createEmpType = async (req, res) => {
 };
 
 let getAllEmpTypes = async (req, res) => {
-  let empTypeList = await empTypeService.getAllEmpTypes();
-  res.status(200).send(empTypeList);
+  let getAllEmpTypeResult = await empTypeService.getAllEmpTypes();
+  // console.log(getAllEmpTypeResult);
+  res.status(getAllEmpTypeResult.code).send(getAllEmpTypeResult.empTypeList);
 };
 
 let updateEmpType = async (req, res) => {
