@@ -1,5 +1,5 @@
 const GLOBAL = {
-  PORT: 3000,
+  PORT: 80,
   MONGO_USER: "commonUser",
   MONGO_PASSWORD: "02urEVFYCBHChcUS",
   MONGO_DB: "randomThinking",
@@ -11,7 +11,7 @@ const GLOBAL = {
   CONFLICT_CODE: 409,
   SERVER_ERROR_CODE: 500,
   ACCESS_TOKEN_SECRET: "Secret",
-  ACCESS_TOKEN_LIFE:"Life",
+  ACCESS_TOKEN_LIFE: '1h',
   REGISTERATION_MESSAGE_PREFIX: "Registeration",
   UPDATE_MESSAGE_PREFIX: "Update",
   DELTE_MESSAGE_PREFIX: "Delete",

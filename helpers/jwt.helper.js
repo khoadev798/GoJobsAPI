@@ -29,7 +29,7 @@ let verifyToken = (token, secretKey) =>{
             if (error) {
                 return reject(error);
             }
-            reject(decoded);
+            resolve(decoded);
         });
     });
 }

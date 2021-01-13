@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const GLOBAL = require("../global/global");
-const CompanyType = require("../model/coType");
+const CompanyType = require("../model/emType");
 const CompanyTypeModel = mongoose.model("CompanyType", CompanyType);
 
 let getAllCompanyTypes = async () => {
