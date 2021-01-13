@@ -11,6 +11,17 @@ let emailValidate = (req, res, next) => {
   }
 };
 
+let empEmailValidate = (req, res, next) => {
+  let { empEmail } = req.body;
+  console.log(empEmail);
+  if (empEmail.match(GLOBAL.EMAIL_REGEX)) {
+    console.log("Processing input...");
+    next();
+  } else {
+    res.status(GLOBAL.BAD_REQUEST_CODE).send("Invalid input.");
+  }
+};
+
 let emailPassPhoneValidate = (req, res, next) => {
   let { email, password, phoneNumber } = req.body;
   let correctEmail = email.match(GLOBAL.EMAIL_REGEX);
@@ -26,4 +37,5 @@ let emailPassPhoneValidate = (req, res, next) => {
 };
 module.exports = {
   emailValidate,
+  empEmailValidate,
 };
