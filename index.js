@@ -7,6 +7,9 @@ const companyRoute = require("./routes/company.route");
 const companyTypeRoute = require("./routes/companyType.route");
 const freelancerRoute = require("./routes/freelancer.route");
 const flcFeedbackRoute = require("./routes/flcFeedback.route");
+const empTypeRoute = require("./routes/empType.route");
+const jobTypeRoute = require("./routes/jobType.route");
+const employerRoute = require("./routes/employer.route");
 const GLOBAL = require("./global/global");
 
 const PORT = GLOBAL.PORT;
@@ -39,6 +42,11 @@ app.use("/flcFeedback", flcFeedbackRoute);
 
 app.use("/companyType", companyTypeRoute);
 
+app.use("/empType", empTypeRoute);
+
+app.use("/employer", employerRoute);
+
+app.use("/jobType", jobTypeRoute);
 app.listen(PORT, () => {
   console.log(`App is running ${PORT}`);
 });

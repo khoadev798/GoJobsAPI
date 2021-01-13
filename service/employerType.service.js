@@ -12,8 +12,8 @@ let getAllCompanyTypes = async () => {
 };
 
 let coTypeCreate = async (coType) => {
-  let isCoTpeExisted = await findCompanyTypeByName(coType);
-  if (isCoTpeExisted.code == 404) {
+  let isCoTypeExisted = await findCompanyTypeByName(coType);
+  if (isCoTypeExisted.code == 404) {
     coType["createdAt"] = new Date();
     let coTypeInstance = new CompanyTypeModel(coType);
     coTypeInstance.save((err, obj) => {
@@ -26,9 +26,9 @@ let coTypeCreate = async (coType) => {
 };
 
 let coTypeUpdate = async (coType) => {
-  let isCoTpeExisted = await findCompanyTypeByName(coType);
+  let isCoTypeExisted = await findCompanyTypeByName(coType);
 
-  if (isCoTpeExisted.code == 404) {
+  if (isCoTypeExisted.code == 404) {
     return { code: 404, message: "Loai cong ty khong ton tai" };
   } else {
     let filter = {

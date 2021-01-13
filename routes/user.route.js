@@ -12,9 +12,9 @@ route.post(
   userController.register
 );
 
-route.get("/getAll",authMiddleware.isAuth, (req, res)=>{
-  res.send("Token OK!")
-})
+route.get("/getAll", authMiddleware.isAuth, (req, res) => {
+  res.send("Token OK!");
+});
 
 route.post("/login", dbConn.conn, userController.login);
 
