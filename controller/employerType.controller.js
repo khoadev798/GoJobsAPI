@@ -1,4 +1,4 @@
-const coTypeService = require("../service/companyType.service");
+const coTypeService = require("../service/employerType.service");
 
 let createCompanyType = async (req, res) => {
   let { coTypeName, createdBy } = req.body;

@@ -22,7 +22,14 @@ let generateToken = (user, secretSignature, tokenLife) => {
     );
   });
 };
-
+let verifyToken = (token, secretKey) =>{
+    return new Promise((resolve, reject) =>{
+        jwt.verify(token, secretKey, (error, decoded) =>{
+            if (error) {
+                return reject(error);
+            }
+            resolve(decoded);
+        });
 let verifyToken = (token, secretKey) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, secretKey, (error, decoded) => {
@@ -33,6 +40,8 @@ let verifyToken = (token, secretKey) => {
     });
   });
 };
+    });
+  }
 
 module.exports = {
   generateToken: generateToken,

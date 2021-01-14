@@ -1,5 +1,5 @@
 const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
-const jwtHelpers = require("../helpers/jwt.helpers");
+const jwtHelpers = require("../helpers/jwt.helper");
 const userService = require("../service/user.service");
 let register = async (req, res, next) => {
   let { name, email, password } = req.body;
