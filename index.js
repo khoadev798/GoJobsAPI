@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const userRoute = require("./routes/user.route");
 const questionRoute = require("./routes/question.route");
-const companyRoute = require("./routes/company.route");
-const companyTypeRoute = require("./routes/companyType.route");
 const freelancerRoute = require("./routes/freelancer.route");
 const flcFeedbackRoute = require("./routes/flcFeedback.route");
 const empTypeRoute = require("./routes/empType.route");
@@ -34,13 +32,9 @@ app.use("/user", userRoute);
 
 app.use("/question", questionRoute);
 
-app.use("/company", companyRoute);
-
 app.use("/freelancer", freelancerRoute);
 
 app.use("/flcFeedback", flcFeedbackRoute);
-
-app.use("/companyType", companyTypeRoute);
 
 app.use("/empType", empTypeRoute);
 

@@ -20,42 +20,31 @@ const ObjectId = Schema.ObjectId;
 
 const Employer = new Schema({
   // coTypeId: { type: Schema.Types.ObjectId, required: true },
+  empTypeId: {
+    type: Schema.Types.ObjectId,
+    ref: "EmpType",
+    required: true,
+  },
   empName: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
+  empEmail: { type: String, required: true },
+  empPassword: { type: String, required: true },
+  empNationalId: { type: String, required: true },
   empPhone: { type: String, required: true },
   empAddress: { type: String, default: null },
   empTaxCode: { type: String, default: null },
   empLogo: { type: String, default: null },
   empDescription: { type: String, default: null },
   empStatus: { type: String, required: true, default: "Pending" },
-  empTypeId: {
-    type: Schema.Types.ObjectId,
-    ref: "EmpType",
-    required: true,
-  },
-  createdAt: { type: Date, min: "1990-01-01", max: "2099-01-01" },
 
+  createdAt: { type: Date },
   confirmedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
   confirmedAt: {
     type: Date,
-    min: "1990-01-01",
-    max: "2099-01-01",
     default: null,
   },
-  updatedPasswordAt: {},
-
-  updatedAt: {
-    type: Date,
-    min: "1990-01-01",
-    max: "2099-01-01",
-    default: null,
-  },
-
+  updatedPasswordAt: { type: Date, default: null },
   updatedInfoAt: {
     type: Date,
-    min: "1990-01-01",
-    max: "2099-01-01",
     default: null,
   },
 });

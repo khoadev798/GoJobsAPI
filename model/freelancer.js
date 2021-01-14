@@ -14,17 +14,17 @@ const Freelancer = new Schema({
   flcSex: { type: String, default: null },
   flcAddress: { type: String, default: null },
   flcEdu: { type: String, default: null },
-  flcMajor: { type: String,default: null },
+  flcMajor: { type: String, default: null },
   flcJobTitle: { type: String, default: null },
   flcBeginExp: { type: Date, default: null },
   flcFinishExp: { type: Date, default: null },
   flcLanguages: { type: String, default: null },
-  createdAt: { type: Date.now()},
+  createdAt: { type: Date },
   updatedPasswordAt: {
-    type: Date.now()
+    type: Date,
   },
   updatedInfoAt: {
-    type: Date.now()
+    type: Date,
   },
   // confirmedBy: { type: Schema.Types.ObjectId, ref: "User" },
   // updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },

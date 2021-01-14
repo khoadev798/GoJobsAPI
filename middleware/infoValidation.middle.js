@@ -22,6 +22,15 @@ let empEmailValidate = (req, res, next) => {
   }
 };
 
+let removeUndefinedKeyValue = (object) => {
+  for (let [key, value] of Object.entries(object)) {
+    if (value == undefined) {
+      delete object[key];
+    }
+  }
+  return object;
+};
+
 let emailPassPhoneValidate = (req, res, next) => {
   let { email, password, phoneNumber } = req.body;
   let correctEmail = email.match(GLOBAL.EMAIL_REGEX);
@@ -38,4 +47,5 @@ let emailPassPhoneValidate = (req, res, next) => {
 module.exports = {
   emailValidate,
   empEmailValidate,
+  removeUndefinedKeyValue,
 };
