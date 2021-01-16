@@ -9,7 +9,7 @@ let employerCreate = async (employer) => {
   if (isEmployerExisted.code == 404) {
     employer = util.empHashPassword(employer);
     employer["createdAt"] = new Date();
-    let employerInstance = new CompanyModel(employer);
+    let employerInstance = new EmployerModel(employer);
     employerInstance.save((err, obj) => {
       if (err) throw err;
     });
@@ -19,24 +19,9 @@ let employerCreate = async (employer) => {
   }
 };
 
-let updateEmployerStatus = async (employer, status) => {
-  let isEmployerExisted = await findEmployerById(employer);
-  if (isEmployerExisted.code == 404) {
-    const filter = { _id: employer._id };
-    const update = { satus: status };
-    let doc = await EmployerModel.findOneAndUpdate(filter, update, {
-      new: true,
-    });
-    console.log("Cap nhat thanh cong:", doc._id, doc.status);
-    return { code: 200, message: "Cap nhat status thanh cong!" };
-  } else {
-    return { code: 409, message: "Thong tin tai khoan da ton tai!" };
-  }
-};
-
 let login = async (employer) => {
   const isEmployerExisted = await findEmployerByEmail(employer);
-  console.log("login here!" + isUserExisted.code);
+  console.log("Employer login here!" + isUserExisted.code);
   if (isEmployerExisted.code == 200) {
     if (
       bcrypt.compareSync(
@@ -44,12 +29,12 @@ let login = async (employer) => {
         isEmployerExisted.employer.empPassword
       )
     ) {
-      console.log("Correct");
+      console.log("Employer login info correct");
       let _id = isEmployerExisted.employer._id;
       return {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
-        id: _id,
+        _id: _id,
       };
     } else {
       console.log("Incorrect");
@@ -60,6 +45,26 @@ let login = async (employer) => {
       code: GLOBAL.NOT_FOUND_CODE,
       message: `User ${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
     };
+  }
+};
+
+let updateEmployerStatus = async (employer) => {
+  let isEmployerExisted = await findEmployerById(employer);
+  if (isEmployerExisted.code == 200) {
+    const filter = { _id: employer._id };
+    const update = {
+      empStatus: employer.status,
+      empTaxCode: employer.empTaxCode,
+      confirmedAt: new Date(),
+      confirmedBy: employer.user_id,
+    };
+    let doc = await EmployerModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+    console.log("Cap nhat thanh cong:", doc._id, doc.empStatus);
+    return { code: 200, message: "Cap nhat status thanh cong!" };
+  } else {
+    return { code: 404, message: "Tai khoan khong ton tai!" };
   }
 };
 
@@ -85,7 +90,7 @@ let findEmployerById = async (employer) => {
   } else {
     return {
       code: GLOBAL.SUCCESS_CODE,
-      message: "Either email or nationalId taken!",
+      message: "Id found!",
       employer: { ...found },
     };
   }
