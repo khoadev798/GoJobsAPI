@@ -52,9 +52,22 @@ let login = async (req, res, next) => {
   });
 };
 
+let confirmAccountInfo = async (req, res, next) => {
+  console.log("Confirm account info!");
+  let { _id, status, empTaxCode, user_id } = req.body;
+  let confirmAccountResult = await employerService.updateEmployerStatus({
+    _id,
+    status,
+    empTaxCode,
+    user_id,
+  });
+  res.status(confirmAccountResult.code).send(confirmAccountResult.message);
+};
+
 let updatePassword = async (req, res, next) => {
+  console.log("Employer updates password");
   let { email, password, newPassword } = req.query;
-  console.log("Update");
+
   console.log(email, typeof password, typeof newPassword);
   let newPasswordResult = await employerService.updatePassword({
     email,
@@ -65,13 +78,9 @@ let updatePassword = async (req, res, next) => {
   res.status(newPasswordResult.code).send(newPasswordResult.message);
 };
 
-let getAllQuestions = (req, res, next) => {
-  res.send("Getting all questions...");
-};
-
 module.exports = {
   register,
   login,
-  getAllQuestions,
+  confirmAccountInfo,
   updatePassword,
 };

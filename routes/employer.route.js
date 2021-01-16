@@ -18,6 +18,12 @@ route.post(
 
 route.post("/login", dbConn.conn, employerController.login);
 
+route.put(
+  "/confirmAccount",
+  dbConn.conn,
+  employerController.confirmAccountInfo
+);
+
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 
 module.exports = route;

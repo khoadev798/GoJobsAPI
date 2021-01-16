@@ -47,6 +47,7 @@ const Employer = new Schema({
     type: Date,
     default: null,
   },
+  salt: { type: String, required: true },
 });
 
 module.exports = Employer;
