@@ -27,9 +27,8 @@ let register = async (req, res, next) => {
     empLogo,
     empDescription,
   });
-
+  console.log("Employer info:", empInfo);
   const registerResult = await employerService.employerCreate(empInfo);
-  console.log(registerResult.code);
   res.status(registerResult.code).send({
     message: registerResult.message,
   });
