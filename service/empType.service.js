@@ -77,7 +77,7 @@ let findEmpTypeByName = async (empType) => {
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Employer Type existed!",
-      empType: found,
+      empType: { ...found },
     };
   }
 };
