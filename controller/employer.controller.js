@@ -34,6 +34,11 @@ let register = async (req, res, next) => {
   });
 };
 
+let getAllPendingAccounts = async (req, res, next) => {
+  let pendingListResult = await employerService.getAllPendingEmployer();
+  res.status(pendingListResult.code).send(pendingListResult.pendingList);
+};
+
 let login = async (req, res, next) => {
   let { email, password } = req.body;
   const loginResult = await employerService.login({
@@ -54,10 +59,10 @@ let login = async (req, res, next) => {
 
 let confirmAccountInfo = async (req, res, next) => {
   console.log("Confirm account info!");
-  let { _id, status, empTaxCode, user_id } = req.body;
+  let { _id, empStatus, empTaxCode, user_id } = req.body;
   let confirmAccountResult = await employerService.updateEmployerStatus({
     _id,
-    status,
+    empStatus,
     empTaxCode,
     user_id,
   });
@@ -83,4 +88,5 @@ module.exports = {
   login,
   confirmAccountInfo,
   updatePassword,
+  getAllPendingAccounts,
 };

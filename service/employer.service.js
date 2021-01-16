@@ -53,7 +53,7 @@ let updateEmployerStatus = async (employer) => {
   if (isEmployerExisted.code == 200) {
     const filter = { _id: employer._id };
     const update = {
-      empStatus: employer.status,
+      empStatus: employer.empStatus,
       empTaxCode: employer.empTaxCode,
       confirmedAt: new Date(),
       confirmedBy: employer.user_id,
@@ -66,6 +66,15 @@ let updateEmployerStatus = async (employer) => {
   } else {
     return { code: 404, message: "Tai khoan khong ton tai!" };
   }
+};
+
+let getAllPendingEmployer = async () => {
+  let pendingList = await EmployerModel.find(
+    { empStatus: "Pending" },
+    "_id empName empNationalId empStatus"
+  ).exec();
+  // console.log(pendingList);
+  return { code: 200, message: "Pending list", pendingList };
 };
 
 let findEmployerById = async (employer) => {
@@ -158,4 +167,5 @@ module.exports = {
   employerCreate,
   login,
   updateEmployerStatus,
+  getAllPendingEmployer,
 };

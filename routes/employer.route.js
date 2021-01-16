@@ -5,6 +5,12 @@ const dbConn = require("../middleware/dbConn.middle");
 const infoValidator = require("../middleware/infoValidation.middle");
 // const authMiddleware = require("../middleware/authMiddleware");
 
+route.get(
+  "/allPendingAccounts",
+  dbConn.conn,
+  employerController.getAllPendingAccounts
+);
+
 route.post(
   "/",
   infoValidator.empEmailValidate,

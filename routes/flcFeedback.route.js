@@ -6,7 +6,6 @@ const dbConn = require("../middleware/dbConn.middle");
 
 route.post(
   "/createFlcFeedback",
-
   authMiddleware.isAuth,
   dbConn.conn,
   flcFeedbackController.createFlcFeedback
