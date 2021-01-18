@@ -1,4 +1,4 @@
-const express = require("express");
+ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const userRoute = require("./routes/user.route");
@@ -14,6 +14,10 @@ const PORT = GLOBAL.PORT;
 
 const app = express();
 
+const http = require('http').Server(app);
+
+const io = require('socket.io')(http);
+
 app.use(bodyParser.json({ limit: "15360mb", type: "application/json" }));
 app.use(
   bodyParser.urlencoded({
@@ -23,6 +27,27 @@ app.use(
     parameterLimit: 5000000,
   })
 );
+
+io.on('connection', function(socket){
+
+  console.log('User Conncetion');
+
+  socket.on('connect user', function(user){
+    console.log("Connected user ");
+    io.emit('connect user', user);
+  });
+
+  socket.on('on typing', function(typing){
+    console.log("Typing.... ");
+    io.emit('on typing', typing);
+  });
+
+  socket.on('chat message', function(msg){
+    console.log("Message " + msg['message']);
+    io.emit('chat message', msg);
+  });
+});
+
 
 app.get("/", (req, res) => {
   res.send("OK!");
@@ -41,6 +66,6 @@ app.use("/empType", empTypeRoute);
 app.use("/employer", employerRoute);
 
 app.use("/jobType", jobTypeRoute);
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log(`App is running ${PORT}`);
 });

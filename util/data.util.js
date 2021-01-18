@@ -18,7 +18,16 @@ let empHashPassword = (emp) => {
   return emp;
 };
 
+let flcHashPassword = (flc) =>{
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(flc.flcHashPassword, salt);
+  flc["flcPassword"] = hash;
+  flc["salt"] = salt;
+  return flc;
+};
+
 module.exports = {
   hashPassword,
   empHashPassword,
+  flcHashPassword,
 };
