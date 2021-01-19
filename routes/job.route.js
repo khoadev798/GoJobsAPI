@@ -1,10 +1,8 @@
 const express = require("express");
 const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
-
-route.post("/", (req, res) => {
-  res.send("New job");
-});
+const jobController = require("../controller/job.controller");
+route.post("/", dbConn.conn, jobController.createNewJob);
 
 route.get("/allJobs", (req, res) => {
   res.send("All jobs");

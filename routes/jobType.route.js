@@ -1,19 +1,19 @@
 const express = require("express");
 const route = express.Router();
-
-route.post("/", (req, res) => {
+const dbConn = require("../middleware/dbConn.middle");
+route.post("/", dbConn.conn, (req, res) => {
   res.send("Creating job type...");
 });
 
-route.get("/getAllJobTypes", (req, res) => {
+route.get("/getAllJobTypes", dbConn.conn, (req, res) => {
   res.send("Getting all job types...");
 });
 
-route.delete("/:id", (req, res) => {
+route.delete("/:id", dbConn.conn, (req, res) => {
   res.send("Deleting...");
 });
 
-route.put("/:id", (req, res) => {
+route.put("/:id", dbConn.conn, (req, res) => {
   res.send("Updating...");
 });
 
