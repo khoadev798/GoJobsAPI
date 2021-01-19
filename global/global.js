@@ -23,6 +23,9 @@ const GLOBAL = {
   PASSWORD_REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
   VNPHONE_REGEX: /((09|03|07|08|05)+([0-9]{8})\b)/g,
   SALT_ROUNDS: 10,
+  SERVICE_ID: "VA9fb49002f0c6108d585bf37148e754f6",
+  ACCOUNTS_ID: "AC0ce24f1befd3b080315fdf2342babbac",
+  AUTH_TOKEN: "3a0f0dd7e9cab8f785c4b618b50c2b89"
 };
 
 module.exports = GLOBAL;

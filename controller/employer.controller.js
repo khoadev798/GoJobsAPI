@@ -45,7 +45,7 @@ let login = async (req, res, next) => {
     email,
     password,
   });
-  const accessToken = await jwtHelpers.generateToken(
+  const accessToken = await jwtHelper.generateToken(
     email,
     ACCESS_TOKEN_SECRET,
     ACCESS_TOKEN_LIFE

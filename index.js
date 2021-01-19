@@ -8,7 +8,11 @@ const flcFeedbackRoute = require("./routes/flcFeedback.route");
 const empTypeRoute = require("./routes/empType.route");
 const jobTypeRoute = require("./routes/jobType.route");
 const employerRoute = require("./routes/employer.route");
+
 const jobRoute = require("./routes/job.route");
+
+const otpRoute = require("./routes/otp.route");
+
 const GLOBAL = require("./global/global");
 
 const PORT = GLOBAL.PORT;
@@ -52,6 +56,8 @@ app.get("/", (req, res) => {
   res.send("OK!");
 });
 
+app.use("/otp", otpRoute);
+
 app.use("/user", userRoute);
 
 app.use("/question", questionRoute);
@@ -67,6 +73,7 @@ app.use("/employer", employerRoute);
 app.use("/job", jobRoute);
 
 app.use("/jobType", jobTypeRoute);
+
 http.listen(PORT, () => {
   console.log(`App is running ${PORT}`);
 });
