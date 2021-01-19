@@ -18,9 +18,9 @@ route.post(
   employerController.register
 );
 
-// route.get("/getAll", authMiddleware.isAuth, (req, res) => {
-//   res.send("Token OK!");
-// });
+route.post("/empNewFeedback", dbConn.conn, (req, res) => {
+  res.send("New feedback");
+});
 
 route.post("/login", dbConn.conn, employerController.login);
 
