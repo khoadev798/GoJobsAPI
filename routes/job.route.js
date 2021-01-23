@@ -4,9 +4,7 @@ const dbConn = require("../middleware/dbConn.middle");
 const jobController = require("../controller/job.controller");
 route.post("/", dbConn.conn, jobController.createNewJob);
 
-route.get("/allJobs", (req, res) => {
-  res.send("All jobs");
-});
+route.get("/allJobs", dbConn.conn, jobController.getAllJobs);
 
 route.get("/empJobList", (req, res) => {
   res.send("Jobs of 1 employer");
