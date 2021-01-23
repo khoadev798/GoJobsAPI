@@ -45,6 +45,12 @@ const createNewJob = async (req, res) => {
   res.status(createNewJobResult.code).send(createNewJobResult.message);
 };
 
+const getAllJobs = async (req, res) => {
+  let jobsAPIResult = await jobService.getAllJobsAndEmployerInfo();
+  res.status(jobsAPIResult.code).send(jobsAPIResult.jobList);
+};
+
 module.exports = {
   createNewJob,
+  getAllJobs,
 };
