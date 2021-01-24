@@ -7,6 +7,26 @@ const flcFeedbackRoute = require("./routes/flcFeedback.route");
 const empTypeRoute = require("./routes/empType.route");
 const jobTypeRoute = require("./routes/jobType.route");
 const employerRoute = require("./routes/employer.route");
+const sendMailRoute = require("./routes/sendMail.route");
+
+// const sgMail = require("@sendgrid/mail");
+// const API_KEY = "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";
+// sgMail.setApiKey(API_KEY)
+// const msg = {
+//   to: 'tran47812@gmail.com', // Change to your recipient
+//   from: 'cauhuyso000@gmail.com', // Change to your verified sender
+//   subject: 'Sending with SendGrid is Fun',
+//   text: 'and easy to do anywhere, even with Node.js',
+//   html: '<strong>and easy to do anywhere, even with Node.js</strong> <a',
+// }
+// sgMail
+//   .send(msg)
+//   .then(() => {
+//     console.log('Email sent')
+//   })
+//   .catch((error) => {
+//     console.error(error)
+//   })
 
 const jobRoute = require("./routes/job.route");
 
@@ -56,6 +76,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/otp", otpRoute);
+
+app.use("/sendMail", sendMailRoute);
 
 app.use("/user", userRoute);
 

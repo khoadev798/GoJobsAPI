@@ -19,6 +19,7 @@ const Freelancer = new Schema({
   flcBeginExp: { type: Date, default: null },
   flcFinishExp: { type: Date, default: null },
   flcLanguages: { type: String, default: null },
+  flcTerm: {type: String, required: true},
   createdAt: { type: Date },
   updatedPasswordAt: {
     type: Date,

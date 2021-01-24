@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const GLOBAL = require("../global/global");
 const Freelancer = require("../model/freelancer");
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
+const bcrypt = require("bcrypt");
+
 
 let getAllFreelancer = async () => {
   await FreelancerModel.find({}, "_id flcEmail", (err, docs) => {
@@ -23,6 +25,35 @@ let flcCreate = async (freelancer) => {
   } else {
     return { code: 409, message: "Freelancer da ton tai!" };
   }
+};
+
+let login = async (freelancer) => {
+    const isFreelancerExisted = await findFreelancerByEmail(freelancer);
+    console.log("Freelancer login here!" + isFreelancerExisted.code);
+    if(isFreelancerExisted.code == 200) {
+      if(
+        bcrypt.compareSync(
+          freelancer.flcPassword,
+          isFreelancerExisted.freelancer.flcPassword
+        )
+      ){
+        console.log("Freelancer login info correct");
+        let _id =  isFreelancerExisted.freelancer._id;
+        return {
+          code: GLOBAL.SUCCESS_CODE,
+          message: `Login succeeded!`,
+          _id: _id,
+        };
+      } else {
+        console.log("Incorrect");
+        return { code: GLOBAL.BAD_REQUEST_CODE, message: `Login Failed!`};
+      }
+    }else {
+      return {
+        code: GLOBAL.NOT_FOUND_CODE,
+        message: `User${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+      };
+    }
 };
 
 let flcUpdate = async (freelancer) => {
