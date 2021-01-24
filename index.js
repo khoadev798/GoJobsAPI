@@ -95,6 +95,6 @@ app.use("/job", jobRoute);
 
 app.use("/jobType", jobTypeRoute);
 
-http.listen(PORT, () => {
+http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);
 });
