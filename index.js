@@ -34,7 +34,7 @@ const otpRoute = require("./routes/otp.route");
 
 const GLOBAL = require("./global/global");
 
-const PORT = GLOBAL.PORT;
+const PORT = GLOBAL.PORT || 80;
 
 const app = express();
 
