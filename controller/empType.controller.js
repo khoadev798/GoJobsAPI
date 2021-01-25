@@ -7,13 +7,10 @@ let createEmpType = async (req, res) => {
     empTypeName,
     createdBy,
   });
-  //   res.send("New coType here!");
   res.status(empTypeCreateResult.code).send(empTypeCreateResult.message);
 };
-
 let getAllEmpTypes = async (req, res) => {
   let getAllEmpTypeResult = await empTypeService.getAllEmpTypes();
-  // console.log(getAllEmpTypeResult);
   res.status(getAllEmpTypeResult.code).send(getAllEmpTypeResult.empTypeList);
 };
 

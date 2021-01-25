@@ -59,8 +59,44 @@ let getAllJobsAndEmployerInfo = async () => {
   }
 };
 
+let getJobsOfOneEmployerById = async (empId) => {
+  await JobModel.find(
+    { empId: empId },
+    "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    (err, docs) => {
+      if (err) handleError(err);
+      console.log(docs);
+      return { code: 200, jobs: docs };
+    }
+  );
+};
+
+let getAllJobTypes = async () => {
+  let ggregatorOpts = [
+    {
+      $unwind: "$items",
+    },
+    {
+      $group: {
+        _id: "$items.jobField",
+        // count: { $count: "$items._id" },
+      },
+    },
+  ];
+  let jobTypes = await JobModel.aggregate([
+    {
+      $group: {
+        _id: { jobField: "$jobField" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  return { code: 200, jobTypes: jobTypes };
+};
 module.exports = {
   createNewJob,
   getAllJobs,
   getAllJobsAndEmployerInfo,
+  getJobsOfOneEmployerById,
+  getAllJobTypes,
 };

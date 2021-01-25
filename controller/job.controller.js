@@ -50,7 +50,24 @@ const getAllJobs = async (req, res) => {
   res.status(jobsAPIResult.code).send(jobsAPIResult.jobList);
 };
 
+const getAllJobsOfEmployerById = async (req, res) => {
+  let { empId } = req.query;
+  let jobsOfEmpResult = await jobService.getJobsOfOneEmployerById(empId);
+  res.status(jobsOfEmpResult.code).send(jobsOfEmpResult.jobs);
+};
+
+const getAllJobTypes = async (req, res) => {
+  let jobTypesResult = await jobService.getAllJobTypes();
+  res.status(jobTypesResult.code).send(jobTypesResult.jobTypes);
+};
+
+const jobPagination = async (req, res) => {
+  let { search, sort, filterList } = req.query;
+};
+
 module.exports = {
   createNewJob,
   getAllJobs,
+  getAllJobsOfEmployerById,
+  getAllJobTypes,
 };
