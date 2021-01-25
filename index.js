@@ -1,5 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
 const userRoute = require("./routes/user.route");
 const questionRoute = require("./routes/question.route");
 const freelancerRoute = require("./routes/freelancer.route");
@@ -8,7 +10,7 @@ const empTypeRoute = require("./routes/empType.route");
 const jobTypeRoute = require("./routes/jobType.route");
 const employerRoute = require("./routes/employer.route");
 const sendMailRoute = require("./routes/sendMail.route");
-
+const swaggerDocument = YAML.load("docs/swagger.yaml");
 // const sgMail = require("@sendgrid/mail");
 // const API_KEY = "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";
 // sgMail.setApiKey(API_KEY)
@@ -74,6 +76,17 @@ io.on("connection", function (socket) {
 app.get("/", (req, res) => {
   res.send("OK!");
 });
+
+app.use(
+  "/api-docs",
+  function (req, res, next) {
+    swaggerDocument.host = req.get("host");
+    req.swaggerDoc = swaggerDocument;
+    next();
+  },
+  swaggerUi.serve,
+  swaggerUi.setup()
+);
 
 app.use("/otp", otpRoute);
 

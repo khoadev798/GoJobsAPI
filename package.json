@@ -20,7 +20,10 @@
     "mongoose": "^5.10.15",
     "nodemon": "^2.0.6",
     "socket.io": "^1.7.4",
+    "swagger-ui-express": "^4.1.6",
     "twilio": "^3.55.0",
-    "uuid": "^8.3.1"
+    "uuid": "^8.3.1",
+    "yaml": "^1.10.0",
+    "yamljs": "^0.3.0"
   }
 }

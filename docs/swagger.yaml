@@ -1,0 +1,395 @@
+# swagger: "2.0"
+openapi: 3.0.1
+info:
+  title: Swagger Petstore
+  description: User Management with Mock Project
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: trankhoa798@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://gojobsvn.herokuapp.com
+tags:
+  - name: users
+    description: Everything about Users
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: roles
+    description: Access to Petstore orders
+paths:
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        description: Login info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginUser'
+      responses:
+        "200":
+          description: "Login success."
+          content: object
+        "403":
+          description: "Incorrect login info."
+          content: objectcontent: object
+  /users/createUser:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - users
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          'application/json':
+            schema: 
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: "User is fully created!"
+        "400":
+          description: "Error occured during transactions!"
+        "409":
+          description: "Email existed!"
+        "401":
+          description: "Unauthorized!"
+  /users/createNewAccessToken/{refreshToken}:
+    get:
+      tags:
+        - users
+      summary: Refresh accessToken for user
+      operationId: getNewAccessToken
+      parameters:
+      - name: refreshToken
+        in: path
+        description: 'Must be a valid refresh token.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Got new accessToken
+          content: object
+        403:
+          description: Invaid Token / no token provided!
+            # application/json:
+  /users/readOneByOne/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - users  
+      summary: Get info of one user with provided id.
+      operationId: readOneByOne
+      parameters:
+      - name: id
+        in: path
+        description: 'userId'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Got new accessToken
+          content: object
+        403:
+          description: Invaid Token / no token provided!
+            # application/json:    
+  /users/readSelfOne:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - users  
+      summary: Get personal info.
+      operationId: readSelf
+      responses:
+        200:
+          description: Got new accessToken
+          content: object
+        403:
+          description: Invaid Token / no token provided!
+            # application/json: 
+  /users/deleteUser/{id}:
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - users  
+      summary: Delete one user.
+      operationId: deleteOne
+      parameters:
+      - name: id
+        in: path
+        description: 'userId being deleted'
+        required: true
+        schema:
+          type: string     
+      responses:
+        200:
+          description: Got new accessToken
+          content: object
+        403:
+          description: Invaid Token / no token provided!
+  /users/updatePassword:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - users  
+      summary: Update personal pasword.
+      operationId: personalPasswordUpdate
+      requestBody:
+        required: true
+        description: Created user object
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string    
+                password:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        200:
+          description: User deleted.
+          content: object
+        403:
+          description: Invaid Token / no token provided!
+  /users/forgot:
+    post:
+      tags:
+        - users
+      summary: Send forgot password email.
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        description: Forget
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        200:
+          description: Email sent.
+          content: object
+        404:
+          description: User not found.
+          content: object
+  /users/reset:
+    put:
+      tags:
+        - users
+      summary: Reset password from email.
+      operationId: resetPassword
+      requestBody:
+        required: true
+        description: Forget
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                token:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Password reset.
+          content: object
+  /users/pagination:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - users
+      summary: Pagination.
+      operationId: userPagination
+      parameters:
+        - name: pageNumber
+          in: query
+          description: 'Current page.'
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          description: 'Size of a page.'
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: 'Search values.'
+          schema:
+            type: string    
+        - name: isSortedByFirsttName
+          in: query
+          description: 'Sorted by first name.'
+          schema:
+            type: boolean
+        - name: filter
+          in: query
+          description: 'Filter by status'
+          schema:
+            type: array
+            items:
+              type: string
+              default: Active
+              enum:
+              - Active 
+              - Inactive      
+      responses:
+        200:
+          description: Show data.
+          content: object
+  /users/updateFullProfile:
+    put:
+      security:
+          - bearerAuth: []
+      tags:
+        - users
+      summary: Update specific info of one user.
+      operationId: updateFullProfile
+      requestBody:
+        required: true
+        description: New user info.
+        content:
+          'application/json':
+            schema: 
+              $ref: '#/components/schemas/UserWitdId'
+      responses:
+        200:
+          description: Password reset.
+          content: object
+  /roles/rolePagination:
+    get:
+      security:
+          - bearerAuth: []
+      tags:
+        - roles
+      summary: Role Pagination.
+      operationId: rolePagination
+      parameters:
+        - name: pageNumber
+          in: query
+          description: 'Current page.'
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          description: 'Size of a page.'
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: 'Search values.'
+          schema:
+            type: string    
+        - name: isSortedByName
+          in: query
+          description: 'Sorted by first name.'
+          schema:
+            type: array
+            items:
+              type: string
+              default: asc
+              enum:
+              - asc 
+              - desc
+  /roles/createRoleWithPermissions:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+      - roles
+      summary: Create role with permissions.
+      operationId: createRoleWithPermissions
+      requestBody:
+        description: Create role with permissions.
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                roleName:
+                  type: string
+components:
+  schemas:
+    loginUser:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string      
+    User:
+      type: object
+      properties:
+        email:
+            type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phoneNumber:
+          type: string
+        status:
+          type: string
+        avatar:
+          type: string
+      xml:
+        name: User
+    UserWitdId:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+            type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phoneNumber:
+          type: string
+        status:
+          type: string
+        avatar:
+          type: string
+      xml:
+        name: UserWithId    
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
