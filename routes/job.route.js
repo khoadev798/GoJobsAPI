@@ -10,7 +10,7 @@ route.get("/allJobs", dbConn.conn, jobController.getAllJobs);
 
 route.get("/allJobs", dbConn.conn, jobController.getAllJobsOfEmployerById);
 
-route.get("/jobPagination", dbConn.conn);
+route.get("/jobPagination", dbConn.conn, jobController.jobPagination);
 
 route.get("/oneJobFullDetail", (req, res) => {});
 

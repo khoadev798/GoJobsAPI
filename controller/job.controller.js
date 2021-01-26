@@ -62,7 +62,17 @@ const getAllJobTypes = async (req, res) => {
 };
 
 const jobPagination = async (req, res) => {
-  let { search, sort, filterList } = req.query;
+  let { search, sort, filter, pageNumber, pageSize } = req.query;
+  console.log(filter);
+  let pagingResult = await jobService.jobPagination({
+    search,
+    sort,
+    filter,
+    pageNumber,
+    pageSize,
+  });
+
+  res.status(pagingResult.code).send(pagingResult.jobs);
 };
 
 module.exports = {
@@ -70,4 +80,5 @@ module.exports = {
   getAllJobs,
   getAllJobsOfEmployerById,
   getAllJobTypes,
+  jobPagination,
 };

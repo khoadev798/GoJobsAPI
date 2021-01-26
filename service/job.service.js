@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate");
 const GLOBAL = require("../global/global");
 const Job = require("../model/job");
+Job.plugin(mongoosePaginate);
 const Employer = require("../model/employer");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
@@ -72,17 +74,6 @@ let getJobsOfOneEmployerById = async (empId) => {
 };
 
 let getAllJobTypes = async () => {
-  let ggregatorOpts = [
-    {
-      $unwind: "$items",
-    },
-    {
-      $group: {
-        _id: "$items.jobField",
-        // count: { $count: "$items._id" },
-      },
-    },
-  ];
   let jobTypes = await JobModel.aggregate([
     {
       $group: {
@@ -93,10 +84,44 @@ let getAllJobTypes = async () => {
   ]);
   return { code: 200, jobTypes: jobTypes };
 };
+
+let jobPagination = async (pagination) => {
+  // Search if name contains search string
+  // ascending or descending by name
+  // filter with
+  // pageNumber
+  let searchRegex = new RegExp(pagination.search, "i");
+  // console.log("Condition", pagination.search);
+  let query = {
+    $and: [
+      {
+        $or: [
+          { jobTitle: { $regex: searchRegex } },
+          { jobDescription: { $regex: searchRegex } },
+        ],
+        jobField: { $in: pagination.filter },
+      },
+    ],
+  };
+
+  let jobsWithConditions = await JobModel.find(
+    query,
+    "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    {
+      skip: (pagination.pageNumber - 1) * pagination.pageSize,
+      limit: pagination.pageNumber * pagination.pageSize,
+    }
+  ).sort({
+    jobTitle: pagination.sort,
+  });
+  console.log(jobsWithConditions);
+  return { code: 200, jobs: jobsWithConditions };
+};
 module.exports = {
   createNewJob,
   getAllJobs,
   getAllJobsAndEmployerInfo,
   getJobsOfOneEmployerById,
   getAllJobTypes,
+  jobPagination,
 };
