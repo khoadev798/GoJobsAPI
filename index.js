@@ -9,26 +9,9 @@ const flcFeedbackRoute = require("./routes/flcFeedback.route");
 const empTypeRoute = require("./routes/empType.route");
 const jobTypeRoute = require("./routes/jobType.route");
 const employerRoute = require("./routes/employer.route");
+const contractRoute = require("./routes/contract.route");
 const sendMailRoute = require("./routes/sendMail.route");
 const swaggerDocument = YAML.load("docs/swagger.yaml");
-// const sgMail = require("@sendgrid/mail");
-// const API_KEY = "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";
-// sgMail.setApiKey(API_KEY)
-// const msg = {
-//   to: 'tran47812@gmail.com', // Change to your recipient
-//   from: 'cauhuyso000@gmail.com', // Change to your verified sender
-//   subject: 'Sending with SendGrid is Fun',
-//   text: 'and easy to do anywhere, even with Node.js',
-//   html: '<strong>and easy to do anywhere, even with Node.js</strong> <a',
-// }
-// sgMail
-//   .send(msg)
-//   .then(() => {
-//     console.log('Email sent')
-//   })
-//   .catch((error) => {
-//     console.error(error)
-//   })
 
 const jobRoute = require("./routes/job.route");
 
@@ -107,6 +90,8 @@ app.use("/employer", employerRoute);
 app.use("/job", jobRoute);
 
 app.use("/jobType", jobTypeRoute);
+
+app.use("/contract", contractRoute);
 
 http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);
