@@ -26,10 +26,9 @@ const Contract = new Schema({
   flcId: { type: Schema.Types.ObjectId, ref: "Freelancer", default: null },
   empId: { type: Schema.Types.ObjectId, ref: "Employer", default: null },
   contractStatus: { type: String, required: true },
-  jobStatus: { type: String, default: null },
   createdAt: { type: Date, default: null },
-  createdBy: { type: String },
-  updatedBy: { type: String },
+  createdBy: { type: String, default: null },
+  updatedBy: { type: String, default: null },
 });
 
 module.exports = Contract;

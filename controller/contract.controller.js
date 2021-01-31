@@ -12,7 +12,8 @@ let getContractsByStatus = (req, res) => {
 };
 
 let addNewContract = (req, res) => {
-  res.status(200).send("Add OK!");
+  let { jobId, flcId, empId, contractStatus } = req.query;
+  res.send("New contract");
 };
 
 module.exports = {

@@ -86,12 +86,8 @@ let getAllJobTypes = async () => {
 };
 
 let jobPagination = async (pagination) => {
-  // Search if name contains search string
-  // ascending or descending by name
-  // filter with
-  // pageNumber
   let searchRegex = new RegExp(pagination.search, "i");
-  // console.log("Condition", pagination.search);
+
   let query = {
     $and: [
       {

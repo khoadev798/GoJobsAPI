@@ -3,9 +3,7 @@ const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
 const contractController = require("../controller/contract.controller");
 
-route.post("/", (req, res) => {
-  res.send("New contract");
-});
+route.post("/", dbConn.conn, contractController.addNewContract);
 
 route.get("/", dbConn.conn, contractController.getContractsByStatus);
 
