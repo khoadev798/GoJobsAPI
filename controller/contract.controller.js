@@ -1,5 +1,5 @@
 const contractService = require("../service/contract.service");
-
+var mongoose = require("mongoose");
 let getContractsByStatus = (req, res) => {
   let { contractStatus, empId, jobId, flcId } = req.query;
   let contractsByConditionsResult = contractService.getContractsByCondition({
@@ -11,9 +11,17 @@ let getContractsByStatus = (req, res) => {
   res.send("Get contracts with specific info");
 };
 
-let addNewContract = (req, res) => {
+let addNewContract = async (req, res) => {
   let { jobId, flcId, empId, contractStatus } = req.query;
-  res.send("New contract");
+  let createContractResult = await contractService.createNewContractAtSituation(
+    {
+      jobId,
+      flcId,
+      empId,
+      contractStatus,
+    }
+  );
+  res.code(createContractResult.code).send(createContractResult.message);
 };
 
 module.exports = {

@@ -58,29 +58,23 @@ let getContractsByCondition = async (condition) => {
 };
 
 let getOneContractWithSpecifiedInfo = async (contract) => {
-  let oneContract = await JobModel.findOne({
+  console.log("Contract at check", contract);
+  let oneContract = await ContractModel.findOne({
     $or: [
       {
         _id: contract._id,
       },
       {
-        $and: [
-          {
-            flcId: contract.flcId,
-            empId: contract.empId,
-          },
-        ],
+        flcId: contract.flcId,
+        empId: contract.empId,
       },
       {
-        $and: [
-          {
-            flcId: contract.flcId,
-            empId: contract.empId,
-          },
-        ],
+        flcId: contract.flcId,
+        jobId: contract.jobId,
       },
     ],
   });
+  // console.log("Query result", oneContract);
   if (oneContract) {
     return { code: 200, contract: oneContract };
   } else {
@@ -91,11 +85,17 @@ let getOneContractWithSpecifiedInfo = async (contract) => {
 let createNewContractAtSituation = async (contract) => {
   let queryContractResult = await getOneContractWithSpecifiedInfo(contract);
   if (queryContractResult.code == 404) {
+    contract["createdAt"] = new Date();
+    let contractInstance = new ContractModel(contract);
+    await contractInstance.save((err, obj) => {
+      if (err) return handleError(err);
+    });
+    return { code: 200, message: "Thao tac thanh cong!" };
   } else {
-    return { code: 409, result: "Contract da ton tai!" };
+    return { code: 409, message: "Contract da ton tai!" };
   }
 };
 
 let updateStatusOfContract = (contract) => {};
 
-module.exports = { getContractsByCondition };
+module.exports = { getContractsByCondition, createNewContractAtSituation };

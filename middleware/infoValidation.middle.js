@@ -22,6 +22,17 @@ let empEmailValidate = (req, res, next) => {
   }
 };
 
+let flcEmailValidate = (req, res, next) => {
+  let { flcEmail } = req.body;
+  console.log(flcEmail);
+  if (flcEmail.match(GLOBAL.EMAIL_REGEX)) {
+    console.log("Processing input...");
+    next();
+  } else {
+    res.status(GLOBAL.BAD_REQUEST_CODE).send("Invalid input.");
+  }
+};
+
 let removeUndefinedKeyValue = (object) => {
   for (let [key, value] of Object.entries(object)) {
     if (value == undefined) {
@@ -47,5 +58,6 @@ let emailPassPhoneValidate = (req, res, next) => {
 module.exports = {
   emailValidate,
   empEmailValidate,
+  flcEmailValidate,
   removeUndefinedKeyValue,
 };
