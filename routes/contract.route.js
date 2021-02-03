@@ -5,12 +5,28 @@ const contractController = require("../controller/contract.controller");
 
 route.post("/", dbConn.conn, contractController.addNewContract);
 
-route.get("/", dbConn.conn, contractController.getContractsByStatus);
+route.get(
+  "/contractsByStatusOfFlc",
+  dbConn.conn,
+  contractController.getContractsByStatusOfFlc
+);
 
 route.get(
-  "/interestedContracts",
+  "/followsOfEmpForFlc",
   dbConn.conn,
-  contractController.getInterestedOrAppliedJobsInfo
+  contractController.getFollowOfEmpForFlc
+);
+
+route.get(
+  "/contractsByJobIdAndStatus",
+  dbConn.conn,
+  contractController.getContractsByJobIdAndContractStatus
+);
+
+route.put(
+  "/updateContractStatusById",
+  dbConn.conn,
+  contractController.updateContractStatusById
 );
 
 route.delete("/", dbConn.conn, contractController.deleteContractById);

@@ -109,38 +109,108 @@ let deleteContractById = async (contract) => {
   return { code: 200, messsage: "Thao tac da duoc thuc hien" };
 };
 
-let joinQueryWithEmployerToGetFullInfoForInterestedJob = async (contract) => {
+let flcJoinQueryWithJobOrEmployer = async (contract) => {
   // 2 initial conditions: {flcId : contract.flcId, contractStatus : "INTEREST || APPLIED"}
   // Join contract with Job to get jobStatus
   // Job join with Employer to get employer info
-
-  let projections = "_id flcId jobId empId contractStatus";
   let match = {
     $match: {
       flcId: mongoose.Types.ObjectId(contract.flcId),
       contractStatus: contract.contractStatus,
     },
   };
-  console.log(match);
+  let aggregate = {};
+  if (contract.contractStatus == "FOLLOW") {
+    aggregate = {
+      $lookup: {
+        from: "employers",
+        localField: "empId",
+        foreignField: "_id",
+        as: "employer",
+      },
+    };
+  } else {
+    aggregate = {
+      $lookup: {
+        from: "jobs",
+        localField: "jobId",
+        foreignField: "_id",
+        as: "job",
+      },
+    };
+  }
 
+  let contractList = await ContractModel.aggregate([match, aggregate]);
+  console.log("DS contract", contractList);
+  return { code: 200, contractList };
+};
+
+let getFollowsOfEmpForFlc = async (contract) => {
+  let match = {
+    $match: {
+      empId: mongoose.Types.ObjectId(contract.empId),
+      contractStatus: "FOLLOW",
+    },
+  };
   let aggregate = {
     $lookup: {
-      from: "jobs",
-      localField: "jobId",
+      from: "freelancers",
+      localField: "flcId",
       foreignField: "_id",
-      as: "relatedJob",
+      as: "freelancer",
+    },
+  };
+  let followList = await ContractModel.aggregate([match, aggregate]);
+  console.log("FollowList of Emp for Flc", followList);
+  return { code: 200, followList };
+};
+
+let getContractsByJobIdAndContractStatus = async (contract) => {
+  let match = {
+    $match: {
+      jobId: mongoose.Types.ObjectId(contract.jobId),
+      contractStatus: contract.contractStatus || "APPLIED",
+    },
+  };
+  let aggregate = {
+    $lookup: {
+      from: "freelancers",
+      localField: "flcId",
+      foreignField: "_id",
+      as: "freelancer",
     },
   };
   let contractList = await ContractModel.aggregate([match, aggregate]);
-  console.log("DS contract", contractList);
-  return contractList;
+  console.log("Thong tin Contract, Emp theo JobId", contractList);
+  return { code: 200, contractList };
 };
-// sybsmyhgzgjcscgn
-let updateStatusOfContract = (contract) => {};
+
+let updateStatusOfContractById = async (contract) => {
+  let filter = {
+    _id: contract._id,
+  };
+  let update = {
+    contractStatus: contract.contractStatus,
+  };
+  let updateResult = await ContractModel.findOneAndUpdate(
+    filter,
+    update,
+    {
+      new: true,
+    },
+    (err) => {
+      if (err) return handleError(err);
+    }
+  );
+  return { code: 200, message: "Cap nhat thanh cong!" };
+};
 
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
   deleteContractById,
-  joinQueryWithEmployerToGetFullInfoForInterestedJob,
+  flcJoinQueryWithJobOrEmployer,
+  getFollowsOfEmpForFlc,
+  getContractsByJobIdAndContractStatus,
+  updateStatusOfContractById,
 };

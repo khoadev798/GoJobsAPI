@@ -1,15 +1,5 @@
 const contractService = require("../service/contract.service");
 var mongoose = require("mongoose");
-let getContractsByStatus = (req, res) => {
-  let { contractStatus, empId, jobId, flcId } = req.query;
-  let contractsByConditionsResult = contractService.getContractsByCondition({
-    contractStatus,
-    empId,
-    jobId,
-    flcId,
-  });
-  res.send("Get contracts with specific info");
-};
 
 let addNewContract = async (req, res) => {
   let { jobId, flcId, empId, contractStatus } = req.query;
@@ -30,18 +20,46 @@ let deleteContractById = async (req, res) => {
   res.status(deleteResult.code).send(deleteResult.messsage);
 };
 
-let getInterestedOrAppliedJobsInfo = async (req, res) => {
-  let { flcId, contractStatus } = req.query;
-  let queryResult = await contractService.joinQueryWithEmployerToGetFullInfoForInterestedJob(
-    { flcId, contractStatus }
-  );
-  res.send(queryResult);
+let getContractsByStatusOfFlc = async (req, res) => {
+  let { flcId } = req.query;
+  let queryResult = await contractService.flcJoinQueryWithJobOrEmployer({
+    flcId,
+  });
+  res.status(queryResult.code).send(queryResult.contractList);
+};
+
+let getFollowOfEmpForFlc = async (req, res) => {
+  let { empId } = req.query;
+  let followQueryResult = await contractService.getFollowsOfEmpForFlc({
+    empId,
+  });
+  res.status(followQueryResult.code).send(followQueryResult.followList);
+};
+
+let getContractsByJobIdAndContractStatus = async (req, res) => {
+  let { jobId, contractStatus } = req.query;
+  let queryResult = await contractService.getContractsByJobIdAndContractStatus({
+    jobId,
+    contractStatus,
+  });
+  res.status(queryResult.code).send(queryResult.contractList);
+};
+
+let updateContractStatusById = async (req, res) => {
+  let { _id, contractStatus } = req.query;
+  let updateResult = await contractService.updateStatusOfContractById({
+    _id,
+    contractStatus,
+  });
+  res.status(updateResult.code).send(updateResult.message);
 };
 
 // 60165ee6f26cce54115bf10e
 module.exports = {
-  getContractsByStatus,
+  getContractsByStatusOfFlc,
   addNewContract,
   deleteContractById,
-  getInterestedOrAppliedJobsInfo,
+  getFollowOfEmpForFlc,
+  getContractsByJobIdAndContractStatus,
+  updateContractStatusById,
 };
