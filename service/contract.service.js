@@ -96,6 +96,51 @@ let createNewContractAtSituation = async (contract) => {
   }
 };
 
+let deleteContractById = async (contract) => {
+  let deleteResult = await ContractModel.deleteOne(
+    {
+      _id: contract._id,
+    },
+    (err) => {
+      if (err) return handleError(err);
+    }
+  );
+  // console.log(deleteResult);
+  return { code: 200, messsage: "Thao tac da duoc thuc hien" };
+};
+
+let joinQueryWithEmployerToGetFullInfoForInterestedJob = async (contract) => {
+  // 2 initial conditions: {flcId : contract.flcId, contractStatus : "INTEREST || APPLIED"}
+  // Join contract with Job to get jobStatus
+  // Job join with Employer to get employer info
+
+  let projections = "_id flcId jobId empId contractStatus";
+  let match = {
+    $match: {
+      flcId: mongoose.Types.ObjectId(contract.flcId),
+      contractStatus: contract.contractStatus,
+    },
+  };
+  console.log(match);
+
+  let aggregate = {
+    $lookup: {
+      from: "jobs",
+      localField: "jobId",
+      foreignField: "_id",
+      as: "relatedJob",
+    },
+  };
+  let contractList = await ContractModel.aggregate([match, aggregate]);
+  console.log("DS contract", contractList);
+  return contractList;
+};
+// sybsmyhgzgjcscgn
 let updateStatusOfContract = (contract) => {};
 
-module.exports = { getContractsByCondition, createNewContractAtSituation };
+module.exports = {
+  getContractsByCondition,
+  createNewContractAtSituation,
+  deleteContractById,
+  joinQueryWithEmployerToGetFullInfoForInterestedJob,
+};

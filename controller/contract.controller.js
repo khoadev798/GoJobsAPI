@@ -21,10 +21,27 @@ let addNewContract = async (req, res) => {
       contractStatus,
     }
   );
-  res.code(createContractResult.code).send(createContractResult.message);
+  res.status(createContractResult.code).send(createContractResult.message);
 };
 
+let deleteContractById = async (req, res) => {
+  let { _id } = req.query;
+  let deleteResult = await contractService.deleteContractById({ _id });
+  res.status(deleteResult.code).send(deleteResult.messsage);
+};
+
+let getInterestedOrAppliedJobsInfo = async (req, res) => {
+  let { flcId, contractStatus } = req.query;
+  let queryResult = await contractService.joinQueryWithEmployerToGetFullInfoForInterestedJob(
+    { flcId, contractStatus }
+  );
+  res.send(queryResult);
+};
+
+// 60165ee6f26cce54115bf10e
 module.exports = {
   getContractsByStatus,
   addNewContract,
+  deleteContractById,
+  getInterestedOrAppliedJobsInfo,
 };

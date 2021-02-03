@@ -7,4 +7,12 @@ route.post("/", dbConn.conn, contractController.addNewContract);
 
 route.get("/", dbConn.conn, contractController.getContractsByStatus);
 
+route.get(
+  "/interestedContracts",
+  dbConn.conn,
+  contractController.getInterestedOrAppliedJobsInfo
+);
+
+route.delete("/", dbConn.conn, contractController.deleteContractById);
+
 module.exports = route;
