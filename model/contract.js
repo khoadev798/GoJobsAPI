@@ -26,9 +26,13 @@ const Contract = new Schema({
   flcId: { type: Schema.Types.ObjectId, ref: "Freelancer", default: null },
   empId: { type: Schema.Types.ObjectId, ref: "Employer", default: null },
   contractStatus: { type: String, required: true },
+  jobTotalSalaryPerHeadCount: { type: Number, default: null },
+  moneyFromEmployer: { type: Number, default: 0 },
+  isPaymentFullyCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: null },
   createdBy: { type: String, default: null },
   updatedBy: { type: String, default: null },
+  updatedAt: { type: Date, default: null },
 });
 
 module.exports = Contract;

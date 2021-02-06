@@ -29,6 +29,12 @@ route.put(
   contractController.updateContractStatusById
 );
 
+route.put(
+  "/approveContractAndPayment",
+  dbConn.conn,
+  contractController.approveContractAndPayment
+);
+
 route.delete("/", dbConn.conn, contractController.deleteContractById);
 
 module.exports = route;

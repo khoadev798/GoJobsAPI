@@ -17,8 +17,10 @@ const Job = new Schema({
   jobField: { type: String, required: true }, // ("LDPT", "IT", "F&B",...)
   jobStart: { type: Date, reqired: true },
   jobEnd: { type: Date, reqired: true },
+  jobDuration: { type: Number, required: true },
   jobPublishDate: { type: Date, default: null },
   jobStatus: { type: String, default: "Open" },
+  jobTotalSalaryPerHeadCount: { type: Number, default: null },
   jobHeadCount: { type: Number, default: 1 },
   updatedBy: { type: Date, default: null },
   updatedAt: { type: Date, default: null },

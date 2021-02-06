@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const GLOBAL = require("../global/global");
 const Employer = require("../model/employer");
 const EmployerModel = mongoose.model("Employer", Employer);
+const walletService = require("./wallet.service");
 const util = require("../util/data.util");
 
 let employerCreate = async (employer) => {
@@ -10,9 +11,20 @@ let employerCreate = async (employer) => {
     employer = util.empHashPassword(employer);
     employer["createdAt"] = new Date();
     let employerInstance = new EmployerModel(employer);
-    employerInstance.save((err, obj) => {
-      if (err) throw err;
-    });
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    let createdEmployer = await employerInstance.save({ session: session });
+    let createdWallet = await walletService.createWallet(
+      createdEmployer,
+      session
+    );
+    await session.commitTransaction();
+    console.log("Created Employer", createdEmployer);
+    console.log(
+      `Wallet of Employer ${createdEmployer.empEmail}`,
+      createdWallet
+    );
+    session.endSession();
     return { code: 200, message: "Tao tai khoa thanh cong!" };
   } else {
     return { code: 409, message: "Thong tin tai khoan da ton tai!" };
@@ -106,19 +118,15 @@ let findEmployerById = async (employer) => {
 };
 
 let findEmployerByEmailOrNationalId = async (employer) => {
-  let found;
-  await EmployerModel.findOne(
+  let found = await EmployerModel.findOne(
     {
       $or: [
-        ({ empTaxCode: employer.empNationalId },
-        { empEmail: employer.empEmail }),
+        { empTaxCode: employer.empNationalId },
+        { empEmail: employer.empEmail },
       ],
     },
-    (err, employer1) => {
+    (err, doc) => {
       if (err) return handleError(err);
-      if (employer1) {
-        found = { ...employer1._doc };
-      }
     }
   );
 

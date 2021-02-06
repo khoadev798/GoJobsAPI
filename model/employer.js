@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
@@ -20,11 +19,6 @@ const ObjectId = Schema.ObjectId;
 
 const Employer = new Schema({
   // coTypeId: { type: Schema.Types.ObjectId, required: true },
-  empTypeId: {
-    type: Schema.Types.ObjectId,
-    ref: "EmpType",
-    required: true,
-  },
   empName: { type: String, required: true },
   empEmail: { type: String, required: true },
   empPassword: { type: String, required: true },
@@ -35,7 +29,6 @@ const Employer = new Schema({
   empLogo: { type: String, default: null },
   empDescription: { type: String, default: null },
   empStatus: { type: String, required: true, default: "Pending" },
-
   createdAt: { type: Date },
   confirmedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
   confirmedAt: {

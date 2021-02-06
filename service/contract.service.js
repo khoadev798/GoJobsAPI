@@ -59,21 +59,29 @@ let getContractsByCondition = async (condition) => {
 
 let getOneContractWithSpecifiedInfo = async (contract) => {
   console.log("Contract at check", contract);
-  let oneContract = await ContractModel.findOne({
-    $or: [
-      {
-        _id: contract._id,
-      },
-      {
-        flcId: contract.flcId,
-        empId: contract.empId,
-      },
-      {
-        flcId: contract.flcId,
-        jobId: contract.jobId,
-      },
-    ],
-  });
+  let oneContract = await ContractModel.findOne(
+    {
+      $or: [
+        {
+          _id: mongoose.Types.ObjectId(contract._id),
+        },
+        {
+          flcId: mongoose.Types.ObjectId(contract.flcId),
+          empId: mongoose.Types.ObjectId(contract.empId),
+          contractStatus: "FOLLOW",
+          createBy: contract.createdBy,
+        },
+        {
+          flcId: mongoose.Types.ObjectId(contract.flcId),
+          empId: mongoose.Types.ObjectId(contract.empId),
+          jobId: mongoose.Types.ObjectId(contract.jobId),
+        },
+      ],
+    },
+    (error, doc) => {
+      if (error) return handleError(err);
+    }
+  );
   // console.log("Query result", oneContract);
   if (oneContract) {
     return { code: 200, contract: oneContract };
@@ -117,6 +125,7 @@ let flcJoinQueryWithJobOrEmployer = async (contract) => {
     $match: {
       flcId: mongoose.Types.ObjectId(contract.flcId),
       contractStatus: contract.contractStatus,
+      createdBy: contract.flcId,
     },
   };
   let aggregate = {};
@@ -150,6 +159,7 @@ let getFollowsOfEmpForFlc = async (contract) => {
     $match: {
       empId: mongoose.Types.ObjectId(contract.empId),
       contractStatus: "FOLLOW",
+      createBy: contract.empId,
     },
   };
   let aggregate = {
@@ -191,6 +201,8 @@ let updateStatusOfContractById = async (contract) => {
   };
   let update = {
     contractStatus: contract.contractStatus,
+    updatedBy: contract.updatedBy,
+    updatedAt: new Date(),
   };
   let updateResult = await ContractModel.findOneAndUpdate(
     filter,
@@ -205,6 +217,55 @@ let updateStatusOfContractById = async (contract) => {
   return { code: 200, message: "Cap nhat thanh cong!" };
 };
 
+let approveContractAndPayment = async (contract) => {
+  let checkContract = await getOneContractWithSpecifiedInfo({
+    _id: contract._id,
+  });
+  let oneContract = checkContract.contract;
+  console.log(oneContract);
+  if (checkContract.code == 200) {
+    let filter = {
+      _id: contract._id,
+    };
+    let update = {};
+    if (
+      oneContract.jobTotalSalaryPerHeadCount <=
+      contract.moneyFromEmployer + oneContract.moneyFromEmployer
+    ) {
+      update = {
+        contractStatus: "APPROVED",
+        updatedBy: contract.updatedBy,
+        moneyFromEmployer:
+          contract.moneyFromEmployer + oneContract.moneyFromEmployer,
+        isPaymentFullyCompleted: true,
+        updatedAt: new Date(),
+      };
+    } else {
+      update = {
+        contractStatus: "INSUFFICIENT",
+        updatedBy: contract.updatedBy,
+        moneyFromEmployer:
+          contract.moneyFromEmployer + oneContract.moneyFromEmployer,
+        isPaymentFullyCompleted: false,
+        updatedAt: new Date(),
+      };
+    }
+
+    let updateResult = await ContractModel.findOneAndUpdate(
+      filter,
+      update,
+      {
+        new: true,
+      },
+      (err) => {
+        if (err) return handleError(err);
+      }
+    );
+    return { code: 200, message: "Duyet contract thanh cong!" };
+  } else {
+    return { code: 404, message: "Khong tim thay contract nay" };
+  }
+};
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -213,4 +274,5 @@ module.exports = {
   getFollowsOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateStatusOfContractById,
+  approveContractAndPayment,
 };

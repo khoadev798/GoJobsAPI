@@ -19,6 +19,7 @@ const createNewJob = async (req, res) => {
     experienceRequired, // default: false
     jobPublishDate, // required
     jobStatus, // default "Opening"
+    jobTotalSalaryPerHeadCount,
     jobHeadCount, // default 1
   } = req.body;
 
@@ -38,6 +39,7 @@ const createNewJob = async (req, res) => {
     experienceRequired, // default: false
     jobPublishDate, // required
     jobStatus, // default "Opening"
+    jobTotalSalaryPerHeadCount,
     jobHeadCount, // default 1
   });
   let createNewJobResult = await jobService.createNewJob(newJob);

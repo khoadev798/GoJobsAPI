@@ -7,13 +7,12 @@ const Employer = require("../model/employer");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
 const util = require("../util/data.util");
-const e = require("express");
 
 let createNewJob = async (job) => {
   job["jobPublishDate"] = new Date();
   let jobInstance = new JobModel(job);
   await jobInstance.save((err, obj) => {
-    if (err) throw err;
+    if (err) return handleError(err);
   });
   return { code: 200, message: "Tao cong viec thanh cong" };
 };

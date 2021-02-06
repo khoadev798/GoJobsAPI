@@ -2,13 +2,22 @@ const contractService = require("../service/contract.service");
 var mongoose = require("mongoose");
 
 let addNewContract = async (req, res) => {
-  let { jobId, flcId, empId, contractStatus } = req.query;
+  let {
+    jobId,
+    flcId,
+    empId,
+    contractStatus,
+    createdBy,
+    jobTotalSalaryPerHeadCount,
+  } = req.query;
   let createContractResult = await contractService.createNewContractAtSituation(
     {
       jobId,
       flcId,
       empId,
       contractStatus,
+      createdBy,
+      jobTotalSalaryPerHeadCount,
     }
   );
   res.status(createContractResult.code).send(createContractResult.message);
@@ -46,10 +55,22 @@ let getContractsByJobIdAndContractStatus = async (req, res) => {
 };
 
 let updateContractStatusById = async (req, res) => {
-  let { _id, contractStatus } = req.query;
+  let { _id, contractStatus, updatedBy } = req.query;
   let updateResult = await contractService.updateStatusOfContractById({
     _id,
     contractStatus,
+    updatedBy,
+  });
+  res.status(updateResult.code).send(updateResult.message);
+};
+
+let approveContractAndPayment = async (req, res) => {
+  let { _id, moneyFromEmployer, updatedBy } = req.query;
+  moneyFromEmployer = Number(moneyFromEmployer);
+  let updateResult = await contractService.approveContractAndPayment({
+    _id,
+    moneyFromEmployer,
+    updatedBy,
   });
   res.status(updateResult.code).send(updateResult.message);
 };
@@ -62,4 +83,5 @@ module.exports = {
   getFollowOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateContractStatusById,
+  approveContractAndPayment,
 };
