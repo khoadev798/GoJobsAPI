@@ -197,10 +197,15 @@ let getContractsByJobIdAndContractStatus = async (contract) => {
 
 let updateStatusOfContractById = async (contract) => {
   let filter = {
-    _id: contract._id,
+    _id: mongoose.Types.ObjectId(contract._id),
   };
+  let currentContract = await ContractModel.findOne(filter);
+  const CHOICES = ["INTEREST", "APPLIED", "ACCEPTED", "REJECTED"];
+  // APPROVED, CANCELLED, COMPLETED need to be seperated
   let update = {
-    contractStatus: contract.contractStatus,
+    contractStatus: CHOICES.includes(contract.contractStatus)
+      ? contract.contractStatus
+      : currentContract.contractStatus,
     updatedBy: contract.updatedBy,
     updatedAt: new Date(),
   };
@@ -217,55 +222,8 @@ let updateStatusOfContractById = async (contract) => {
   return { code: 200, message: "Cap nhat thanh cong!" };
 };
 
-let approveContractAndPayment = async (contract) => {
-  let checkContract = await getOneContractWithSpecifiedInfo({
-    _id: contract._id,
-  });
-  let oneContract = checkContract.contract;
-  console.log(oneContract);
-  if (checkContract.code == 200) {
-    let filter = {
-      _id: contract._id,
-    };
-    let update = {};
-    if (
-      oneContract.jobTotalSalaryPerHeadCount <=
-      contract.moneyFromEmployer + oneContract.moneyFromEmployer
-    ) {
-      update = {
-        contractStatus: "APPROVED",
-        updatedBy: contract.updatedBy,
-        moneyFromEmployer:
-          contract.moneyFromEmployer + oneContract.moneyFromEmployer,
-        isPaymentFullyCompleted: true,
-        updatedAt: new Date(),
-      };
-    } else {
-      update = {
-        contractStatus: "INSUFFICIENT",
-        updatedBy: contract.updatedBy,
-        moneyFromEmployer:
-          contract.moneyFromEmployer + oneContract.moneyFromEmployer,
-        isPaymentFullyCompleted: false,
-        updatedAt: new Date(),
-      };
-    }
+//  mongoose.Types.ObjectId
 
-    let updateResult = await ContractModel.findOneAndUpdate(
-      filter,
-      update,
-      {
-        new: true,
-      },
-      (err) => {
-        if (err) return handleError(err);
-      }
-    );
-    return { code: 200, message: "Duyet contract thanh cong!" };
-  } else {
-    return { code: 404, message: "Khong tim thay contract nay" };
-  }
-};
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -274,5 +232,4 @@ module.exports = {
   getFollowsOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateStatusOfContractById,
-  approveContractAndPayment,
 };

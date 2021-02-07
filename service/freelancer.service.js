@@ -3,7 +3,7 @@ const GLOBAL = require("../global/global");
 const Freelancer = require("../model/freelancer");
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 const bcrypt = require("bcrypt");
-
+const walletService = require("./wallet.service");
 
 let getAllFreelancer = async () => {
   await FreelancerModel.find({}, "_id flcEmail", (err, docs) => {
@@ -18,9 +18,20 @@ let flcCreate = async (freelancer) => {
   if (isFlcExisted.code == 404) {
     freelancer["createAt"] = new Date();
     let flcInstance = new FreelancerModel(freelancer);
-    flcInstance.save((err, obj) => {
-      if (err) return handleError(err);
-    });
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    let createdFreelancer = await flcInstance.save({ session: session });
+    let createdWallet = await walletService.createWallet(
+      createdFreelancer,
+      session
+    );
+    await session.commitTransaction();
+    console.log("Created Freelancer", createdFreelancer);
+    console.log(
+      `Wallet of Employer ${createdFreelancer.flcEmail}`,
+      createdWallet
+    );
+    session.endSession();
     return { code: 200, message: "Tao thanh cong!" };
   } else {
     return { code: 409, message: "Freelancer da ton tai!" };
@@ -28,32 +39,32 @@ let flcCreate = async (freelancer) => {
 };
 
 let login = async (freelancer) => {
-    const isFreelancerExisted = await findFreelancerByEmail(freelancer);
-    console.log("Freelancer login here!" + isFreelancerExisted.code);
-    if(isFreelancerExisted.code == 200) {
-      if(
-        bcrypt.compareSync(
-          freelancer.flcPassword,
-          isFreelancerExisted.freelancer.flcPassword
-        )
-      ){
-        console.log("Freelancer login info correct");
-        let _id =  isFreelancerExisted.freelancer._id;
-        return {
-          code: GLOBAL.SUCCESS_CODE,
-          message: `Login succeeded!`,
-          _id: _id,
-        };
-      } else {
-        console.log("Incorrect");
-        return { code: GLOBAL.BAD_REQUEST_CODE, message: `Login Failed!`};
-      }
-    }else {
+  const isFreelancerExisted = await findFreelancerByEmail(freelancer);
+  console.log("Freelancer login here!" + isFreelancerExisted.code);
+  if (isFreelancerExisted.code == 200) {
+    if (
+      bcrypt.compareSync(
+        freelancer.flcPassword,
+        isFreelancerExisted.freelancer.flcPassword
+      )
+    ) {
+      console.log("Freelancer login info correct");
+      let _id = isFreelancerExisted.freelancer._id;
       return {
-        code: GLOBAL.NOT_FOUND_CODE,
-        message: `User${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+        code: GLOBAL.SUCCESS_CODE,
+        message: `Login succeeded!`,
+        _id: _id,
       };
+    } else {
+      console.log("Incorrect");
+      return { code: GLOBAL.BAD_REQUEST_CODE, message: `Login Failed!` };
     }
+  } else {
+    return {
+      code: GLOBAL.NOT_FOUND_CODE,
+      message: `User${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+    };
+  }
 };
 
 let flcUpdate = async (freelancer) => {

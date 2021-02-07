@@ -10,6 +10,7 @@ let addNewContract = async (req, res) => {
     createdBy,
     jobTotalSalaryPerHeadCount,
   } = req.query;
+
   let createContractResult = await contractService.createNewContractAtSituation(
     {
       jobId,
@@ -20,6 +21,7 @@ let addNewContract = async (req, res) => {
       jobTotalSalaryPerHeadCount,
     }
   );
+
   res.status(createContractResult.code).send(createContractResult.message);
 };
 
@@ -64,17 +66,6 @@ let updateContractStatusById = async (req, res) => {
   res.status(updateResult.code).send(updateResult.message);
 };
 
-let approveContractAndPayment = async (req, res) => {
-  let { _id, moneyFromEmployer, updatedBy } = req.query;
-  moneyFromEmployer = Number(moneyFromEmployer);
-  let updateResult = await contractService.approveContractAndPayment({
-    _id,
-    moneyFromEmployer,
-    updatedBy,
-  });
-  res.status(updateResult.code).send(updateResult.message);
-};
-
 // 60165ee6f26cce54115bf10e
 module.exports = {
   getContractsByStatusOfFlc,
@@ -83,5 +74,4 @@ module.exports = {
   getFollowOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateContractStatusById,
-  approveContractAndPayment,
 };

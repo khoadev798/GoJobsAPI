@@ -27,7 +27,7 @@ const Contract = new Schema({
   empId: { type: Schema.Types.ObjectId, ref: "Employer", default: null },
   contractStatus: { type: String, required: true },
   jobTotalSalaryPerHeadCount: { type: Number, default: null },
-  moneyFromEmployer: { type: Number, default: 0 },
+  // moneyFromEmployer: { type: Number, default: 0 },
   isPaymentFullyCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: null },
   createdBy: { type: String, default: null },
