@@ -21,8 +21,8 @@ const Job = new Schema({
   jobPublishDate: { type: Date, default: null },
   jobStatus: { type: String, default: "Open" },
   jobTotalSalaryPerHeadCount: { type: Number, default: null },
-  jobHeadCount: { type: Number, default: 1 },
-  paidJobHeadCount: { type: Number, default: 0 },
+  jobHeadCountTarget: { type: Number, default: 1 },
+  jobPaidContractCount: { type: Number, default: 0 },
   updatedBy: { type: Date, default: null },
   updatedAt: { type: Date, default: null },
 });

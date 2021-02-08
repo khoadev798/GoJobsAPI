@@ -8,16 +8,19 @@ let getWalletInfoOfEndUser = async (req, res) => {
 };
 
 let payForAcceptedContracts = async (req, res) => {
-  let { _id, walletOwnerId, contractIds } = req.query;
-  console.log(contractIds instanceof Array);
-  contractIds.forEach((id) => {
-    id = mongoose.Types.ObjectId(id);
-  });
+  let { _id, walletOwnerId, contractIds, jobId } = req.query;
+
+  // contractIds.forEach((id) => {
+  //   id = mongoose.Types.ObjectId(id);
+  //   return id;
+  // });
+  // console.log(contractIds);
   let paymentResult = await walletService.payForAcceptedContractsProcedure(
     _id,
     walletOwnerId,
-    contractIds
+    contractIds,
+    jobId
   );
-  res.send("Procedure");
+  res.status(paymentResult.code).send(paymentResult.result);
 };
 module.exports = { getWalletInfoOfEndUser, payForAcceptedContracts };

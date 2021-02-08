@@ -4,11 +4,12 @@ const Wallet = require("../model/wallet");
 const Employer = require("../model/employer");
 const Freelancer = require("../model/freelancer");
 const Contract = require("../model/contract");
+const Job = require("../model/job");
 const WalletModel = mongoose.model("Wallet", Wallet);
 const EmployerModel = mongoose.model("Employer", Employer);
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 const ContractModel = mongoose.model("Contract", Contract);
-
+const JobModel = mongoose.model("Job", Job);
 let createWallet = async (endUser, session) => {
   // console.log("EndUser of Employer", endUser instanceof EmployerModel);
   let walletInfo = {
@@ -42,7 +43,8 @@ let getWalletOfEndUserByCreatedBy = async (endUser) => {
 let payForAcceptedContractsProcedure = async (
   _id,
   walletOwnerId,
-  contractIds
+  contractIds,
+  jobId
 ) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -54,7 +56,7 @@ let payForAcceptedContractsProcedure = async (
   // Tìm các Contract đang được thanh toán
   let contractFilter = {
     _id: { $in: contractIds },
-    empId: mongoose.Types.ObjectId(walletOwnerId),
+    empId: walletOwnerId,
     contractStatus: "ACCEPTED",
   };
   let currentWallet = await WalletModel.findOne(walletFilter);
@@ -64,9 +66,72 @@ let payForAcceptedContractsProcedure = async (
   // Người dùng update các contract APPROVED thành COMPLETED, thực hiện ck vào ví cho các freelancer với phần jobTotalSalaryPerHeadCount
   console.log("Wallet", currentWallet);
   console.log("Contracts", involvedContracts);
-  await session.commitTransaction();
-  session.endSession();
-  return "OK";
+  let totalPayment = 0;
+  involvedContracts.forEach((contract) => {
+    totalPayment += contract.jobTotalSalaryPerHeadCount;
+  });
+  console.log(
+    "Balance vs Payment",
+    `${currentWallet.balance} & ${totalPayment}` +
+      (currentWallet.balance < totalPayment ? " NOT ENOUGH" : " ENOUGH")
+  );
+  if (currentWallet.balance < totalPayment) {
+    // Trả về ko đủ tiền và yêu cầu nạp thêm
+    await session.commitTransaction();
+    session.endSession();
+    return {
+      code: 400,
+      result: "Ban không đủ tiền để thanh toán. Vui lòng nạp thêm.",
+    };
+  } else {
+    // Xử lý thanh toán: 1. Trừ tiền, 2. update contract isPaymentFullyCompleted true 3. update job
+    let walletUpdate = {
+      balance: currentWallet.balance - totalPayment,
+      updatedAt: new Date(),
+      updatedBy: currentWallet.empId,
+    };
+    console.log("Remained balance:", `${walletUpdate.balance}`);
+    let updatedWallet = await WalletModel.findOneAndUpdate(
+      walletFilter,
+      walletUpdate,
+      { new: true }
+    );
+    let contractUpdate = {
+      $set: {
+        isPaymentFullyCompleted: true,
+        contractStatus: "APPROVED",
+        updatedAt: new Date(),
+        updatedBy: currentWallet.empId,
+      },
+    };
+    // update các contracts ở bước này
+    let updateContractsResult = await ContractModel.updateMany(
+      contractFilter,
+      contractUpdate,
+      { new: true }
+    );
+    // tiếp tục update jobPaidContractCount ở job từ current với currentjob
+    let jobFilter = {
+      _id: jobId,
+    };
+    let currentJob = await JobModel.findOne(jobFilter);
+    let jobUpdate = {
+      jobPaidContractCount:
+        currentJob.jobPaidContractCount + updateContractsResult.n,
+    };
+    let updatedJob = await JobModel.findOneAndUpdate(jobFilter, jobUpdate, {
+      new: true,
+    });
+    await session.commitTransaction();
+    session.endSession();
+    console.log("Updated wallet", updatedWallet);
+    console.log("Updated contracts", updateContractsResult);
+    console.log("Updated job", updatedJob);
+    return {
+      code: 200,
+      result: `Thanh toán thành công cho ${updateContractsResult.n} hợp đồng!`,
+    };
+  }
 };
 module.exports = {
   createWallet,
