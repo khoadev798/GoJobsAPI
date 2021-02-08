@@ -5,10 +5,13 @@ const Contract = require("../model/contract");
 Contract.plugin(mongoosePaginate);
 const Employer = require("../model/employer");
 const Job = require("../model/job");
+const Wallet = require("../model/wallet");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
 const ContractModel = mongoose.model("Contract", Contract);
+const WalletModel = mongoose.model("Wallet", Wallet);
 
+// Không dùng function này nữa
 let getContractsByCondition = async (condition) => {
   let contracts = await ContractModel.find(
     {
@@ -198,6 +201,9 @@ let getContractsByJobIdAndContractStatus = async (contract) => {
 let updateStatusOfContractById = async (contract) => {
   let filter = {
     _id: mongoose.Types.ObjectId(contract._id),
+    contractStatus: { $ne: "APPROVED" },
+    contractStatus: { $ne: "COMPLETED" },
+    contractStatus: { $ne: "CANCELLED" },
   };
   let currentContract = await ContractModel.findOne(filter);
   const CHOICES = ["INTEREST", "APPLIED", "ACCEPTED", "REJECTED"];
@@ -224,6 +230,89 @@ let updateStatusOfContractById = async (contract) => {
 
 //  mongoose.Types.ObjectId
 
+let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let contractFilter = {
+    _id: { $in: _idContractList },
+    contractStatus: { $eq: "APPROVED" },
+  };
+  let contractList = await ContractModel.find(contractFilter);
+  console.log("Paying contracts", contractList);
+  if (contractList.length > 0) {
+    // Lấy các freelancers từ flcId của contractList liên quan và cộng tiền vào wallet của họ
+    let queryList = [];
+    contractList.forEach(async (contract) => {
+      let walletFilter = {
+        createdBy: { $eq: contract.flcId },
+      };
+      let currentWallet = WalletModel.findOne(walletFilter).exec();
+      queryList.push(currentWallet);
+    });
+    let flcWalletList = await Promise.all(queryList).then((values) => {
+      return values;
+    });
+    console.log("flcWalletList", flcWalletList);
+    let updateWalletList = [];
+    let updateContractList = [];
+    contractList.forEach((contract, index) => {
+      let walletFilter = {
+        createdBy: { $eq: contract.flcId },
+      };
+      let walletUpdate = {
+        $set: {
+          balance:
+            flcWalletList[index].balance +
+            (contract.jobTotalSalaryPerHeadCount * 90) / 100,
+          updatedBy: contract.empId,
+          updatedAt: new Date(),
+        },
+      };
+      let updateWalletBalance = WalletModel.findOneAndUpdate(
+        walletFilter,
+        walletUpdate,
+        {
+          new: true,
+        }
+      ).exec();
+      let updateContractStatus = ContractModel.findOneAndUpdate(
+        {
+          _id: contract._id,
+        },
+        {
+          $set: {
+            contractStatus: "COMPLETED",
+            updatedBy: contract.empId,
+            updatedAt: new Date(),
+          },
+        },
+        {
+          new: true,
+        }
+      ).exec();
+      updateWalletList.push(updateWalletBalance);
+      updateContractList.push(updateContractStatus);
+    });
+    let updatedFlcWalletList = await Promise.all(updateWalletList).then(
+      (values) => {
+        return values;
+      }
+    );
+    let complatedContractList = await Promise.all(updateContractList).then(
+      (values) => {
+        return values;
+      }
+    );
+    console.log("DS Wallet da nhan tien", updatedFlcWalletList);
+    console.log("DS Contract da COMPLETED", complatedContractList);
+    await session.commitTransaction();
+    session.endSession();
+    return { code: 200, result: "Thanh toán các Contract thành công!" };
+  } else {
+    return { code: 404, result: "Không có contract phù hợp để thanh toán!" };
+  }
+};
+
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -232,4 +321,5 @@ module.exports = {
   getFollowsOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateStatusOfContractById,
+  markContractsCompletedAndPayFreelancers,
 };

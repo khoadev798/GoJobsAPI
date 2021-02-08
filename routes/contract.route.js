@@ -31,4 +31,10 @@ route.put(
 
 route.delete("/", dbConn.conn, contractController.deleteContractById);
 
+route.put(
+  "/markContractsCompleted",
+  dbConn.conn,
+  contractController.markContractsCompleted
+);
+
 module.exports = route;

@@ -67,6 +67,14 @@ let updateContractStatusById = async (req, res) => {
 };
 
 // 60165ee6f26cce54115bf10e
+
+let markContractsCompleted = async (req, res) => {
+  let { _idContractList } = req.query;
+  let payResult = await contractService.markContractsCompletedAndPayFreelancers(
+    _idContractList
+  );
+  res.status(payResult.code).send(payResult.result);
+};
 module.exports = {
   getContractsByStatusOfFlc,
   addNewContract,
@@ -74,4 +82,5 @@ module.exports = {
   getFollowOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateContractStatusById,
+  markContractsCompleted,
 };

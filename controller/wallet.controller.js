@@ -15,6 +15,7 @@ let payForAcceptedContracts = async (req, res) => {
   //   return id;
   // });
   // console.log(contractIds);
+
   let paymentResult = await walletService.payForAcceptedContractsProcedure(
     _id,
     walletOwnerId,

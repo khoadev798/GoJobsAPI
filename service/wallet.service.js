@@ -56,8 +56,8 @@ let payForAcceptedContractsProcedure = async (
   // Tìm các Contract đang được thanh toán
   let contractFilter = {
     _id: { $in: contractIds },
-    empId: walletOwnerId,
-    contractStatus: "ACCEPTED",
+    empId: { $eq: walletOwnerId },
+    contractStatus: { $eq: "ACCEPTED" },
   };
   let currentWallet = await WalletModel.findOne(walletFilter);
   let involvedContracts = await ContractModel.find(contractFilter);
