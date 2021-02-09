@@ -4,6 +4,7 @@ const GLOBAL = require("../global/global");
 const Contract = require("../model/contract");
 Contract.plugin(mongoosePaginate);
 const Employer = require("../model/employer");
+const Freelancer = require("../model/freelancer");
 const Job = require("../model/job");
 const Wallet = require("../model/wallet");
 const JobModel = mongoose.model("Job", Job);
@@ -246,8 +247,8 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
       let walletFilter = {
         createdBy: { $eq: contract.flcId },
       };
-      let currentWallet = WalletModel.findOne(walletFilter).exec();
-      queryList.push(currentWallet);
+      let currentFlcWallet = WalletModel.findOne(walletFilter).exec();
+      queryList.push(currentFlcWallet);
     });
     let flcWalletList = await Promise.all(queryList).then((values) => {
       return values;
@@ -313,6 +314,73 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
   }
 };
 
+let markOneContractCancelled = async (_idContract) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let contractFilter = {
+    _id: mongoose.Types.ObjectId(_idContract),
+    contractStatus: { $eq: "APPROVED" },
+  };
+  let involvedContract = await ContractModel.findOne(contractFilter);
+
+  if (involvedContract) {
+    let flcWalletFilter = {
+      createdBy: { $eq: involvedContract.flcId },
+    };
+    let involvedFlcWallet = await WalletModel.findOne(flcWalletFilter);
+
+    let empWalletFilter = {
+      createdBy: { $eq: involvedContract.empId },
+    };
+    let involvedEmpWallet = await WalletModel.findOne(empWalletFilter);
+    let contractUpdate = {
+      contractStatus: "CANCELLED",
+      updatedBy: involvedContract.flcId,
+      updatedAt: new Date(),
+    };
+    let flcWalletUpdate = {
+      balance:
+        involvedFlcWallet.balance +
+        involvedContract.jobTotalSalaryPerHeadCount * 0.55,
+      updatedBy: involvedContract.flcId,
+      updatedAt: new Date(),
+    };
+    let empWalletUpdate = {
+      balance:
+        involvedEmpWallet.balance +
+        involvedContract.jobTotalSalaryPerHeadCount * 0.35,
+      updatedBy: involvedContract.flcId,
+      updatedAt: new Date(),
+    };
+    let updatedContract = await ContractModel.findOneAndUpdate(
+      contractFilter,
+      contractUpdate,
+      { new: true }
+    );
+    let updatedFlcWallet = await WalletModel.findOneAndUpdate(
+      flcWalletFilter,
+      flcWalletUpdate,
+      { new: true }
+    );
+    let updatedEmpWallet = await WalletModel.findOneAndUpdate(
+      empWalletFilter,
+      empWalletUpdate,
+      { new: true }
+    );
+
+    console.log("Cacelled contract", updatedContract);
+    console.log("Updated flcWallet", updatedFlcWallet);
+    console.log("Update empWallet", updatedEmpWallet);
+    await session.commitTransaction();
+    session.endSession();
+    return { code: 200, result: "Contract đã bị huỷ." };
+  } else {
+    await session.commitTransaction();
+    session.endSession();
+    return { code: 404, result: "Không có contract phù hợp!" };
+  }
+};
+
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -322,4 +390,5 @@ module.exports = {
   getContractsByJobIdAndContractStatus,
   updateStatusOfContractById,
   markContractsCompletedAndPayFreelancers,
+  markOneContractCancelled,
 };

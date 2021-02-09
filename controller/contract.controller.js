@@ -75,6 +75,14 @@ let markContractsCompleted = async (req, res) => {
   );
   res.status(payResult.code).send(payResult.result);
 };
+
+let markOneContractCancelled = async (req, res) => {
+  let { _idContract } = req.query;
+  let cancelResult = await contractService.markOneContractCancelled(
+    _idContract
+  );
+  res.status(cancelResult.code).send(cancelResult.result);
+};
 module.exports = {
   getContractsByStatusOfFlc,
   addNewContract,
@@ -83,4 +91,5 @@ module.exports = {
   getContractsByJobIdAndContractStatus,
   updateContractStatusById,
   markContractsCompleted,
+  markOneContractCancelled,
 };

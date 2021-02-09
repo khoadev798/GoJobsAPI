@@ -31,10 +31,18 @@ route.put(
 
 route.delete("/", dbConn.conn, contractController.deleteContractById);
 
+// Khác biệt giữa 2 trường hợp COMPLETED và CANCELLED là
+// cho phép COMPLETED cùng lúc nhiều contracts
 route.put(
   "/markContractsCompleted",
   dbConn.conn,
   contractController.markContractsCompleted
+);
+// chỉ cho phép CANCELLED từng contract riêng biệt
+route.put(
+  "/markOneContractCancelled",
+  dbConn.conn,
+  contractController.markOneContractCancelled
 );
 
 module.exports = route;
