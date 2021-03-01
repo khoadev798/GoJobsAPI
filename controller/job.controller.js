@@ -21,6 +21,7 @@ const createNewJob = async (req, res) => {
     jobStatus, // default "Opening"
     jobTotalSalaryPerHeadCount,
     jobHeadCount, // default 1
+    jobAddress,
   } = req.body;
 
   let newJob = infoValidation.removeUndefinedKeyValue({
@@ -41,6 +42,7 @@ const createNewJob = async (req, res) => {
     jobStatus, // default "Opening"
     jobTotalSalaryPerHeadCount,
     jobHeadCount, // default 1
+    jobAddress,
   });
   let createNewJobResult = await jobService.createNewJob(newJob);
   console.log(createNewJobResult);

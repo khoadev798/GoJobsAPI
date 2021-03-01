@@ -40,19 +40,22 @@ let getAllPendingAccounts = async (req, res, next) => {
 };
 
 let login = async (req, res, next) => {
-  let { email, password } = req.body;
+  let { empEmail, empPassword } = req.body;
   const loginResult = await employerService.login({
-    email,
-    password,
+    empEmail,
+    empPassword,
   });
-  const accessToken = await jwtHelper.generateToken(
-    email,
-    ACCESS_TOKEN_SECRET,
-    ACCESS_TOKEN_LIFE
-  );
+  if (loginResult.code == 200) {
+    const accessToken = await jwtHelper.generateToken(
+      empEmail,
+      ACCESS_TOKEN_SECRET,
+      ACCESS_TOKEN_LIFE
+    );
+  }
+
   res.status(loginResult.code).send({
     message: loginResult.message,
-    userId: loginResult.id,
+    empId: loginResult.id,
     accessToken: accessToken,
   });
 };

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const GLOBAL = require("../global/global");
 const Employer = require("../model/employer");
 const EmployerModel = mongoose.model("Employer", Employer);
@@ -33,7 +34,8 @@ let employerCreate = async (employer) => {
 
 let login = async (employer) => {
   const isEmployerExisted = await findEmployerByEmail(employer);
-  console.log("Employer login here!" + isUserExisted.code);
+  console.log("Employer login here!" + isEmployerExisted.employer.empPassword);
+  console.log(isEmployerExisted);
   if (isEmployerExisted.code == 200) {
     if (
       bcrypt.compareSync(
@@ -127,8 +129,11 @@ let findEmployerByEmailOrNationalId = async (employer) => {
     },
     (err, doc) => {
       if (err) return handleError(err);
+      return doc;
     }
   );
+
+  // console.log(found);
 
   if (found == undefined) {
     return {
@@ -145,16 +150,14 @@ let findEmployerByEmailOrNationalId = async (employer) => {
 };
 
 let findEmployerByEmail = async (employer) => {
-  let found;
-  await EmployerModel.findOne(
+  let found = await EmployerModel.findOne(
     {
-      email: employer.email,
+      empEmail: employer.empEmail,
     },
-    (err, employer1) => {
+    "_id empEmail empPassword empNationalId empPhone salt",
+    (err, doc) => {
       if (err) return handleError(err);
-      if (employer1) {
-        found = { ...employer1._doc };
-      }
+      return doc;
     }
   );
 
@@ -167,7 +170,7 @@ let findEmployerByEmail = async (employer) => {
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Either email or nationalId taken!",
-      employer: { ...found },
+      employer: found,
     };
   }
 };

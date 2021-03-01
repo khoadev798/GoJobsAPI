@@ -12,6 +12,7 @@ const employerRoute = require("./routes/employer.route");
 const contractRoute = require("./routes/contract.route");
 const walletRoute = require("./routes/wallet.route");
 const sendMailRoute = require("./routes/sendMail.route");
+const locationRoute = require("./routes/location.route");
 const swaggerDocument = YAML.load("docs/swagger.yaml");
 
 const jobRoute = require("./routes/job.route");
@@ -95,6 +96,8 @@ app.use("/jobType", jobTypeRoute);
 app.use("/contract", contractRoute);
 
 app.use("/wallet", walletRoute);
+
+app.use("/location", locationRoute);
 
 http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);

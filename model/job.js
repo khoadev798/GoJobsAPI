@@ -23,6 +23,7 @@ const Job = new Schema({
   jobTotalSalaryPerHeadCount: { type: Number, default: null },
   jobHeadCountTarget: { type: Number, default: 1 },
   jobPaidContractCount: { type: Number, default: 0 },
+  jobAddress: { type: String },
   updatedBy: { type: Date, default: null },
   updatedAt: { type: Date, default: null },
 });
