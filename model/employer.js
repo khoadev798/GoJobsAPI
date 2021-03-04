@@ -41,6 +41,7 @@ const Employer = new Schema({
     default: null,
   },
   salt: { type: String, required: true },
+  empTerm: { type: String, required: true, default: "false" },
 });
 
 module.exports = Employer;

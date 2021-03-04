@@ -14,6 +14,7 @@ let register = async (req, res, next) => {
     empAddress, // default: null
     empLogo, // default: null
     empDescription, // default: null
+    empTerm,
   } = req.body;
 
   let empInfo = infoValidation.removeUndefinedKeyValue({
@@ -26,6 +27,7 @@ let register = async (req, res, next) => {
     empAddress,
     empLogo,
     empDescription,
+    empTerm,
   });
   // console.log("Employer info:", empInfo);
   const registerResult = await employerService.employerCreate(empInfo);

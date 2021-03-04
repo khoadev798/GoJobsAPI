@@ -6,8 +6,7 @@ const Freelancer = new Schema({
 
   flcEmail: { type: String, required: true },
   flcPassword: { type: String, required: true },
-  flcFirstName: { type: String, default: null },
-  flcLastName: { type: String, default: null },
+  flcName: { type: String, default: null },
   flcPhone: { type: String, default: null },
   flcBirthday: { type: Date, default: null },
   flcAvatar: { type: String, default: null },
@@ -16,8 +15,6 @@ const Freelancer = new Schema({
   flcEdu: { type: String, default: null },
   flcMajor: { type: String, default: null },
   flcJobTitle: { type: String, default: null },
-  flcBeginExp: { type: Date, default: null },
-  flcFinishExp: { type: Date, default: null },
   flcLanguages: { type: String, default: null },
   flcTerm: { type: Boolean, required: true },
   createdAt: { type: Date },
