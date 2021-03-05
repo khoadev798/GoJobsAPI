@@ -12,7 +12,9 @@ let emailValidate = (req, res, next) => {
 };
 
 let empEmailValidate = (req, res, next) => {
+  console.log(req.body);
   let { empEmail } = req.body;
+
   console.log(empEmail);
   if (empEmail.match(GLOBAL.EMAIL_REGEX)) {
     console.log("Processing input...");

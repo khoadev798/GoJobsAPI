@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const GLOBAL = require("../global/global");
+const jwtHelper = require("../helpers/jwt.helper");
+const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 const Employer = require("../model/employer");
 const EmployerModel = mongoose.model("Employer", Employer);
 const walletService = require("./wallet.service");
@@ -45,10 +47,16 @@ let login = async (employer) => {
     ) {
       console.log("Employer login info correct");
       let _id = isEmployerExisted.employer._id;
+      const accessToken = await jwtHelper.generateToken(
+        _id,
+        ACCESS_TOKEN_SECRET,
+        ACCESS_TOKEN_LIFE
+      );
       return {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         _id: _id,
+        accessToken: accessToken
       };
     } else {
       console.log("Incorrect");

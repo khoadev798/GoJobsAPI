@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-let generateToken = (user, secretSignature, tokenLife) => {
+let generateToken = (employer, secretSignature, tokenLife) => {
   return new Promise((resolve, reject) => {
     const userData = {
-      email: user.email,
+      _id: employer._id,
     };
 
     jwt.sign(

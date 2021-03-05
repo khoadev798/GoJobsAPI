@@ -1,6 +1,5 @@
-const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
-const jwtHelper = require("../helpers/jwt.helper");
 const infoValidation = require("../middleware/infoValidation.middle");
+const Employer = require("../model/employer");
 const employerService = require("../service/employer.service");
 
 let register = async (req, res, next) => {
@@ -15,7 +14,7 @@ let register = async (req, res, next) => {
     empLogo, // default: null
     empDescription, // default: null
     empTerm,
-  } = req.query;
+  } = req.body;
 
   let empInfo = infoValidation.removeUndefinedKeyValue({
     empTypeId,
@@ -42,24 +41,18 @@ let getAllPendingAccounts = async (req, res, next) => {
 };
 
 let login = async (req, res, next) => {
-  let { empEmail, empPassword } = req.body;
+  let { empEmail, empPassword } = req.query;
   const loginResult = await employerService.login({
     empEmail,
     empPassword,
   });
   if (loginResult.code == 200) {
-    const accessToken = await jwtHelper.generateToken(
-      empEmail,
-      ACCESS_TOKEN_SECRET,
-      ACCESS_TOKEN_LIFE
-    );
+    res.status(loginResult.code).send({
+      message: loginResult.message,
+      empId: loginResult.id,
+      accessToken: loginResult.accessToken,
+    });
   }
-
-  res.status(loginResult.code).send({
-    message: loginResult.message,
-    empId: loginResult.id,
-    accessToken: accessToken,
-  });
 };
 
 let confirmAccountInfo = async (req, res, next) => {
