@@ -9,10 +9,10 @@ route.post(
     sendMailController.sendMailRePasswordFlc
 );
 
-// route.post(
-//     "/sendEmailRePasswordEmp",
-//     dbConn.dbConn,
-//     sendMailController.sendMailRePasswordEmp
-// );
+route.post(
+    "/sendEmailRePasswordEmp",
+    dbConn.conn,
+    sendMailController.sendMailRePasswordEmp
+);
 
 module.exports = route;

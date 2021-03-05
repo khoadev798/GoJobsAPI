@@ -96,7 +96,9 @@ let flcUpdate = async (freelancer) => {
 
 let findFreelancerByEmail = async (freelancer) => {
   let found;
+  console.log(freelancer.flcEmail)
   await FreelancerModel.findOne(
+   
     { flcEmail: freelancer.flcEmail },
     (err, flc1) => {
       if (err) return handleError(err);

@@ -1,7 +1,7 @@
 const GLOBAL = require("../global/global");
 
 let emailValidate = (req, res, next) => {
-  let { email } = req.body;
+  let { email } = req.body
   console.log(email);
   if (email.match(GLOBAL.EMAIL_REGEX)) {
     console.log("Processing input...");

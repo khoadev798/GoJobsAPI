@@ -12,7 +12,7 @@ route.get(
 );
 
 route.post(
-  "/",
+  "/register",
   infoValidator.empEmailValidate,
   dbConn.conn,
   employerController.register

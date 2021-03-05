@@ -7,7 +7,7 @@ const walletService = require("./wallet.service");
 const util = require("../util/data.util");
 
 let employerCreate = async (employer) => {
-  let isEmployerExisted = await findEmployerByEmailOrNationalId(employer);
+  let isEmployerExisted = await findEmployerByEmail(employer);
   if (isEmployerExisted.code == 404) {
     employer = util.empHashPassword(employer);
     employer["createdAt"] = new Date();
