@@ -1,6 +1,7 @@
 const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 const jwtHelpers = require("../helpers/jwt.helper");
 const userService = require("../service/user.service");
+
 let register = async (req, res, next) => {
   let { name, email, password } = req.body;
   const registerResult = await userService.userRegister({
@@ -20,7 +21,11 @@ let login = async (req, res, next) => {
     email,
     password,
   });
-  const accessToken = await jwtHelpers.generateToken(email,ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
+  const accessToken = await jwtHelpers.generateToken(
+    email,
+    ACCESS_TOKEN_SECRET,
+    ACCESS_TOKEN_LIFE
+  );
   res.status(loginResult.code).send({
     message: loginResult.message,
     userId: loginResult.id,

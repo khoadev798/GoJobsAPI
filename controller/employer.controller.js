@@ -67,31 +67,38 @@ let confirmAccountInfo = async (req, res, next) => {
   res.status(confirmAccountResult.code).send(confirmAccountResult.message);
 };
 
-let updatedInfo = async (req, res, next) =>{
+let updatedInfo = async (req, res, next) => {
   console.log("Employer updates info");
-  let {empName, empPhone, empType, empAddress, empDescription, empEmail} = req.query;
+  let {
+    empName,
+    empPhone,
+    empType,
+    empAddress,
+    empDescription,
+    empEmail,
+    empNationalId,
+  } = req.query;
   let updatedInfoResult = await employerService.updateEmployerInfo({
     empName,
-    empPhone, 
+    empPhone,
     empType,
-    empAddress, 
+    empAddress,
     empDescription,
-    empEmail
+    empEmail,
+    empNationalId,
   });
   res.status(updatedInfoResult.code).send({
-
     empName: updatedInfoResult.doc.empName,
     empType: updatedInfoResult.doc.empType,
     empPhone: updatedInfoResult.doc.empPhone,
     empAddress: updatedInfoResult.doc.empAddress,
-    empDescription: updatedInfoResult.doc.empDescription
+    empDescription: updatedInfoResult.doc.empDescription,
   });
 };
 
 let updatePassword = async (req, res, next) => {
   console.log("Employer updates password");
   let { email, password, newPassword } = req.query;
-
   console.log(email, typeof password, typeof newPassword);
   let newPasswordResult = await employerService.updatePassword({
     email,

@@ -56,7 +56,7 @@ let login = async (employer) => {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         _id: _id,
-        accessToken: accessToken
+        accessToken: accessToken,
       };
     } else {
       console.log("Incorrect");
@@ -85,39 +85,39 @@ let updateEmployerStatus = async (employer) => {
     });
     console.log("Cap nhat thanh cong:", doc._id, doc.empStatus);
     return {
-       code: 200,
-       message: "Cap nhat status thanh cong!",
-       };
+      code: 200,
+      message: "Cap nhat status thanh cong!",
+    };
   } else {
     return { code: 404, message: "Tai khoan khong ton tai!" };
   }
 };
 
-let updateEmployerInfo = async (employer) =>{
+let updateEmployerInfo = async (employer) => {
   let isEmployerExisted = await findEmployerByEmail(employer);
-  if (isEmployerExisted.code == 200){
-    const filter = {empEmail: employer.empEmail};
-    const update = {
-      empName: employer.empName,
-      empPhone: employer.empPhone,
-      empType: employer.empType,
-      empAddress: employer.empAddress,
-      empDescription: employer.empDescription,
-    
-    };
+  if (isEmployerExisted.code == 200) {
+    const filter = { empEmail: employer.empEmail };
+    if (employer.empName || employer.empNationalId) {
+      employer["empStats"] = "Pending";
+    }
+    const update = employer;
     let doc = await EmployerModel.findOneAndUpdate(filter, update, {
       new: true,
     });
     console.log("Cap nhat info thanh cong: ", doc);
-    return {code: 200, message: "Cap nhat info thanh cong", doc};
+    return { code: 200, message: "Cap nhat info thanh cong", doc };
   } else {
-    return {code: 404, message:"Tai khoan khong ton tai"};
+    return { code: 404, message: "Tai khoan khong ton tai" };
   }
 };
 
 let getAllPendingEmployer = async () => {
   let pendingList = await EmployerModel.find(
-    { empStatus: "Pending" },
+    {
+      empStatus: "Pending",
+      empName: { $ne: null },
+      empNationalId: { $ne: null },
+    },
     "_id empName empNationalId empStatus"
   ).exec();
   // console.log(pendingList);
@@ -125,16 +125,14 @@ let getAllPendingEmployer = async () => {
 };
 
 let findEmployerById = async (employer) => {
-  let found;
-  await EmployerModel.findOne(
+  let found = await EmployerModel.findOne(
     {
       _id: employer._id,
     },
-    (err, employer1) => {
+    "_id empEmail empPassword empNationalId empPhone salt",
+    (err, doc) => {
       if (err) return handleError(err);
-      if (employer1) {
-        found = { ...employer1._doc };
-      }
+      return doc;
     }
   );
 
@@ -146,8 +144,8 @@ let findEmployerById = async (employer) => {
   } else {
     return {
       code: GLOBAL.SUCCESS_CODE,
-      message: "Id found!",
-      employer: { ...found },
+      message: "Either email or nationalId taken!",
+      employer: found,
     };
   }
 };
