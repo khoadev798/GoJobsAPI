@@ -20,6 +20,7 @@ const ObjectId = Schema.ObjectId;
 const Employer = new Schema({
   // coTypeId: { type: Schema.Types.ObjectId, required: true },
   empName: { type: String, default: null },
+  empType: {type: String, default: null},
   empEmail: { type: String, required: true },
   empPassword: { type: String, required: true },
   empNationalId: { type: String, default: null},
@@ -42,7 +43,7 @@ const Employer = new Schema({
     default: null,
   },
   salt: { type: String, required: true },
-  empTerm: { type: String, required: true, default: "false" },
+  
 });
 
 module.exports = Employer;

@@ -84,9 +84,34 @@ let updateEmployerStatus = async (employer) => {
       new: true,
     });
     console.log("Cap nhat thanh cong:", doc._id, doc.empStatus);
-    return { code: 200, message: "Cap nhat status thanh cong!" };
+    return {
+       code: 200,
+       message: "Cap nhat status thanh cong!",
+       };
   } else {
     return { code: 404, message: "Tai khoan khong ton tai!" };
+  }
+};
+
+let updateEmployerInfo = async (employer) =>{
+  let isEmployerExisted = await findEmployerByEmail(employer);
+  if (isEmployerExisted.code == 200){
+    const filter = {empEmail: employer.empEmail};
+    const update = {
+      empName: employer.empName,
+      empPhone: employer.empPhone,
+      empType: employer.empType,
+      empAddress: employer.empAddress,
+      empDescription: employer.empDescription,
+    
+    };
+    let doc = await EmployerModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+    console.log("Cap nhat info thanh cong: ", doc);
+    return {code: 200, message: "Cap nhat info thanh cong", doc};
+  } else {
+    return {code: 404, message:"Tai khoan khong ton tai"};
   }
 };
 
@@ -187,4 +212,5 @@ module.exports = {
   login,
   updateEmployerStatus,
   getAllPendingEmployer,
+  updateEmployerInfo,
 };

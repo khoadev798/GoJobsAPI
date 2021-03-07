@@ -57,7 +57,7 @@ let login = async (req, res, next) => {
 
 let confirmAccountInfo = async (req, res, next) => {
   console.log("Confirm account info!");
-  let { _id, empStatus, empTaxCode, user_id } = req.body;
+  let { _id, empStatus, empTaxCode, user_id } = req.query;
   let confirmAccountResult = await employerService.updateEmployerStatus({
     _id,
     empStatus,
@@ -65,6 +65,27 @@ let confirmAccountInfo = async (req, res, next) => {
     user_id,
   });
   res.status(confirmAccountResult.code).send(confirmAccountResult.message);
+};
+
+let updatedInfo = async (req, res, next) =>{
+  console.log("Employer updates info");
+  let {empName, empPhone, empType, empAddress, empDescription, empEmail} = req.query;
+  let updatedInfoResult = await employerService.updateEmployerInfo({
+    empName,
+    empPhone, 
+    empType,
+    empAddress, 
+    empDescription,
+    empEmail
+  });
+  res.status(updatedInfoResult.code).send({
+
+    empName: updatedInfoResult.doc.empName,
+    empType: updatedInfoResult.doc.empType,
+    empPhone: updatedInfoResult.doc.empPhone,
+    empAddress: updatedInfoResult.doc.empAddress,
+    empDescription: updatedInfoResult.doc.empDescription
+  });
 };
 
 let updatePassword = async (req, res, next) => {
@@ -87,4 +108,5 @@ module.exports = {
   confirmAccountInfo,
   updatePassword,
   getAllPendingAccounts,
+  updatedInfo,
 };

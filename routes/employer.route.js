@@ -30,6 +30,12 @@ route.put(
   employerController.confirmAccountInfo
 );
 
+route.put(
+  "/updatedEmployerInfo",
+  dbConn.conn,
+  employerController.updatedInfo,
+);
+
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 
 module.exports = route;
