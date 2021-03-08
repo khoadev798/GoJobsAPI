@@ -6,10 +6,16 @@ const authMiddleware = require("../middleware/authMiddleware");
 const dbConn = require("../middleware/dbConn.middle");
 
 route.post(
-  "/register",
+  "/flcRegister",
   infoValidation.flcEmailValidate,
   dbConn.conn,
   freelancerController.createFreelancer
+);
+
+route.post(
+  "/flcLogin",
+  dbConn.conn,
+  freelancerController.loginFreelancer,
 );
 
 route.get(

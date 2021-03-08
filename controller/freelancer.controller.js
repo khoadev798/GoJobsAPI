@@ -1,26 +1,32 @@
 const flcService = require("../service/freelancer.service");
 
 let createFreelancer = async (req, res) => {
-  let { flcEmail, flcPassword, flcTerm } = req.body;
+  let { flcEmail, flcPassword, flcTerm } = req.query;
   console.log("new freelancer: ", flcEmail);
-  if (flcTerm) {
+  
     let flcCreateResult = await flcService.flcCreate({
       flcEmail,
       flcPassword,
       flcTerm,
     });
     res.status(flcCreateResult.code).send(flcCreateResult.message);
-  } else {
-    let flcCreateResult = {
-      code: 400,
-      message: "Dang ky that bai.",
-    };
-    res.status(flcCreateResult.code).send(flcCreateResult.message);
   }
-};
 
 let loginFreelancer = async (req, res, next) => {
-  let { flcEmail, flcPassword } = req.body;
+  let { flcEmail, flcPassword } = req.query;
+  console.log("Freelancer login: " + flcEmail);
+  let flcLoginResult = await flcService.login({
+    flcEmail,
+    flcPassword
+  });
+  if(flcLoginResult.code == 200){
+    res.status(flcLoginResult.code).send({
+      message: flcLoginResult.message,
+      _id : flcLoginResult._id,
+      accessToken: flcLoginResult.accessToken
+    });
+  }
+
 };
 
 let getAllFreelancer = async (req, res) => {
@@ -45,4 +51,5 @@ module.exports = {
   getAllFreelancer,
   updateFreelancer,
   deleteFreelaner,
+  loginFreelancer
 };

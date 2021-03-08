@@ -4,6 +4,9 @@ const Freelancer = require("../model/freelancer");
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 const bcrypt = require("bcrypt");
 const walletService = require("./wallet.service");
+const jwtHelper = require("../helpers/jwt.helper");
+const util = require("../util/data.util");
+const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 
 let getAllFreelancer = async () => {
   await FreelancerModel.find({}, "_id flcEmail", (err, docs) => {
@@ -16,6 +19,7 @@ let getAllFreelancer = async () => {
 let flcCreate = async (freelancer) => {
   let isFlcExisted = await findFreelancerByEmail(freelancer);
   if (isFlcExisted.code == 404) {
+    freelancer = util.flcHashPassword(freelancer)
     freelancer["createAt"] = new Date();
     let flcInstance = new FreelancerModel(freelancer);
     const session = await mongoose.startSession();
@@ -41,6 +45,7 @@ let flcCreate = async (freelancer) => {
 let login = async (freelancer) => {
   const isFreelancerExisted = await findFreelancerByEmail(freelancer);
   console.log("Freelancer login here!" + isFreelancerExisted.code);
+  console.log(isFreelancerExisted);
   if (isFreelancerExisted.code == 200) {
     if (
       bcrypt.compareSync(
@@ -50,11 +55,18 @@ let login = async (freelancer) => {
     ) {
       console.log("Freelancer login info correct");
       let _id = isFreelancerExisted.freelancer._id;
+      const accessToken = await jwtHelper.generateToken(
+        _id,
+        ACCESS_TOKEN_SECRET,
+        ACCESS_TOKEN_LIFE
+      );
       return {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         _id: _id,
+        accessToken: accessToken
       };
+      
     } else {
       console.log("Incorrect");
       return { code: GLOBAL.BAD_REQUEST_CODE, message: `Login Failed!` };
@@ -95,16 +107,12 @@ let flcUpdate = async (freelancer) => {
 };
 
 let findFreelancerByEmail = async (freelancer) => {
-  let found;
-  console.log(freelancer.flcEmail)
-  await FreelancerModel.findOne(
+  let found = await FreelancerModel.findOne(
    
     { flcEmail: freelancer.flcEmail },
-    (err, flc1) => {
+    (err, doc) => {
       if (err) return handleError(err);
-      if (flc1) {
-        found = { ...flc1._doc };
-      }
+      return doc;
     }
   );
   if (found == undefined) {
@@ -125,4 +133,5 @@ module.exports = {
   getAllFreelancer,
   flcCreate,
   flcUpdate,
+  login,
 };

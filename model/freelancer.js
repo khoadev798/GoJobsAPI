@@ -16,7 +16,7 @@ const Freelancer = new Schema({
   flcMajor: { type: String, default: null },
   flcJobTitle: { type: String, default: null },
   flcLanguages: { type: String, default: null },
-  flcTerm: { type: Boolean, required: true },
+  flcTerm: { type: String, required: true },
   createdAt: { type: Date },
   updatedPasswordAt: {
     type: Date,
