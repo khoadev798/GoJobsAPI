@@ -79,7 +79,7 @@ let login = async (freelancer) => {
   }
 };
 
-let flcUpdate = async (freelancer) => {
+let flcUpdateInfo = async (freelancer) => {
   let isFlcExisted = await findFreelancerByEmail(freelancer);
 
   if (isFlcExisted.code == 404) {
@@ -132,6 +132,6 @@ let findFreelancerByEmail = async (freelancer) => {
 module.exports = {
   getAllFreelancer,
   flcCreate,
-  flcUpdate,
+  flcUpdateInfo,
   login,
 };
