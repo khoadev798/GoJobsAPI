@@ -11,11 +11,11 @@ route.post(
   flcFeedbackController.createFlcFeedback
 );
 
-route.get(
-  "/getFeedback:id",
+route.post(
+  "/flcFeedbackAVG",
   
   dbConn.conn,
-  flcFeedbackController.getAllFlcFeedback
+  flcFeedbackController.flcFeedbackAVG
 );
 
 module.exports = route;

@@ -7,7 +7,7 @@ let createEmpFeedback = async (req, res) =>{
          flcId, 
          starRating,
          flcComment
-        } = req.body;
+        } = req.query;
        let createEmpFeedbackResult = await empFeedbackService.empFeedbackCreate({
            jobId,
            empId,

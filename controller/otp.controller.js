@@ -1,21 +1,22 @@
 const otpService = require("../service/otp.service");
 
 let getOTP = async (req, res, next) =>{
-    let {_id, empPhone} = req.body;
+    let { empEmail, empPhone } = req.query;
     const getOTPResult = await otpService.getOTP({
-        _id,
-        empPhone
+        empEmail,
+        empPhone,
     });
-    res.status(getOTPResult.code).send({
-        message: getOTPResult.message,
-        Phone: getOTPResult.Phone
-    });
+    if(getOTPResult.code == 200){
+        res.status(getOTPResult.code).send({
+            message: getOTPResult.message,
+        });
+    }
 };
 
 let verifyOTP = async (req, res, next) => {
-    let {_id, empPhone, code } = req.body;
+    let {empEmail, empPhone, code } = req.query;
     const verifyOTPResult = await otpService.verifyOTP({
-        _id,
+        empEmail,
         empPhone,
         code
     });

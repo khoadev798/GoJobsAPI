@@ -1,5 +1,8 @@
 const GLOBAL = require("../global/global");
 const sgMail = require("@sendgrid/mail");
+const mongoose = require("mongoose");
+const Employer = require("../model/employer");
+const EmployerModel = mongoose.model("Employer", Employer);
 sgMail.setApiKey(GLOBAL.API_KEY_MAIL);
 
 let sendMailRePasswordFlc = async (freelancer) =>{
@@ -11,25 +14,19 @@ let sendMailRePasswordFlc = async (freelancer) =>{
                 name: 'Gojobs Việt Nam',
                 email:  GLOBAL.EMAIL_ADMIN,
             },
-            subject: "Gojobs - Xác nhận đổi mật khẩu",
-            text: "Bạn muốn xác nhận mật khẩu hãy nhẫn vào link:  <a href='gojobsvn.xyz/rePassword/confirm'></a>",
-            html: "Bạn muốn xác nhận mật khẩu hãy nhẫn vào link:  <a href='gojobsvn.xyz/rePassword/confirm'></a>",
+            subject: "Gojobs - Lấy lại mật khẩu",
+            text: "Mật khẩu của bạn là: " + isFlcExisted.freelancer.flcPassord,
+            html:  "Mật khẩu của bạn là: " + isFlcExisted.freelancer.flcPassord,
         }
-        let email = isFlcExisted.freelancer.email;
-        sgMail
+             sgMail
             .send(msg)
-            .then(() =>{
-                console.log("Email sent!");
-                return {
-                  code: GLOBAL.SUCCESS_CODE,
-                  message: `Email sent!`,
-                  email: email,
-              };
-            })
-            .catch((error) =>{
-              console.log("Incorrect! " + error);
-              return { code: GLOBAL.BAD_REQUEST_CODE, message: `Sent email failed!`};
-            });
+            .then(() => console.log("sent Mail!"))
+        .catch((error) => console.log("Error: " + error));
+        return {
+            code: GLOBAL.SUCCESS_CODE,
+            message: "Sent Mail!",
+            flcPassord: isEmpExisted.freelancer.flcPassord
+         }
     
     } else {
         return {
@@ -43,30 +40,25 @@ let sendMailRePasswordEmp = async (employer) =>{
     let isEmpExisted = await findEmployerByEmail(employer);
     if (isEmpExisted.code == 200) {
         const msg = {
-            to: employer.email,
+            to: isEmpExisted.employer.empEmail,
             from: {
                 name: 'Gojobs Việt Nam',
                 email:  GLOBAL.EMAIL_ADMIN,
             },
-            subject: "Gojobs - Xác nhận đổi mật khẩu",
-            text: "Bạn muốn xác nhận mật khẩu hãy nhẫn vào link:  <a href='gojobsvn.xyz/rePassword/confirm'></a>",
-            html: "Bạn muốn xác nhận mật khẩu hãy nhẫn vào link:  <a href='gojobsvn.xyz/rePassword/confirm'></a>",
+            subject: "Gojobs - Lấy lại mật khẩu",
+            text:  "Mật khẩu của bạn là: " + isEmpExisted.employer.empPassord,
+            html: "Mật khẩu của bạn là: " + isEmpExisted.employer.empPassord,
         }
-  
-        let email = isEmpExisted.employer.email;
+
         sgMail
-            .send(msg)
-            .then(() =>{
-              return {
-                code: GLOBAL.SUCCESS_CODE,
-                message: `Email sent!`,
-                email: email,
-            };
-            })
-            .catch((error) =>{
-              console.log("Incorrect! " + error);
-              return { code: GLOBAL.BAD_REQUEST_CODE, message: `Sent email failed!`};
-            });
+        .send(msg)
+        .then(() => console.log("sent Mail!"))
+        .catch((error) => console.log("Error: " + error));
+        return {
+            code: GLOBAL.SUCCESS_CODE,
+            message: "Sent Mail!",
+            empPassord: isEmpExisted.employer.empPassord
+         }
     } else {
         return {
             code: GLOBAL.NOT_FOUND_CODE,
@@ -77,32 +69,30 @@ let sendMailRePasswordEmp = async (employer) =>{
 
 
 let findEmployerByEmail = async (employer) => {
-    let found;
-    await EmployerModel.findOne(
-      {
-        email: employer.email,
-      },
-      (err, employer1) => {
-        if (err) return handleError(err);
-        if (employer1) {
-          found = { ...employer1._doc };
-        }
-      }
-    );
-  
-    if (found == undefined) {
-      return {
-        code: GLOBAL.NOT_FOUND_CODE,
-        message: "Employer not found!",
-      };
-    } else {
-      return {
-        code: GLOBAL.SUCCESS_CODE,
-        message: "Either email or nationalId taken!",
-        employer: { ...found },
-      };
+  let found = await EmployerModel.findOne(
+    {
+      empEmail: employer.empEmail,
+    },
+    "_id empEmail empPassword empNationalId empPhone salt",
+    (err, doc) => {
+      if (err) return handleError(err);
+      return doc;
     }
-  };
+  );
+
+  if (found == undefined) {
+    return {
+      code: GLOBAL.NOT_FOUND_CODE,
+      message: "Employer not found!",
+    };
+  } else {
+    return {
+      code: GLOBAL.SUCCESS_CODE,
+      message: "Either email or nationalId taken!",
+      employer: found,
+    };
+  }
+};
 
   let findFreelancerByEmail = async (freelancer) => {
     let found;
@@ -110,9 +100,7 @@ let findEmployerByEmail = async (employer) => {
       { flcEmail: freelancer.flcEmail },
       (err, flc1) => {
         if (err) return handleError(err);
-        if (flc1) {
-          found = { ...flc1._doc };
-        }
+        return flc1;
       }
     );
     if (found == undefined) {

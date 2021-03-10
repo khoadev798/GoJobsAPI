@@ -12,53 +12,42 @@ let getAllFlcFeedback = async () =>{
 };
 
 let flcFeedbackCreate = async (flcFeedback) =>{
-    let isFlcFeedbackExisted = await findFlcFeedbackById(flcFeedback);
-    if (isFlcFeedbackExisted.code == 404) {
-        
+    flcFeedback["createdAt"] = new Date();
         let flcFeedbackInstance = new FlcFeedbackModel(flcFeedback);
+        
         flcFeedbackInstance.save((err, obj) =>{
             if(err) return handleError(err);
         });
-        return { code: 200, message: "Tao thanh cong!"};
-    }else {
-        return { code: 409, message: "Freelancer Feedback da ton tai!"};
-    }
+        return { code: GLOBAL.SUCCESS_CODE, message: "Tạo feedback freelancer thành công"};
 };
 
-let flcFeedbackUpdate = async (flcFeedback) => {
-    let isFlcFeedbackExisted = await findFlcFeedbackById(flcFeedback);
+let flcFeedbackAVG = async (flcFeedback) =>{
+    const isFlcFeedbackExisted = await findFlcFeedbackById(flcFeedback);
+    console.log("flcId: " + isFlcFeedbackExisted.flcId)
+    if (isFlcFeedbackExisted.code == 200) {
+        let flcFeedbacks = [];
 
-    if (isFlcFeedbackExisted.code == 404){
-        return { code: 404, message: "freelancer feedback khong ton tai"};
-    } else{
-        let filter = {
-            flcFeedback_id: flcFeedback._id,
-        };
-        let update = {
-            flcFeedback_id: flcFeedback.newFlcFeedback_id,
-            updatedAt: new Date(),
-        };
-        let doc = await FlcFeedbackModel.findOneAndUpdate(filter, update, {
-            new: true,
-        });
-        if(doc) {
-            return {
-                code: GLOBAL.SUCCESS_CODE,
-                message: "Freelancer feedback da duoc cap nhat!",
-            };
+        await FlcFeedbackModel.find(
+            {flcId: isFlcFeedbackExisted.flcFeedback.flcId},
+            (err, docs) =>{
+                if (err) return handleError(err);
+                flcFeedbacks = [...docs];
+            }
+        );
+        if (flcFeedbacks.length !=0){
+            return {code: GLOBAL.SUCCESS_CODE, flcFeedbacks};
+        } else {
+            return {code: GLOBAL.NOT_FOUND_CODE, flcFeedbacks: "Missing!"};
         }
     }
-};
+}
 
 let findFlcFeedbackById = async (flcFeedback) =>{
-    let found; 
-    await FlcFeedbackModel.findOne(
-        {_id: flcFeedback._id},
+    let found = await FlcFeedbackModel.findOne(
+        {flcId: flcFeedback.flcId},
         (err, flcFeedback1) =>{
             if(err) return handleError(err);
-            if (flcFeedback1) {
-                found = { ...flcFeedback1._doc};
-            }
+           return flcFeedback1
         }
     );
     if(found == undefined) {
@@ -78,5 +67,5 @@ let findFlcFeedbackById = async (flcFeedback) =>{
 module.exports = {
     flcFeedbackCreate,
     getAllFlcFeedback,
-    flcFeedbackUpdate,
+    flcFeedbackAVG,
 }

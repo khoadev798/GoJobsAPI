@@ -4,8 +4,9 @@ const EmpFeedback = require("../model/empFeedback");
 const EmpFeedbackModel = mongoose.model("EmpFeedback", EmpFeedback);
 
 let empFeedbackCreate = async (empFeedback) => {
+    empFeedback["createdAt"] = new Date();
     let empFeedbackInstance = new EmpFeedbackModel(empFeedback);
-    empFeedback["createAt"] = new Date();
+    
     empFeedbackInstance.save((err, obj) =>{
         if(err) return handleError(err);
     });

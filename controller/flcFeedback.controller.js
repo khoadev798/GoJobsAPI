@@ -1,38 +1,31 @@
 const flcFeedbackService = require("../service/flcFeedback.service");
 
 let createFlcFeedback = async (req, res) => {
-  let { freelancer_id, job_id, em_id } = req.body;
-  console.log("new flcFeedback: ");
+  let { empId, jobId, flcId, empComment, starRating } = req.query;
   let flcFeedbackCreateResult = await flcFeedbackService.flcFeedbackCreate({
-    freelancer_id,
-    job_id,
-    em_id,
+    empId,
+    jobId,
+    flcId,
+    empComment,
+    starRating
   });
   res
     .status(flcFeedbackCreateResult.code)
     .send(flcFeedbackCreateResult.message);
 };
 
-let getAllFlcFeedback = async (req, res) => {
-  let flcFeedbackList = await flcFeedbackService.getAllFlcFeedback();
-  res.status(200).send(flcFeedbackList);
-};
+let flcFeedbackAVG = async (req, res) =>{
+  let {flcId} = req.body;
+  let flcFeedbackAVGResult = await flcFeedbackService.flcFeedbackAVG({flcId});
+  if(flcFeedbackAVGResult.code ==200) {
+    res.status(flcFeedbackAVGResult.code).send({
+      flcFeedbacks: flcFeedbackAVGResult.flcFeedbacks
+    });
+  }
+}
 
-// let updateFreelancer = async (req, res) =>{
-//     let { flcFeedbackId, newFlcFeedback } = req.body;
-//     console.log("Update freelancer feedback", flcFeedbackId);
-//     let flcFeedbackUpdateResult = await flcFeedbackService.flcFeedbackUpdate({
-//         flcFeedbackId,
-//         newFlcFeedback,
-//     });
-//     res.status(flcFeedbackUpdateResult.code).send(flcFeedbackUpdateResult.message);
-// };
-
-// let deleteFlcFeedback = (req, res) =>{};
 
 module.exports = {
   createFlcFeedback,
-  // updateFreelancer,
-  getAllFlcFeedback,
-  // deleteFlcFeedback,
+  flcFeedbackAVG
 };
