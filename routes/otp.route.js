@@ -6,34 +6,11 @@ const dbConn = require("../middleware/dbConn.middle");
 const OTPController = require("../controller/otp.controller");
 
 route.post("/getOTP",dbConn.conn, OTPController.getOTP);
-    // console.log("run post /getOTP")
-    // client
-    //     .verify
-    //     .services(GLOBAL.SERVICE_ID)
-    //     .verifications
-    //     .create({
-    //         to: `+${req.query.phonenumber}`,
-    //         channel: req.query.channel
-    //     })
-    //     .then((data) =>{
-    //         res.status(200).send(data);
-    //     })
-    // }
-
-
+    
 route.post("/verifyOTP", OTPController.verifyOTP);
-//     client
-//         .verify
-//         .services(GLOBAL.SERVICE_ID)
-//         .verificationChecks
-//         .create({
-//             to: `+${req.query.phonenumber}`,
-//             code: req.query.code
-//         })
-//         .then((data) =>{
-//             res.status(200).send(data)
-//         })
-// })
 
+route.post("/getOTPFlc", dbConn.conn, OTPController.getOTPFlc);
+
+route.post("/verifyOTPFlc", dbConn.conn, OTPController.verifyOTPFlc)
 
 module.exports = route;

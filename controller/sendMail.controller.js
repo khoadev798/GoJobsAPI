@@ -1,7 +1,7 @@
 const sendMailService = require("../service/sendMail.service");
 
 let sendMailRePasswordEmp = async (req, res, next) =>{
-    let {empEmail} = req.body;
+    let {empEmail} = req.query;
     console.log("empEmail: " + empEmail);
     const sendMailRePasswordEmpResult = await sendMailService.sendMailRePasswordEmp({
         empEmail,
@@ -13,7 +13,7 @@ let sendMailRePasswordEmp = async (req, res, next) =>{
 };
 
 let sendMailRePasswordFlc = async (req, res, next) =>{
-    let {flcEmail} = req.body;
+    let {flcEmail} = req.query;
     const sendMailRePasswordFlcResult = await sendMailService.sendMailRePasswordFlc({
         flcEmail,
     });
