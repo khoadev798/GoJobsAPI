@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const JobType = require("../model/jobType");
 const Employer = require("../model/employer");
 const Freelancer = require("../model/freelancer");
 

@@ -5,12 +5,6 @@ const dbConn = require("../middleware/dbConn.middle");
 const infoValidator = require("../middleware/infoValidation.middle");
 // const authMiddleware = require("../middleware/authMiddleware");
 
-route.get(
-  "/allPendingAccounts",
-  dbConn.conn,
-  employerController.getAllPendingAccounts
-);
-
 route.post(
   "/register",
   infoValidator.empEmailValidate,
@@ -24,17 +18,7 @@ route.post("/empNewFeedback", dbConn.conn, (req, res) => {
 
 route.post("/login", dbConn.conn, employerController.login);
 
-route.put(
-  "/confirmAccount",
-  dbConn.conn,
-  employerController.confirmAccountInfo
-);
-
-route.put(
-  "/updatedEmployerInfo",
-  dbConn.conn,
-  employerController.updatedInfo,
-);
+route.put("/updatedEmployerInfo", dbConn.conn, employerController.updatedInfo);
 
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 

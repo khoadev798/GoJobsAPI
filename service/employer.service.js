@@ -70,29 +70,6 @@ let login = async (employer) => {
   }
 };
 
-let updateEmployerStatus = async (employer) => {
-  let isEmployerExisted = await findEmployerById(employer);
-  if (isEmployerExisted.code == 200) {
-    const filter = { _id: employer._id };
-    const update = {
-      empStatus: employer.empStatus,
-      empTaxCode: employer.empTaxCode,
-      confirmedAt: new Date(),
-      confirmedBy: employer.user_id,
-    };
-    let doc = await EmployerModel.findOneAndUpdate(filter, update, {
-      new: true,
-    });
-    console.log("Cap nhat thanh cong:", doc._id, doc.empStatus);
-    return {
-      code: 200,
-      message: "Cap nhat status thanh cong!",
-    };
-  } else {
-    return { code: 404, message: "Tai khoan khong ton tai!" };
-  }
-};
-
 let updateEmployerInfo = async (employer) => {
   let isEmployerExisted = await findEmployerByEmail(employer);
   if (isEmployerExisted.code == 200) {
@@ -109,19 +86,6 @@ let updateEmployerInfo = async (employer) => {
   } else {
     return { code: 404, message: "Tai khoan khong ton tai" };
   }
-};
-
-let getAllPendingEmployer = async () => {
-  let pendingList = await EmployerModel.find(
-    {
-      empStatus: "Pending",
-      empName: { $ne: null },
-      empNationalId: { $ne: null },
-    },
-    "_id empName empNationalId empStatus"
-  ).exec();
-  // console.log(pendingList);
-  return { code: 200, message: "Pending list", pendingList };
 };
 
 let findEmployerById = async (employer) => {
@@ -208,7 +172,5 @@ let findEmployerByEmail = async (employer) => {
 module.exports = {
   employerCreate,
   login,
-  updateEmployerStatus,
-  getAllPendingEmployer,
   updateEmployerInfo,
 };
