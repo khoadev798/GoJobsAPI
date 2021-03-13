@@ -9,12 +9,9 @@ const {
   allowInsecurePrototypeAccess,
 } = require("@handlebars/allow-prototype-access");
 
-const userRoute = require("./routes/user.route");
-const questionRoute = require("./routes/question.route");
+const adminRoute = require("./routes/admin.route");
 const freelancerRoute = require("./routes/freelancer.route");
 const flcFeedbackRoute = require("./routes/flcFeedback.route");
-const empTypeRoute = require("./routes/empType.route");
-const jobTypeRoute = require("./routes/jobType.route");
 const employerRoute = require("./routes/employer.route");
 const contractRoute = require("./routes/contract.route");
 const walletRoute = require("./routes/wallet.route");
@@ -83,21 +80,15 @@ app.use("/otp", otpRoute);
 
 app.use("/sendMail", sendMailRoute);
 
-app.use("/user", userRoute);
-
-app.use("/question", questionRoute);
+app.use("/admin", adminRoute);
 
 app.use("/freelancer", freelancerRoute);
 
 app.use("/flcFeedback", flcFeedbackRoute);
 
-app.use("/empType", empTypeRoute);
-
 app.use("/employer", employerRoute);
 
 app.use("/job", jobRoute);
-
-app.use("/jobType", jobTypeRoute);
 
 app.use("/contract", contractRoute);
 
@@ -113,17 +104,18 @@ http.listen(process.env.PORT || PORT, () => {
 
 /**BEGIN OF ADMIN WEBSITE */
 app.set("views", path.join(__dirname, "/views"));
+app.set("view engine", "hbs");
+
 app.engine(
   "hbs",
   exphbs({
     extname: "hbs",
-    defaultLayout: "layout",
     layoutsDir: __dirname + "/views/layouts/",
+    defaultLayout: "layout",
+
     handlebars: allowInsecurePrototypeAccess(Handlebars),
   })
 );
-app.set("view engine", "hbs");
-app.use(express.static("public"));
 
 app.use("/web", webAdminRoute);
 

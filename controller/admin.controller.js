@@ -1,10 +1,10 @@
 const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 const jwtHelpers = require("../helpers/jwt.helper");
-const userService = require("../service/user.service");
+const adminService = require("../service/admin.service");
 
 let register = async (req, res, next) => {
   let { name, email, password } = req.body;
-  const registerResult = await userService.userRegister({
+  const registerResult = await adminService.adminRegister({
     name,
     email,
     password,
@@ -18,7 +18,7 @@ let register = async (req, res, next) => {
 let login = async (req, res) => {
   let { email, password } = req.body;
   console.log({ email, password });
-  const loginResult = await userService.login({
+  const loginResult = await adminService.login({
     email,
     password,
   });
@@ -29,7 +29,7 @@ let login = async (req, res) => {
   // );
   res.status(loginResult.code).send({
     message: loginResult.message,
-    userId: loginResult.id,
+    _id: loginResult.id,
     // accessToken: accessToken,
   });
 };
@@ -38,7 +38,7 @@ let updatePassword = async (req, res, next) => {
   let { email, password, newPassword } = req.query;
   console.log("Update");
   console.log(email, typeof password, typeof newPassword);
-  let newPasswordResult = await userService.updatePassword({
+  let newPasswordResult = await adminService.updatePassword({
     email,
     password,
     newPassword,
@@ -54,6 +54,5 @@ let getAllQuestions = (req, res, next) => {
 module.exports = {
   register,
   login,
-  getAllQuestions,
   updatePassword,
 };

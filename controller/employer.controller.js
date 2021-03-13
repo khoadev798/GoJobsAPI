@@ -35,11 +35,6 @@ let register = async (req, res, next) => {
   });
 };
 
-let getAllPendingAccounts = async (req, res, next) => {
-  let pendingListResult = await employerService.getAllPendingEmployer();
-  res.status(pendingListResult.code).send(pendingListResult.pendingList);
-};
-
 let login = async (req, res, next) => {
   let { empEmail, empPassword } = req.query;
   const loginResult = await employerService.login({
@@ -53,18 +48,6 @@ let login = async (req, res, next) => {
       accessToken: loginResult.accessToken,
     });
   }
-};
-
-let confirmAccountInfo = async (req, res, next) => {
-  console.log("Confirm account info!");
-  let { _id, empStatus, empTaxCode, user_id } = req.query;
-  let confirmAccountResult = await employerService.updateEmployerStatus({
-    _id,
-    empStatus,
-    empTaxCode,
-    user_id,
-  });
-  res.status(confirmAccountResult.code).send(confirmAccountResult.message);
 };
 
 let updatedInfo = async (req, res, next) => {
@@ -112,8 +95,6 @@ let updatePassword = async (req, res, next) => {
 module.exports = {
   register,
   login,
-  confirmAccountInfo,
   updatePassword,
-  getAllPendingAccounts,
   updatedInfo,
 };
