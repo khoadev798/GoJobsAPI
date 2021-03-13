@@ -15,21 +15,22 @@ let register = async (req, res, next) => {
   });
 };
 
-let login = async (req, res, next) => {
+let login = async (req, res) => {
   let { email, password } = req.body;
+  console.log({ email, password });
   const loginResult = await userService.login({
     email,
     password,
   });
-  const accessToken = await jwtHelpers.generateToken(
-    email,
-    ACCESS_TOKEN_SECRET,
-    ACCESS_TOKEN_LIFE
-  );
+  // const accessToken = await jwtHelpers.generateToken(
+  //   email,
+  //   ACCESS_TOKEN_SECRET,
+  //   ACCESS_TOKEN_LIFE
+  // );
   res.status(loginResult.code).send({
     message: loginResult.message,
     userId: loginResult.id,
-    accessToken: accessToken,
+    // accessToken: accessToken,
   });
 };
 

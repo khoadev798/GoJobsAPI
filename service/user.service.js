@@ -48,15 +48,8 @@ let login = async (user) => {
 
 let findOneByEmail = async (user) => {
   const query = await UserModel.findOne({ email: user.email });
-  let found;
-  await UserModel.findOne({ email: user.email }, (err, user1) => {
-    if (err) return handleError(err);
-    if (user1) {
-      found = { ...user1._doc };
-      delete found["salt"];
-    }
-  });
-  if (found == undefined) {
+  console.log(query);
+  if (query == undefined) {
     return {
       code: GLOBAL.NOT_FOUND_CODE,
       message: `User ${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
@@ -65,7 +58,7 @@ let findOneByEmail = async (user) => {
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: `User ${GLOBAL.EXISTED_MESSAGE_SUFFIX}`,
-      user: found,
+      user: query,
     };
   }
 };
