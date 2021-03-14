@@ -92,9 +92,26 @@ let updatePassword = async (req, res, next) => {
   res.status(newPasswordResult.code).send(newPasswordResult.message);
 };
 
+let empPagination = async (req, res) => {
+  console.log("Employer paginating...");
+  let { search, sort, filter, pageNumber, pageSize } = req.query;
+
+  let empPaginationResult = await employerService.employerPagination({
+    search,
+    sort,
+    filter,
+    pageNumber,
+    pageSize,
+  });
+
+  console.log(empPaginationResult);
+  res.send(empPaginationResult);
+};
+
 module.exports = {
   register,
   login,
   updatePassword,
   updatedInfo,
+  empPagination,
 };

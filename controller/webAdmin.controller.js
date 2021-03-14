@@ -1,7 +1,12 @@
 const adminService = require("../service/admin.service");
+const jwtHelper = require("../helpers/jwt.helper");
 
 let loginPage = (req, res, next) => {
   res.render("login", { layout: false, title: "Login" });
+};
+
+let mainPage = (req, res, next) => {
+  res.render("main", { layout: "layout", title: "Main", admin: req.admin });
 };
 
 let adminLogin = async (req, res) => {
@@ -13,6 +18,11 @@ let adminLogin = async (req, res) => {
   });
   console.log(adminLoginResult);
   if (adminLoginResult.code == 200) {
+    await jwtHelper.generateAdminWebToken(
+      res,
+      adminLoginResult.admin._id,
+      adminLoginResult.admin.name
+    );
     res.render("main", {
       layout: "layout",
       title: "Admin",
@@ -24,11 +34,16 @@ let adminLogin = async (req, res) => {
 };
 
 let employerManagementPage = (req, res) => {
-  res.render("employer/tableEmployer", { layout: false, title: "Employer" });
+  res.render("employer/tableEmployer", {
+    layout: "layout",
+    title: "Employer",
+    admin: req.admin,
+  });
 };
 
 module.exports = {
   loginPage,
+  mainPage,
   adminLogin,
   employerManagementPage,
 };
