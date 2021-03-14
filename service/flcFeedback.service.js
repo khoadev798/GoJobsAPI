@@ -2,67 +2,54 @@ const mongoose = require("mongoose");
 const GLOBAL = require("../global/global");
 const FlcFeedback = require("../model/flcFeedback");
 const FlcFeedbackModel = mongoose.model("FlcFeedback", FlcFeedback);
+const Freelancer = require("../model/freelancer");
+const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 
-let getAllFlcFeedback = async () =>{
-    await FlcFeedbackModel.find({}, "_id flcEmail", (err, docs) =>{
-        if(err) return handleError(err);
-        console.log(docs);
-        return "OK";
-    });
-};
-
-let flcFeedbackCreate = async (flcFeedback) =>{
+let flcFeedbackCreate = async (flcFeedback) => {
     flcFeedback["createdAt"] = new Date();
-        let flcFeedbackInstance = new FlcFeedbackModel(flcFeedback);
-        
-        flcFeedbackInstance.save((err, obj) =>{
-            if(err) return handleError(err);
-        });
-        return { code: GLOBAL.SUCCESS_CODE, message: "Tạo feedback freelancer thành công"};
-};
-
-let flcFeedbackAVG = async (flcFeedback) =>{
-    const isFlcFeedbackExisted = await findFlcFeedbackById(flcFeedback);
-    console.log("flcId: " + isFlcFeedbackExisted.flcId)
-    if (isFlcFeedbackExisted.code == 200) {
-        let flcFeedbacks = [];
-
-        await FlcFeedbackModel.find(
-            {flcId: isFlcFeedbackExisted.flcFeedback.flcId},
-            (err, docs) =>{
-                if (err) return handleError(err);
-                flcFeedbacks = [...docs];
-            }
-        );
-        if (flcFeedbacks.length !=0){
-            return {code: GLOBAL.SUCCESS_CODE, flcFeedbacks};
-        } else {
-            return {code: GLOBAL.NOT_FOUND_CODE, flcFeedbacks: "Missing!"};
+    let flcFeedbackInstance = new FlcFeedbackModel(flcFeedback);
+    const session = await mongoose.startSession();
+     session.startTransaction();
+    await flcFeedbackInstance.save({ session: session });
+    let match = {
+        $match: {
+            flcId:mongoose.Types.ObjectId(flcFeedback.flcId),
         }
     }
-}
 
-let findFlcFeedbackById = async (flcFeedback) =>{
-    let found = await FlcFeedbackModel.findOne(
-        {flcId: flcFeedback.flcId},
-        (err, flcFeedback1) =>{
-            if(err) return handleError(err);
-           return flcFeedback1
+    let aggregate = {
+        $group: {
+            _id: {flcId: "$flcId"},
+           totalRating: { $sum: "$starRating"},
+           count: {$sum: 1}
         }
-    );
-    if(found == undefined) {
-        return {
-            code: GLOBAL.NOT_FOUND_CODE,
-            message: "Freelancer Feedback not found!",
-        };
-    } else {
-        return{
-            code: GLOBAL.SUCCESS_CODE,
-            message: "Freelancer Feedback Existed!",
-            flcFeedback: found,
-        };
     }
+
+    let sumStarRating = await FlcFeedbackModel.aggregate([match,aggregate]).session(session);
+    console.log("sumStarRating: ", sumStarRating);
+       const found = sumStarRating.find(rating=> rating.totalRating);
+       const avg = sumStarRating.find(avg=> avg.count);
+       const flcRating = found.totalRating / avg.count;
+
+       let filter = {
+           _id: flcFeedback.flcId,
+       }
+       let update = {
+           flcRating: flcRating,
+       }
+       const doc = await FreelancerModel.findOneAndUpdate(filter, update, {
+           new: true,
+       });
+       await session.commitTransaction();
+       session.endSession();
+       console.log("Update thanh cong: ", doc)
+       if( doc.length !=0){
+           return { code: GLOBAL.SUCCESS_CODE, message: "Tao feedback freelancer thanh cong"};
+       }else{
+           return { code: GLOBAL.NOT_FOUND_CODE, message: "Tao feedback freelancer that bai"};
+       }
 };
+
 
 module.exports = {
     flcFeedbackCreate,

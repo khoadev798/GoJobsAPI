@@ -2,6 +2,7 @@ const express = require("express");
 const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
 const jobController = require("../controller/job.controller");
+const sendNotificationController = require("../controller/notifycationSendApp.controller");
 route.post("/", dbConn.conn, jobController.createNewJob);
 
 route.get("/allJobTypes", dbConn.conn, jobController.getAllJobTypes);
@@ -21,5 +22,7 @@ route.put("/", (req, res) => {
 route.delete("/", (req, res) => {
   res.send("Delete job");
 });
+
+route.post("/notification", sendNotificationController.sendNotification);
 
 module.exports = route;
