@@ -171,9 +171,6 @@ let findEmployerByEmail = async (employer) => {
 };
 
 let employerPagination = async (pagination) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   let searchRegex = new RegExp(pagination.search, "i");
   let match = {
     $match: {
@@ -194,32 +191,34 @@ let employerPagination = async (pagination) => {
   };
 
   let skip = {
-    $skip: (pagination.pageNumber - 1) * pagination.pageSize,
+    $skip: (pagination.pageNumber - 1) * 5,
   };
   let limit = {
-    $limit: pagination.pageNumber * pagination.pageSize,
+    $limit: pagination.pageNumber * 5,
   };
 
-  // let sort = {
-  //   $sort: { empName: pagination.sort },
-  // };
-  // let employerWithConditions = await EmployerModel.find(
-  //   query,
-  //   "_id empName empEmail empPhone",
-  //   {
-  //     skip: (pagination.pageNumber - 1) * pagination.pageSize,
-  //     limit: pagination.pageNumber * pagination.pageSize,
-  //   }
-  // ).sort({
-  //   empName: pagination.sort,
-  // });
+  let sort;
+  let employersAndWalletWithConditions;
+  if (pagination.sort) {
+    sort = {
+      $sort: { empName: pagination.sort == "asc" ? 1 : -1 },
+    };
+    employersAndWalletWithConditions = await EmployerModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+      sort,
+    ]);
+  } else {
+    employersAndWalletWithConditions = await EmployerModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+    ]);
+  }
 
-  let employersAndWalletWithConditions = await EmployerModel.aggregate([
-    match,
-    join,
-  ]);
-  await session.commitTransaction();
-  session.endSession();
   console.log(employersAndWalletWithConditions[0].wallet);
   return { code: 200, employers: employersAndWalletWithConditions };
 };

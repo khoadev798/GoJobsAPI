@@ -15,12 +15,7 @@ route.get(
   webAdminController.mainPage
 );
 
-route.post(
-  "/adminLogin",
-  dbConn.conn,
-  authenMiddleware.isAuthOnWebAdminFromCookieToken,
-  webAdminController.adminLogin
-);
+route.post("/adminLogin", dbConn.conn, webAdminController.adminLogin);
 
 route.get(
   "/employer",

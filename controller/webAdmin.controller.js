@@ -1,4 +1,5 @@
 const adminService = require("../service/admin.service");
+const employerService = require("../service/employer.service");
 const jwtHelper = require("../helpers/jwt.helper");
 
 let loginPage = (req, res, next) => {
@@ -33,11 +34,21 @@ let adminLogin = async (req, res) => {
   }
 };
 
-let employerManagementPage = (req, res) => {
+let employerManagementPage = async (req, res) => {
+  let { search, sort, filter, pageNumber } = req.query;
+
+  let employerPagination = await employerService.employerPagination({
+    search,
+    sort,
+    filter,
+    pageNumber: 1,
+  });
+  let employerList = employerPagination.employers;
   res.render("employer/tableEmployer", {
     layout: "layout",
     title: "Employer",
     admin: req.admin,
+    employerList,
   });
 };
 

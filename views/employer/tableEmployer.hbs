@@ -36,17 +36,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each nguoidungs}}
+                            {{#each employerList}}
                             <tr>
-                                <td>
-                                    <a>
-                                        {{tenNguoiDung}}
-                                    </a>
-                                </td>
-                                <td>{{email}}</td>
-                                <td>{{matKhau}}</td>
-                                <td>{{sdt}}</td>
-                                <td>{{soDu}}</td>
+                                <td>{{_id}}</td>
+                                <td>{{empName}}</td>
+                                <td>{{empEmail}}</td>
+                                <td>{{empPhone}}</td>
+                                <td>{{wallet.[0].balance}}</td>
                                 <td>
                                     <a href=""><i class="fas fa-pen" aria-hidden="true"></i></a>
                                     &nbsp; &nbsp;
