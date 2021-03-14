@@ -103,8 +103,8 @@ let empPagination = async (req, res) => {
     pageNumber,
     pageSize,
   });
-
-  res.send(empPaginationResult);
+  // console.log(empPaginationResult);
+  res.status(empPaginationResult.code).send(empPaginationResult);
 };
 
 module.exports = {

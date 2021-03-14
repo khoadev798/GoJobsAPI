@@ -171,6 +171,8 @@ let findEmployerByEmail = async (employer) => {
 };
 
 let employerPagination = async (pagination) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   let searchRegex = new RegExp(pagination.search, "i");
   let match = {
     $match: {
@@ -191,12 +193,14 @@ let employerPagination = async (pagination) => {
   };
 
   let skip = {
-    $skip: (pagination.pageNumber - 1) * 5,
+    $skip: (pagination.pageNumber - 1) * pagination.pageSize,
   };
   let limit = {
-    $limit: pagination.pageNumber * 5,
+    $limit: pagination.pageNumber * pagination.pageSize,
   };
-
+  let count = {
+    $count: "totalCount",
+  };
   let sort;
   let employersAndWalletWithConditions;
   if (pagination.sort) {
@@ -209,6 +213,7 @@ let employerPagination = async (pagination) => {
       skip,
       limit,
       sort,
+      count,
     ]);
   } else {
     employersAndWalletWithConditions = await EmployerModel.aggregate([
@@ -219,8 +224,18 @@ let employerPagination = async (pagination) => {
     ]);
   }
 
-  console.log(employersAndWalletWithConditions[0].wallet);
-  return { code: 200, employers: employersAndWalletWithConditions };
+  // console.log(employersAndWalletWithConditions);
+  let empCount = await EmployerModel.countDocuments({
+    $or: [
+      { empEmail: { $regex: searchRegex } },
+      { empName: { $regex: searchRegex } },
+    ],
+  });
+  await session.commitTransaction();
+  session.endSession();
+  // console.log(empCount);
+  let pageCount = Math.round(empCount / 5);
+  return { code: 200, employers: employersAndWalletWithConditions, pageCount };
 };
 module.exports = {
   employerCreate,

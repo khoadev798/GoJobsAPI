@@ -10,7 +10,6 @@ route.get("/", dbConn.conn, webAdminController.loginPage);
 
 route.get(
   "/main",
-  dbConn.conn,
   authenMiddleware.isAuthOnWebAdminFromCookieToken,
   webAdminController.mainPage
 );
