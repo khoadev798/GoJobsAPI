@@ -22,4 +22,6 @@ route.put("/updatedEmployerInfo", dbConn.conn, employerController.updatedInfo);
 
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 
+route.get("/empPagination", dbConn.conn, employerController.empPagination);
+
 module.exports = route;

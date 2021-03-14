@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const GLOBAL = require("../global/global");
 
 let generateToken = (user, secretSignature, tokenLife) => {
   return new Promise((resolve, reject) => {
@@ -22,28 +23,32 @@ let generateToken = (user, secretSignature, tokenLife) => {
     );
   });
 };
-let verifyToken = (token, secretKey) =>{
-    return new Promise((resolve, reject) =>{
-        jwt.verify(token, secretKey, (error, decoded) =>{
-            if (error) {
-                return reject(error);
-            }
-            resolve(decoded);
-        });
+
 let verifyToken = (token, secretKey) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, secretKey, (error, decoded) => {
       if (error) {
         return reject(error);
       }
-      reject(decoded);
+      resolve(decoded);
     });
   });
 };
-    });
-  }
+
+let generateAdminWebToken = async (res, _id, name) => {
+  const token = await jwt.sign({ _id, name }, GLOBAL.ACCESS_TOKEN_SECRET, {
+    algorithm: "HS256",
+    expiresIn: GLOBAL.ACCESS_TOKEN_LIFE,
+  });
+  return res.cookie("token", token, {
+    expires: new Date(Date.now() + 3600000), // miliseconds
+    secure: false, // set to true if your using https
+    httpOnly: true,
+  });
+};
 
 module.exports = {
-  generateToken: generateToken,
-  verifyToken: verifyToken,
+  generateToken,
+  verifyToken,
+  generateAdminWebToken,
 };

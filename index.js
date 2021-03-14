@@ -5,6 +5,10 @@ const YAML = require("yamljs");
 const path = require("path");
 const Handlebars = require("handlebars");
 const exphbs = require("express-handlebars");
+
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
 const {
   allowInsecurePrototypeAccess,
 } = require("@handlebars/allow-prototype-access");
@@ -42,6 +46,19 @@ app.use(
     parameterLimit: 5000000,
   })
 );
+
+/** Cookies setup here */
+
+app.use(
+  cors({
+    origin: ["http://localhost:80"],
+    credentials: true,
+  })
+);
+
+app.use(cookieParser());
+
+/** End of Cookies setup */
 
 // app.use(bodyParser.json({ type: "application/json" }));
 // app.use(bodyParser.urlencoded({ extended: true }));

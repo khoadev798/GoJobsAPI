@@ -169,8 +169,63 @@ let findEmployerByEmail = async (employer) => {
     };
   }
 };
+
+let employerPagination = async (pagination) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  let searchRegex = new RegExp(pagination.search, "i");
+  let match = {
+    $match: {
+      $or: [
+        { empEmail: { $regex: searchRegex } },
+        { empName: { $regex: searchRegex } },
+      ],
+    },
+  };
+
+  join = {
+    $lookup: {
+      from: "wallets",
+      localField: "_id",
+      foreignField: "empId",
+      as: "wallet",
+    },
+  };
+
+  let skip = {
+    $skip: (pagination.pageNumber - 1) * pagination.pageSize,
+  };
+  let limit = {
+    $limit: pagination.pageNumber * pagination.pageSize,
+  };
+
+  // let sort = {
+  //   $sort: { empName: pagination.sort },
+  // };
+  // let employerWithConditions = await EmployerModel.find(
+  //   query,
+  //   "_id empName empEmail empPhone",
+  //   {
+  //     skip: (pagination.pageNumber - 1) * pagination.pageSize,
+  //     limit: pagination.pageNumber * pagination.pageSize,
+  //   }
+  // ).sort({
+  //   empName: pagination.sort,
+  // });
+
+  let employersAndWalletWithConditions = await EmployerModel.aggregate([
+    match,
+    join,
+  ]);
+  await session.commitTransaction();
+  session.endSession();
+  console.log(employersAndWalletWithConditions[0].wallet);
+  return { code: 200, employers: employersAndWalletWithConditions };
+};
 module.exports = {
   employerCreate,
   login,
   updateEmployerInfo,
+  employerPagination,
 };
