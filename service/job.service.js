@@ -7,14 +7,48 @@ const Employer = require("../model/employer");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
 const util = require("../util/data.util");
+const admin = require("firebase-admin");
+
+const serviceAccount = require("../privatefile.json");
 
 let createNewJob = async (job) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   job["jobPublishDate"] = new Date();
   let jobInstance = new JobModel(job);
-  await jobInstance.save((err, obj) => {
-    if (err) return handleError(err);
-  });
-  return { code: 200, message: "Tao cong viec thanh cong" };
+  await jobInstance.save({ session: session });
+
+  if (!admin.apps.length) {
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: "https://console.firebase.google.com/u/1/project/gojobs-7d2ee/overview"
+    });
+  } else {
+    admin.app(); // if already initialized, use that one
+  }
+
+  let token = ['fRB4I1ccR3WTtuGwxdXN2E:APA91bGvguOHXiiQsmXp9Wh5FfvoQYjyuY-BTTNuXRdRSd0lhx_xEEzpYcl8sY8hjJ3S-ZYWZRCF8ip0Nw5rAob-hF8VpXOe1pUTQ7tJZFYqdaRCFVlf--7660DP5JrSzmxDHK5lEIQ9'];
+
+  const payload = {
+    notification: {
+      title: "New Job",
+      body: jobInstance.jobDescription
+    }
+  };
+
+  const options = {
+    priority: "high",
+    timeToLive: 60 * 60 * 24
+  };
+
+  admin.messaging().sendToDevice(token, payload, options)
+    .then((res) => console.log("Successfully send notify:", res))
+    .catch((err) => console.log("Error:", err));
+  console.log("new jobs: ", jobInstance);
+  await session.commitTransaction();
+  session.endSession();
+  return { code: GLOBAL.SUCCESS_CODE, message: "Tao job moi thanh cong"};
 };
 
 let getAllJobs = async () => {
@@ -112,6 +146,23 @@ let jobPagination = async (pagination) => {
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
 };
+
+let jobPaginationWithTime = async (pagination) => {
+
+  let jobsWithConditions = await JobModel.find(
+    {},
+    "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    {
+      skip: (pagination.pageNumber - 1) * pagination.pageSize,
+      limit: pagination.pageNumber * pagination.pageSize,
+    }
+  ).sort({
+    jobPublishDate: pagination.sort,
+  });
+  console.log(jobsWithConditions);
+  return { code: 200, jobs: jobsWithConditions };
+};
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -119,4 +170,5 @@ module.exports = {
   getJobsOfOneEmployerById,
   getAllJobTypes,
   jobPagination,
+  jobPaginationWithTime,
 };

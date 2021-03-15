@@ -34,22 +34,54 @@ let getAllFreelancer = async (req, res) => {
   res.status(200).send(flcList);
 };
 
-let updateFreelancer = async (req, res) => {
-  let { flcEmail, newFlcEmail } = req.body;
-  console.log("Update freelancer", flcEmail);
-  let flcUpdateResult = await flcService.flcUpdate({
-    flcEmail,
-    newFlcEmail,
-  });
-  res.status(flcUpdateResult.code).send(flcUpdateResult.message);
-};
 
-let deleteFreelaner = (req, res) => {};
+let updateFreelancerInfo = async (req, res) =>{
+    let {
+      flcEmail,
+      flcName,
+      flcPhone,
+      flcBirthday,
+      flcAvatar,
+      flcSex,
+      flcAddress,
+      flcEdu,
+      flcMajor,
+      flcJobTitle,
+      flcLanguages,
+    } =  req.query;
+    const updatedInfoResult = await flcService.flcUpdateInfo({
+      flcName,
+      flcEmail,
+      flcPhone,
+      flcBirthday,
+      flcAvatar,
+      flcSex,
+      flcAddress,
+      flcEdu,
+      flcMajor,
+      flcJobTitle,
+      flcLanguages,
+    });
+    res.status(updatedInfoResult.code).send(updatedInfoResult.doc);
+}
+
+let flcPagination = async (req, res) =>{
+  let {search, sort, filter, pageNumber, pageSize } = req.query;
+  console.log(filter);
+  let pagingResult = await flcService.flcPagination({
+    search,
+    sort,
+    filter,
+    pageNumber,
+    pageSize,
+  });
+  res.status(pagingResult.code).send(pagingResult.freelancers);
+}
 
 module.exports = {
   createFreelancer,
   getAllFreelancer,
-  updateFreelancer,
-  deleteFreelaner,
-  loginFreelancer
+  updateFreelancerInfo,
+  loginFreelancer,
+  flcPagination,
 };
