@@ -5,7 +5,7 @@ const YAML = require("yamljs");
 const path = require("path");
 const Handlebars = require("handlebars");
 const exphbs = require("express-handlebars");
-
+const hbs = require("hbs");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
