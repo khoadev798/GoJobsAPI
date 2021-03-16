@@ -36,7 +36,6 @@ let employerCreate = async (employer) => {
 
 let login = async (employer) => {
   const isEmployerExisted = await findEmployerByEmail(employer);
-  console.log("Employer login here!" + isEmployerExisted.employer.empPassword);
   console.log(isEmployerExisted);
   if (isEmployerExisted.code == 200) {
     if (
@@ -55,6 +54,7 @@ let login = async (employer) => {
       return {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
+        empEmail: isEmployerExisted.employer.empEmail,
         _id: _id,
         accessToken: accessToken,
       };

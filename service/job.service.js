@@ -6,16 +6,80 @@ Job.plugin(mongoosePaginate);
 const Employer = require("../model/employer");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
+const Follow = require("../model/follow");
+const FollowModel = mongoose.model("Follow", Follow);
 const util = require("../util/data.util");
+const admin = require("firebase-admin");
+const fcm = require("fcm-notification");
+const FCM = new fcm("D:/DuLieu/Duan2/GoJobsAPI/privatefile.json");
+// const serviceAccount = require("../privatefile.json");
 
 let createNewJob = async (job) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   job["jobPublishDate"] = new Date();
   let jobInstance = new JobModel(job);
-  await jobInstance.save((err, obj) => {
-    if (err) return handleError(err);
-  });
-  return { code: 200, message: "Tao cong viec thanh cong" };
+  await jobInstance.save({ session: session });
+  let isFollowExistedResult = await isFollowExisted(job);
+  if(isFollowExistedResult.code == 200){
+    let tokenlists = isFollowExistedResult.follow;
+    let Tokens = [];
+    tokenlists.forEach((token) =>{
+        Tokens = Tokens.concat(token.tokenDeviceWithFlc);
+      });
+      let endTokens = await Promise.all(Tokens).then((values) =>{
+        return values;
+      });
+
+    var message = {
+      data: {
+        score: '850',
+        time: '2:45'
+      },
+      notification:{
+        title : 'Navish',
+        body : 'Test message by navish'
+      }
+    };
+    FCM.sendToMultipleToken(message, endTokens, function(err, response) {
+        if(err){
+            console.log('err--', err);
+        }else {
+            console.log('response-----', response);
+        }
+     
+    })
+  };
+  console.log("new jobs: ", jobInstance);
+  await session.commitTransaction();
+  session.endSession();
+  return { code: GLOBAL.SUCCESS_CODE, message: "Tao job moi thanh cong"};
 };
+
+let isFollowExisted = async(job) =>{
+
+  let found = await FollowModel.find(
+    { empId: job.empId},
+    "tokenDeviceWithFlc",
+    (err, doc) =>{
+      if (err) return handleError(err);
+      return doc;
+    }
+  );
+
+  if (found == undefined) {
+    return {
+      code: GLOBAL.NOT_FOUND_CODE,
+      message: "Follow not found!",
+    }
+  }else{
+    return {
+      code: GLOBAL.SUCCESS_CODE,
+      message:"find success!",
+      follow: found,
+    }
+  }
+}
 
 let getAllJobs = async () => {
   let jobs = [];
@@ -112,6 +176,23 @@ let jobPagination = async (pagination) => {
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
 };
+
+let jobPaginationWithTime = async (pagination) => {
+
+  let jobsWithConditions = await JobModel.find(
+    {},
+    "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    {
+      skip: (pagination.pageNumber - 1) * pagination.pageSize,
+      limit: pagination.pageNumber * pagination.pageSize,
+    }
+  ).sort({
+    jobPublishDate: pagination.sort,
+  });
+  console.log(jobsWithConditions);
+  return { code: 200, jobs: jobsWithConditions };
+};
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -119,4 +200,5 @@ module.exports = {
   getJobsOfOneEmployerById,
   getAllJobTypes,
   jobPagination,
+  jobPaginationWithTime,
 };

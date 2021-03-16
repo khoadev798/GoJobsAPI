@@ -14,7 +14,7 @@ let register = async (req, res, next) => {
     empLogo, // default: null
     empDescription, // default: null
     empTerm,
-  } = req.body;
+  } = req.query;
 
   let empInfo = infoValidation.removeUndefinedKeyValue({
     empTypeId,
@@ -44,7 +44,8 @@ let login = async (req, res, next) => {
   if (loginResult.code == 200) {
     res.status(loginResult.code).send({
       message: loginResult.message,
-      empId: loginResult.id,
+      _id: loginResult._id,
+      empEmail: loginResult.empEmail,
       accessToken: loginResult.accessToken,
     });
   }

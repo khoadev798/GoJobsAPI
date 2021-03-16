@@ -25,6 +25,7 @@ const empFeedbackRoute = require("./routes/empFeedback.route");
 const swaggerDocument = YAML.load("docs/swagger.yaml");
 const jobRoute = require("./routes/job.route");
 const otpRoute = require("./routes/otp.route");
+const followRoute = require("./routes/follow.route");
 const webAdminRoute = require("./routes/webAdmin.route");
 
 const GLOBAL = require("./global/global");
@@ -114,6 +115,8 @@ app.use("/wallet", walletRoute);
 app.use("/location", locationRoute);
 
 app.use("/empFeedback", empFeedbackRoute);
+
+app.use("/follow", followRoute);
 
 http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);

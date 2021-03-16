@@ -22,7 +22,7 @@ const createNewJob = async (req, res) => {
     jobTotalSalaryPerHeadCount,
     jobHeadCount, // default 1
     jobAddress,
-  } = req.body;
+  } = req.query;
 
   let newJob = infoValidation.removeUndefinedKeyValue({
     empId,
@@ -79,10 +79,22 @@ const jobPagination = async (req, res) => {
   res.status(pagingResult.code).send(pagingResult.jobs);
 };
 
+const jobPaginationWithTime = async (req, res) => {
+  let { sort, pageNumber, pageSize } = req.query;
+  let pagingResult = await jobService.jobPaginationWithTime({
+    sort,
+    pageNumber,
+    pageSize,
+  });
+
+  res.status(pagingResult.code).send(pagingResult.jobs);
+};
+
 module.exports = {
   createNewJob,
   getAllJobs,
   getAllJobsOfEmployerById,
   getAllJobTypes,
   jobPagination,
+  jobPaginationWithTime
 };
