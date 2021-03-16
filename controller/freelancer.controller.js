@@ -19,13 +19,13 @@ let loginFreelancer = async (req, res, next) => {
     flcEmail,
     flcPassword
   });
-  if(flcLoginResult.code == 200){
+  
     res.status(flcLoginResult.code).send({
       message: flcLoginResult.message,
       _id : flcLoginResult._id,
+      flcEmail: flcLoginResult.flcEmail,
       accessToken: flcLoginResult.accessToken
     });
-  }
 
 };
 

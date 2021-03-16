@@ -6,10 +6,13 @@ Job.plugin(mongoosePaginate);
 const Employer = require("../model/employer");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
+const Follow = require("../model/follow");
+const FollowModel = mongoose.model("Follow", Follow);
 const util = require("../util/data.util");
 const admin = require("firebase-admin");
-
-const serviceAccount = require("../privatefile.json");
+const fcm = require("fcm-notification");
+const FCM = new fcm("D:/DuLieu/Duan2/GoJobsAPI/privatefile.json");
+// const serviceAccount = require("../privatefile.json");
 
 let createNewJob = async (job) => {
   const session = await mongoose.startSession();
@@ -17,39 +20,66 @@ let createNewJob = async (job) => {
   job["jobPublishDate"] = new Date();
   let jobInstance = new JobModel(job);
   await jobInstance.save({ session: session });
+  let isFollowExistedResult = await isFollowExisted(job);
+  if(isFollowExistedResult.code == 200){
+    let tokenlists = isFollowExistedResult.follow;
+    let Tokens = [];
+    tokenlists.forEach((token) =>{
+        Tokens = Tokens.concat(token.tokenDeviceWithFlc);
+      });
+      let endTokens = await Promise.all(Tokens).then((values) =>{
+        return values;
+      });
 
-  if (!admin.apps.length) {
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: "https://console.firebase.google.com/u/1/project/gojobs-7d2ee/overview"
-    });
-  } else {
-    admin.app(); // if already initialized, use that one
-  }
-
-  let token = ['fRB4I1ccR3WTtuGwxdXN2E:APA91bGvguOHXiiQsmXp9Wh5FfvoQYjyuY-BTTNuXRdRSd0lhx_xEEzpYcl8sY8hjJ3S-ZYWZRCF8ip0Nw5rAob-hF8VpXOe1pUTQ7tJZFYqdaRCFVlf--7660DP5JrSzmxDHK5lEIQ9'];
-
-  const payload = {
-    notification: {
-      title: "New Job",
-      body: jobInstance.jobDescription
-    }
+    var message = {
+      data: {
+        score: '850',
+        time: '2:45'
+      },
+      notification:{
+        title : 'Navish',
+        body : 'Test message by navish'
+      }
+    };
+    FCM.sendToMultipleToken(message, endTokens, function(err, response) {
+        if(err){
+            console.log('err--', err);
+        }else {
+            console.log('response-----', response);
+        }
+     
+    })
   };
-
-  const options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24
-  };
-
-  admin.messaging().sendToDevice(token, payload, options)
-    .then((res) => console.log("Successfully send notify:", res))
-    .catch((err) => console.log("Error:", err));
   console.log("new jobs: ", jobInstance);
   await session.commitTransaction();
   session.endSession();
   return { code: GLOBAL.SUCCESS_CODE, message: "Tao job moi thanh cong"};
 };
+
+let isFollowExisted = async(job) =>{
+
+  let found = await FollowModel.find(
+    { empId: job.empId},
+    "tokenDeviceWithFlc",
+    (err, doc) =>{
+      if (err) return handleError(err);
+      return doc;
+    }
+  );
+
+  if (found == undefined) {
+    return {
+      code: GLOBAL.NOT_FOUND_CODE,
+      message: "Follow not found!",
+    }
+  }else{
+    return {
+      code: GLOBAL.SUCCESS_CODE,
+      message:"find success!",
+      follow: found,
+    }
+  }
+}
 
 let getAllJobs = async () => {
   let jobs = [];

@@ -66,6 +66,7 @@ let login = async (freelancer) => {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         _id: _id,
+        flcEmail: isFreelancerExisted.freelancer.flcEmail,
         accessToken: accessToken
       };
 
