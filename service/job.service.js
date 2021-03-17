@@ -10,8 +10,9 @@ const Follow = require("../model/follow");
 const FollowModel = mongoose.model("Follow", Follow);
 const util = require("../util/data.util");
 const admin = require("firebase-admin");
+const path = require("path");
 const fcm = require("fcm-notification");
-const FCM = new fcm("D:/DuLieu/Duan2/GoJobsAPI/privatefile.json");
+const FCM = new fcm(path.join(__dirname, "../privatefile.json"));
 // const serviceAccount = require("../privatefile.json");
 
 let createNewJob = async (job) => {
@@ -21,47 +22,45 @@ let createNewJob = async (job) => {
   let jobInstance = new JobModel(job);
   await jobInstance.save({ session: session });
   let isFollowExistedResult = await isFollowExisted(job);
-  if(isFollowExistedResult.code == 200){
+  if (isFollowExistedResult.code == 200) {
     let tokenlists = isFollowExistedResult.follow;
     let Tokens = [];
-    tokenlists.forEach((token) =>{
-        Tokens = Tokens.concat(token.tokenDeviceWithFlc);
-      });
-      let endTokens = await Promise.all(Tokens).then((values) =>{
-        return values;
-      });
+    tokenlists.forEach((token) => {
+      Tokens = Tokens.concat(token.tokenDeviceWithFlc);
+    });
+    let endTokens = await Promise.all(Tokens).then((values) => {
+      return values;
+    });
 
     var message = {
       data: {
-        score: '850',
-        time: '2:45'
+        score: "850",
+        time: "2:45",
       },
-      notification:{
-        title : 'Navish',
-        body : 'Test message by navish'
-      }
+      notification: {
+        title: "Navish",
+        body: "Test message by navish",
+      },
     };
-    FCM.sendToMultipleToken(message, endTokens, function(err, response) {
-        if(err){
-            console.log('err--', err);
-        }else {
-            console.log('response-----', response);
-        }
-     
-    })
-  };
+    FCM.sendToMultipleToken(message, endTokens, function (err, response) {
+      if (err) {
+        console.log("err--", err);
+      } else {
+        console.log("response-----", response);
+      }
+    });
+  }
   console.log("new jobs: ", jobInstance);
   await session.commitTransaction();
   session.endSession();
-  return { code: GLOBAL.SUCCESS_CODE, message: "Tao job moi thanh cong"};
+  return { code: GLOBAL.SUCCESS_CODE, message: "Tao job moi thanh cong" };
 };
 
-let isFollowExisted = async(job) =>{
-
+let isFollowExisted = async (job) => {
   let found = await FollowModel.find(
-    { empId: job.empId},
+    { empId: job.empId },
     "tokenDeviceWithFlc",
-    (err, doc) =>{
+    (err, doc) => {
       if (err) return handleError(err);
       return doc;
     }
@@ -71,15 +70,15 @@ let isFollowExisted = async(job) =>{
     return {
       code: GLOBAL.NOT_FOUND_CODE,
       message: "Follow not found!",
-    }
-  }else{
+    };
+  } else {
     return {
       code: GLOBAL.SUCCESS_CODE,
-      message:"find success!",
+      message: "find success!",
       follow: found,
-    }
+    };
   }
-}
+};
 
 let getAllJobs = async () => {
   let jobs = [];
@@ -178,7 +177,6 @@ let jobPagination = async (pagination) => {
 };
 
 let jobPaginationWithTime = async (pagination) => {
-
   let jobsWithConditions = await JobModel.find(
     {},
     "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
