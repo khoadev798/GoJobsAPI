@@ -67,9 +67,15 @@ let payForAcceptedContractsProcedure = async (
   console.log("Wallet", currentWallet);
   console.log("Contracts", involvedContracts);
   let totalPayment = 0;
+  let flcWalletUpdateAQuarter = [];
   involvedContracts.forEach((contract) => {
     totalPayment += contract.jobTotalSalaryPerHeadCount;
+    flcWalletUpdateAQuarter.push({
+      flcId: contract.flcId,
+      firstPaymentForFlc: contract.jobTotalSalaryPerHeadCount * 0.25,
+    });
   });
+
   console.log(
     "Balance vs Payment",
     `${currentWallet.balance} & ${totalPayment}` +
@@ -104,6 +110,25 @@ let payForAcceptedContractsProcedure = async (
         updatedBy: currentWallet.empId,
       },
     };
+    // Cộng 25% số tiền vào wallet của flc liên quan
+    let updateFlcWalletList = [];
+    flcWalletUpdateAQuarter.forEach((task) => {
+      let oneFlcWalletUpdate = WalletModel.findOneAndUpdate(
+        {
+          $or: [{ flcId: task.flcId }, { createdBy: task.flcId }],
+        },
+        { $inc: { balance: task.firstPaymentForFlc } },
+        { new: true }
+      ).exec();
+
+      updateFlcWalletList.push(oneFlcWalletUpdate);
+    });
+
+    let updatedFlcWalletList = await Promise.all(updateFlcWalletList).then(
+      (results) => {
+        console.log("Đã cho 25% tiền vào wallet của Flc liên quan");
+      }
+    );
     // update các contracts ở bước này
     let updateContractsResult = await ContractModel.updateMany(
       contractFilter,
@@ -114,10 +139,9 @@ let payForAcceptedContractsProcedure = async (
     let jobFilter = {
       _id: jobId,
     };
-    let currentJob = await JobModel.findOne(jobFilter);
+
     let jobUpdate = {
-      jobPaidContractCount:
-        currentJob.jobPaidContractCount + updateContractsResult.n,
+      $inc: updateContractsResult.n,
     };
     let updatedJob = await JobModel.findOneAndUpdate(jobFilter, jobUpdate, {
       new: true,
@@ -125,6 +149,7 @@ let payForAcceptedContractsProcedure = async (
     await session.commitTransaction();
     session.endSession();
     console.log("Updated wallet", updatedWallet);
+    console.log("Updated wallets of FLC", updatedFlcWalletList);
     console.log("Updated contracts", updateContractsResult);
     console.log("Updated job", updatedJob);
     return {
