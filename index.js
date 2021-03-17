@@ -27,6 +27,7 @@ const jobRoute = require("./routes/job.route");
 const otpRoute = require("./routes/otp.route");
 const followRoute = require("./routes/follow.route");
 const webAdminRoute = require("./routes/webAdmin.route");
+const notificationRoute = require("./routes/notification.route");
 
 const GLOBAL = require("./global/global");
 
@@ -117,6 +118,8 @@ app.use("/location", locationRoute);
 app.use("/empFeedback", empFeedbackRoute);
 
 app.use("/follow", followRoute);
+
+app.use("/notification", notificationRoute);
 
 http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);

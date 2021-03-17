@@ -13,6 +13,8 @@ const admin = require("firebase-admin");
 const path = require("path");
 const fcm = require("fcm-notification");
 const FCM = new fcm(path.join(__dirname, "../privatefile.json"));
+const Notification = require("../model/notification");
+const NotificationModel = mongoose.model("Notification", Notification);
 // const serviceAccount = require("../privatefile.json");
 
 let createNewJob = async (job) => {
@@ -25,31 +27,51 @@ let createNewJob = async (job) => {
   if (isFollowExistedResult.code == 200) {
     let tokenlists = isFollowExistedResult.follow;
     let Tokens = [];
+    let flcIds = [];
+
     tokenlists.forEach((token) => {
       Tokens = Tokens.concat(token.tokenDeviceWithFlc);
+      flcIds = flcIds.concat(token.flcId);
     });
     let endTokens = await Promise.all(Tokens).then((values) => {
       return values;
     });
-
-    var message = {
-      data: {
-        score: "850",
-        time: "2:45",
-      },
-      notification: {
-        title: "Navish",
-        body: "Test message by navish",
-      },
-    };
-    FCM.sendToMultipleToken(message, endTokens, function (err, response) {
-      if (err) {
-        console.log("err--", err);
-      } else {
-        console.log("response-----", response);
-      }
+    let endFlcIds = await Promise.all(flcIds).then((values) => {
+      return values;
     });
+
+    let notification = {
+      flcId: endFlcIds,
+      jobId: jobInstance._id,
+      createdAt: new Date(),
+    };
+    let notificationInstance = new NotificationModel(notification);
+    await notificationInstance.save(notification, (err, doc) => {
+      if (err) handleError(err);
+      return console.log(doc);
+    });
+
+    console.log("toekn:", tokenlists);
+    // var message = {
+    //   data: {
+    //     score: '850',
+    //     time: '2:45'
+    //   },
+    //   notification:{
+    //     title : 'Navish',
+    //     body : 'Test message by navish'
+    //   }
+    // };
+    // FCM.sendToMultipleToken(message, endTokens, function(err, response) {
+    //     if(err){
+    //         console.log('err--', err);
+    //     }else {
+    //         console.log('response-----', response);
+    //     }
+
+    // })
   }
+
   console.log("new jobs: ", jobInstance);
   await session.commitTransaction();
   session.endSession();
@@ -59,7 +81,7 @@ let createNewJob = async (job) => {
 let isFollowExisted = async (job) => {
   let found = await FollowModel.find(
     { empId: job.empId },
-    "tokenDeviceWithFlc",
+    "tokenDeviceWithFlc flcId",
     (err, doc) => {
       if (err) return handleError(err);
       return doc;
@@ -110,6 +132,7 @@ let getAllJobsAndEmployerInfo = async () => {
         "_id empName empEmail empStatus"
       ).exec();
       queryList.push(query);
+      gi;
     });
     let employers = await Promise.all(queryList).then((values) => {
       return values;
