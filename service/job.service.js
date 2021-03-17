@@ -10,12 +10,11 @@ const Follow = require("../model/follow");
 const FollowModel = mongoose.model("Follow", Follow);
 const util = require("../util/data.util");
 const admin = require("firebase-admin");
-const fcm = require("fcm-notification");
 const path = require("path");
+const fcm = require("fcm-notification");
 const FCM = new fcm(path.join(__dirname, "../privatefile.json"));
 const Notification = require("../model/notification");
 const NotificationModel = mongoose.model("Notification", Notification);
-
 // const serviceAccount = require("../privatefile.json");
 
 let createNewJob = async (job) => {

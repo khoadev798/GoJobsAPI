@@ -72,12 +72,6 @@ let getOneContractWithSpecifiedInfo = async (contract) => {
         {
           flcId: mongoose.Types.ObjectId(contract.flcId),
           empId: mongoose.Types.ObjectId(contract.empId),
-          contractStatus: "FOLLOW",
-          createBy: contract.createdBy,
-        },
-        {
-          flcId: mongoose.Types.ObjectId(contract.flcId),
-          empId: mongoose.Types.ObjectId(contract.empId),
           jobId: mongoose.Types.ObjectId(contract.jobId),
         },
       ],
@@ -132,27 +126,27 @@ let flcJoinQueryWithJobOrEmployer = async (contract) => {
       createdBy: contract.flcId,
     },
   };
-  let aggregate = {};
-  if (contract.contractStatus == "FOLLOW") {
-    aggregate = {
-      $lookup: {
-        from: "employers",
-        localField: "empId",
-        foreignField: "_id",
-        as: "employer",
-      },
-    };
-  } else {
-    aggregate = {
-      $lookup: {
-        from: "jobs",
-        localField: "jobId",
-        foreignField: "_id",
-        as: "job",
-      },
-    };
-  }
+  let aggregate = {
+    $lookup: {
+      from: "jobs",
+      localField: "jobId",
+      foreignField: "_id",
+      as: "job",
+    },
+  };
 
+  // BỎ FOLLOW CỦA CONTRACT
+  // if (contract.contractStatus == "FOLLOW") {
+  //   aggregate = {
+  //     $lookup: {
+  //       from: "employers",
+  //       localField: "empId",
+  //       foreignField: "_id",
+  //       as: "employer",
+  //     },
+  //   };
+  // } else {
+  // }
   let contractList = await ContractModel.aggregate([match, aggregate]);
   console.log("DS contract", contractList);
   return { code: 200, contractList };
@@ -200,6 +194,8 @@ let getContractsByJobIdAndContractStatus = async (contract) => {
 };
 
 let updateStatusOfContractById = async (contract) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   let filter = {
     _id: mongoose.Types.ObjectId(contract._id),
     contractStatus: { $ne: "APPROVED" },
@@ -216,7 +212,8 @@ let updateStatusOfContractById = async (contract) => {
     updatedBy: contract.updatedBy,
     updatedAt: new Date(),
   };
-  let updateResult = await ContractModel.findOneAndUpdate(
+
+  let updatedResult = await ContractModel.findOneAndUpdate(
     filter,
     update,
     {
@@ -226,6 +223,31 @@ let updateStatusOfContractById = async (contract) => {
       if (err) return handleError(err);
     }
   );
+  // let walletFilter = {};
+  // if (updatedResult.contractStatus == "ACCEPTED") {
+  //   flcWalletFilter = {
+  //     createdBy: { $eq: updatedResult.flcId },
+  //   };
+  //   let currentFlcWallet = await WalletModel.findOne(flcWalletFilter);
+  //   let flcWalletUpdate = {
+  //     $set: {
+  //       balance:
+  //         currentFlcWallet.balance +
+  //         (updatedResult.jobTotalSalaryPerHeadCount * 25) / 100,
+  //       updatedBy: contract.empId,
+  //       updatedAt: new Date(),
+  //     },
+  //   };
+  //   let updatedWalletOfFlc = await WalletModel.findOneAndUpdate(
+  //     flcWalletFilter,
+  //     flcWalletUpdate,
+  //     {
+  //       new: true,
+  //     }
+  //   );
+  // }
+  await session.commitTransaction();
+  session.endSession();
   return { code: 200, message: "Cap nhat thanh cong!" };
 };
 
@@ -264,7 +286,7 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
         $set: {
           balance:
             flcWalletList[index].balance +
-            (contract.jobTotalSalaryPerHeadCount * 90) / 100,
+            (contract.jobTotalSalaryPerHeadCount * 70) / 100,
           updatedBy: contract.empId,
           updatedAt: new Date(),
         },
@@ -341,13 +363,13 @@ let markOneContractCancelled = async (_idContract) => {
     let flcWalletUpdate = {
       balance:
         involvedFlcWallet.balance +
-        involvedContract.jobTotalSalaryPerHeadCount * 0.55,
+        involvedContract.jobTotalSalaryPerHeadCount * 0.3,
       updatedBy: involvedContract.flcId,
       updatedAt: new Date(),
     };
     let empWalletUpdate = {
       balance:
-        involvedEmpWallet.balance +
+        involvedEmpWallet.balance -
         involvedContract.jobTotalSalaryPerHeadCount * 0.35,
       updatedBy: involvedContract.flcId,
       updatedAt: new Date(),
