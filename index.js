@@ -28,6 +28,7 @@ const otpRoute = require("./routes/otp.route");
 const followRoute = require("./routes/follow.route");
 const webAdminRoute = require("./routes/webAdmin.route");
 const notificationRoute = require("./routes/notification.route");
+const messageRoute = require("./routes/messagge.route");
 
 const GLOBAL = require("./global/global");
 
@@ -120,6 +121,8 @@ app.use("/empFeedback", empFeedbackRoute);
 app.use("/follow", followRoute);
 
 app.use("/notification", notificationRoute);
+
+app.use("/message", messageRoute);
 
 http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);
