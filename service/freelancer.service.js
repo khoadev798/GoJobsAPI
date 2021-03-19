@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate")
+const mongoosePaginate = require("mongoose-paginate");
 const GLOBAL = require("../global/global");
 const Freelancer = require("../model/freelancer");
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
@@ -21,7 +21,7 @@ let getAllFreelancer = async () => {
 let flcCreate = async (freelancer) => {
   let isFlcExisted = await findFreelancerByEmail(freelancer);
   if (isFlcExisted.code == 404) {
-    freelancer = util.flcHashPassword(freelancer)
+    freelancer = util.flcHashPassword(freelancer);
     freelancer["createAt"] = new Date();
     let flcInstance = new FreelancerModel(freelancer);
     const session = await mongoose.startSession();
@@ -67,9 +67,8 @@ let login = async (freelancer) => {
         message: `Login succeeded!`,
         _id: _id,
         flcEmail: isFreelancerExisted.freelancer.flcEmail,
-        accessToken: accessToken
+        accessToken: accessToken,
       };
-
     } else {
       console.log("Incorrect");
       return { code: GLOBAL.BAD_REQUEST_CODE, message: `Login Failed!` };
@@ -93,7 +92,11 @@ let flcUpdateInfo = async (freelancer) => {
       new: true,
     });
     console.log("Cap nhat info thanh cong: ", doc);
-    return { code: GLOBAL.SUCCESS_CODE, message: "Cap nhat info thanh cong!", doc }
+    return {
+      code: GLOBAL.SUCCESS_CODE,
+      message: "Cap nhat info thanh cong!",
+      doc,
+    };
   } else {
     return { code: GLOBAL.NOT_FOUND_CODE, message: "Tai khoan khong ton tai!" };
   }
@@ -103,11 +106,10 @@ let flcPagination = async (pagination) => {
   let searchRegex = new RegExp(pagination.search, "i");
 
   let query = {
-   
-        $or: [
-          { flcJobTitle: { $regex: searchRegex } },
-          { flcMajor: { $regex: searchRegex } },
-        ],
+    $or: [
+      { flcJobTitle: { $regex: searchRegex } },
+      { flcMajor: { $regex: searchRegex } },
+    ],
   };
 
   let flcsWithConditions = await FreelancerModel.find(
@@ -122,11 +124,10 @@ let flcPagination = async (pagination) => {
   });
   console.log(flcsWithConditions);
   return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions };
-}
+};
 
 let findFreelancerByEmail = async (freelancer) => {
   let found = await FreelancerModel.findOne(
-
     { flcEmail: freelancer.flcEmail },
     (err, doc) => {
       if (err) return handleError(err);
@@ -147,10 +148,78 @@ let findFreelancerByEmail = async (freelancer) => {
   }
 };
 
+let flcPaginationForAdminWeb = async (pagination) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let searchRegex = new RegExp(pagination.search, "i");
+  let match = {
+    $match: {
+      $or: [
+        { flcEmail: { $regex: searchRegex } },
+        { flcName: { $regex: searchRegex } },
+      ],
+    },
+  };
+
+  join = {
+    $lookup: {
+      from: "wallets",
+      localField: "_id",
+      foreignField: "flcId",
+      as: "wallet",
+    },
+  };
+
+  let skip = {
+    $skip: (pagination.pageNumber - 1) * pagination.pageSize,
+  };
+  let limit = {
+    $limit: pagination.pageNumber * pagination.pageSize,
+  };
+  let count = {
+    $count: "totalCount",
+  };
+  let sort;
+  let flcAndWalletsWithConditions;
+  if (pagination.sort) {
+    sort = {
+      $sort: { flcName: pagination.sort == "asc" ? 1 : -1 },
+    };
+    flcAndWalletsWithConditions = await FreelancerModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+      sort,
+      count,
+    ]);
+  } else {
+    flcAndWalletsWithConditions = await FreelancerModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+    ]);
+  }
+  // console.log(flcAndWalletsWithConditions);
+  let flcCount = await FreelancerModel.countDocuments({
+    $or: [
+      { flcEmail: { $regex: searchRegex } },
+      { flcName: { $regex: searchRegex } },
+    ],
+  });
+  await session.commitTransaction();
+  session.endSession();
+  // console.log(flcCount);
+  let pageCount = Math.ceil(flcCount / 5);
+  return { code: 200, freelancers: flcAndWalletsWithConditions, pageCount };
+};
+
 module.exports = {
   getAllFreelancer,
   flcCreate,
   flcUpdateInfo,
   login,
   flcPagination,
+  flcPaginationForAdminWeb,
 };

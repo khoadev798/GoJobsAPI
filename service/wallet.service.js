@@ -70,6 +70,7 @@ let payForAcceptedContractsProcedure = async (
   let flcWalletUpdateAQuarter = [];
   involvedContracts.forEach((contract) => {
     totalPayment += contract.jobTotalSalaryPerHeadCount;
+    // Lấy thông tin của flc liên quan và tính 1/4 số tiền tổng trả
     flcWalletUpdateAQuarter.push({
       flcId: contract.flcId,
       firstPaymentForFlc: contract.jobTotalSalaryPerHeadCount * 0.25,
@@ -102,14 +103,7 @@ let payForAcceptedContractsProcedure = async (
       walletUpdate,
       { new: true }
     );
-    let contractUpdate = {
-      $set: {
-        isPaymentFullyCompleted: true,
-        contractStatus: "APPROVED",
-        updatedAt: new Date(),
-        updatedBy: currentWallet.empId,
-      },
-    };
+
     // Cộng 25% số tiền vào wallet của flc liên quan
     let updateFlcWalletList = [];
     flcWalletUpdateAQuarter.forEach((task) => {
@@ -134,6 +128,14 @@ let payForAcceptedContractsProcedure = async (
       }
     );
     // update các contracts ở bước này
+    let contractUpdate = {
+      $set: {
+        isPaymentFullyCompleted: true,
+        contractStatus: "APPROVED",
+        updatedAt: new Date(),
+        updatedBy: currentWallet.empId,
+      },
+    };
     let updateContractsResult = await ContractModel.updateMany(
       contractFilter,
       contractUpdate,
@@ -145,7 +147,7 @@ let payForAcceptedContractsProcedure = async (
     };
 
     let jobUpdate = {
-      $inc: updateContractsResult.n,
+      $inc: { jobPaidContractCount: updateContractsResult.n },
     };
     let updatedJob = await JobModel.findOneAndUpdate(jobFilter, jobUpdate, {
       new: true,
@@ -162,8 +164,33 @@ let payForAcceptedContractsProcedure = async (
     };
   }
 };
+
+let updateWalletBalanceById = async (wallet) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  let updatedWallet = await WalletModel.findByIdAndUpdate(
+    { _id: wallet.walletId },
+    {
+      $inc: { balance: wallet.balance },
+      updatedBy: wallet.adminId,
+      updatedAt: new Date(),
+    },
+    { new: true }
+  );
+
+  await session.commitTransaction();
+  session.endSession();
+  if (updatedWallet) {
+    return { code: 200, message: "Cập nhật thành công!" };
+  } else {
+    return { code: 400, message: "Gặp lỗi!" };
+  }
+};
+
 module.exports = {
   createWallet,
   getWalletOfEndUserByCreatedBy,
   payForAcceptedContractsProcedure,
+  updateWalletBalanceById,
 };

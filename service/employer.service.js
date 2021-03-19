@@ -234,7 +234,7 @@ let employerPagination = async (pagination) => {
   await session.commitTransaction();
   session.endSession();
   // console.log(empCount);
-  let pageCount = Math.round(empCount / 5);
+  let pageCount = Math.ceil(empCount / 5);
   return { code: 200, employers: employersAndWalletWithConditions, pageCount };
 };
 module.exports = {

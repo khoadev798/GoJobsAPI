@@ -4,9 +4,9 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 {{!-- <h6 class="m-0 font-weight-bold text-primary">Tất cả sách</h6> --}}
-                <h3><a href="/web/employer">DS Employer</a>
+                <h3><a href="/web/freelancer">DS Freelancer</a>
                     <!-- Topbar Search -->
-                    <form action="/web/employer" method="GET"
+                    <form action="/web/freelancer" method="GET"
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search float-right">
                         <div class="input-group">
                             <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
@@ -37,18 +37,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each employerList}}
+                            {{#each freelancerList}}
                             <tr>
                                 <td>{{_id}}</td>
-                                <td>{{empName}}</td>
-                                <td>{{empEmail}}</td>
-                                <td>{{empPhone}}</td>
+                                <td>{{flcName}}</td>
+                                <td>{{flcEmail}}</td>
+                                <td>{{flcPhone}}</td>
                                 <td>{{wallet.[0]._id}}</td>
                                 <td>{{wallet.[0].balance}}</td>
                                 <td>
                                     &nbsp; &nbsp;&nbsp; &nbsp;
                                     <a
-                                        href="/web/updateEmpWallet?empId={{_id}}&empName={{empName}}&walletId={{wallet.[0]._id}}"><i
+                                        href="/web/updateFlcWallet?flcId={{_id}}&flcName={{flcName}}&walletId={{wallet.[0]._id}}"><i
                                             class="fas fa-pen" aria-hidden="true"></i></a>
                                 </td>
                             </tr>
@@ -68,7 +68,7 @@
                             <li class="page-item"><a class="page-link" href="#">3</a></li> --}}
                             {{#forInRange 1 pageCount 1}}
                             <li class="page-item"><a class="page-link"
-                                    href="/web/employer?pageNumber={{this}}">{{this}}</a></li>
+                                    href="/web/freelancer?pageNumber={{this}}">{{this}}</a></li>
                             {{/forInRange}}
                             <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Next">
