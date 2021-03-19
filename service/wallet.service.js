@@ -90,7 +90,7 @@ let payForAcceptedContractsProcedure = async (
       result: "Ban không đủ tiền để thanh toán. Vui lòng nạp thêm.",
     };
   } else {
-    // Xử lý thanh toán: 1. Trừ tiền, 2. update contract isPaymentFullyCompleted true 3. update job
+    // Xử lý thanh toán: 1. Trừ tiền, 2. Bỏ 25% số tiền từng flcWallet theo contract  ,3. update contract isPaymentFullyCompleted true 3. update job
     let walletUpdate = {
       balance: currentWallet.balance - totalPayment,
       updatedAt: new Date(),
@@ -117,7 +117,11 @@ let payForAcceptedContractsProcedure = async (
         {
           $or: [{ flcId: task.flcId }, { createdBy: task.flcId }],
         },
-        { $inc: { balance: task.firstPaymentForFlc } },
+        {
+          $inc: { balance: task.firstPaymentForFlc },
+          updatedBy: currentWallet.empId,
+          uơdatedAt: new Date(),
+        },
         { new: true }
       ).exec();
 

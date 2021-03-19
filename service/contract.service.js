@@ -286,7 +286,7 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
         $set: {
           balance:
             flcWalletList[index].balance +
-            (contract.jobTotalSalaryPerHeadCount * 70) / 100,
+            (contract.jobTotalSalaryPerHeadCount * 65) / 100,
           updatedBy: contract.empId,
           updatedAt: new Date(),
         },
