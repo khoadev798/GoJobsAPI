@@ -96,5 +96,5 @@ module.exports = {
   getAllJobsOfEmployerById,
   getAllJobTypes,
   jobPagination,
-  jobPaginationWithTime
+  jobPaginationWithTime,
 };

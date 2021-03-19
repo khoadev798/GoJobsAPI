@@ -5,11 +5,13 @@ const Employer = require("../model/employer");
 const Freelancer = require("../model/freelancer");
 const Contract = require("../model/contract");
 const Job = require("../model/job");
+const Receipt = require("../model/receipt");
 const WalletModel = mongoose.model("Wallet", Wallet);
 const EmployerModel = mongoose.model("Employer", Employer);
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 const ContractModel = mongoose.model("Contract", Contract);
 const JobModel = mongoose.model("Job", Job);
+const ReceiptModel = mongoose.model("Receipt", Receipt);
 let createWallet = async (endUser, session) => {
   // console.log("EndUser of Employer", endUser instanceof EmployerModel);
   let walletInfo = {
@@ -68,12 +70,20 @@ let payForAcceptedContractsProcedure = async (
   console.log("Contracts", involvedContracts);
   let totalPayment = 0;
   let flcWalletUpdateAQuarter = [];
+  let receiptList = [];
   involvedContracts.forEach((contract) => {
     totalPayment += contract.jobTotalSalaryPerHeadCount;
     // Lấy thông tin của flc liên quan và tính 1/4 số tiền tổng trả
     flcWalletUpdateAQuarter.push({
       flcId: contract.flcId,
       firstPaymentForFlc: contract.jobTotalSalaryPerHeadCount * 0.25,
+    });
+    receiptList.push({
+      updatedValue: contract.jobTotalSalaryPerHeadCount * 0.25,
+      receiverId: contract.flcId,
+      senderId: contract.empId,
+      createdBy: contract.empId,
+      createdAt: new Date(),
     });
   });
 
@@ -91,7 +101,7 @@ let payForAcceptedContractsProcedure = async (
       result: "Ban không đủ tiền để thanh toán. Vui lòng nạp thêm.",
     };
   } else {
-    // Xử lý thanh toán: 1. Trừ tiền, 2. Bỏ 25% số tiền từng flcWallet theo contract  ,3. update contract isPaymentFullyCompleted true 3. update job
+    // Xử lý thanh toán: 1. Trừ tiền, 2. Bỏ 25% số tiền từng flcWallet theo contract, 3. Tạo các receipt cho flc  ,4. update contract isPaymentFullyCompleted true 5. update job
     let walletUpdate = {
       balance: currentWallet.balance - totalPayment,
       updatedAt: new Date(),
@@ -106,6 +116,8 @@ let payForAcceptedContractsProcedure = async (
 
     // Cộng 25% số tiền vào wallet của flc liên quan
     let updateFlcWalletList = [];
+
+    console.log("FLC info", flcWalletUpdateAQuarter);
     flcWalletUpdateAQuarter.forEach((task) => {
       let oneFlcWalletUpdate = WalletModel.findOneAndUpdate(
         {
@@ -124,7 +136,21 @@ let payForAcceptedContractsProcedure = async (
 
     let updatedFlcWalletList = await Promise.all(updateFlcWalletList).then(
       (results) => {
-        console.log("Đã cho 25% tiền vào wallet của Flc liên quan");
+        console.log("Đã cho 25% tiền vào wallet của Flc liên quan!", results);
+      }
+    );
+    // tạo các receipt khi flc nhận tiền
+    let createReceiptList = [];
+    console.log("Receipt info", receiptList);
+    receiptList.forEach((receipt) => {
+      receiptInstance = new ReceiptModel(receipt);
+      let newReceipt = receiptInstance.save({ session: session }).finally();
+      createReceiptList.push(newReceipt);
+    });
+
+    let createdReceiptList = await Promise.all(createReceiptList).then(
+      (receipts) => {
+        console.log("Đã ghi chép các receipt!", receipts);
       }
     );
     // update các contracts ở bước này
@@ -155,7 +181,8 @@ let payForAcceptedContractsProcedure = async (
     await session.commitTransaction();
     session.endSession();
     console.log("Updated wallet", updatedWallet);
-    console.log("Updated wallets of FLC", updatedFlcWalletList);
+    // console.log("Updated wallets of FLC", updatedFlcWalletList);
+    // console.log("Created receipts", createdReceiptList);
     console.log("Updated contracts", updateContractsResult);
     console.log("Updated job", updatedJob);
     return {
@@ -165,7 +192,7 @@ let payForAcceptedContractsProcedure = async (
   }
 };
 
-let updateWalletBalanceById = async (wallet) => {
+let updateWalletBalanceByIdOnWebAdmin = async (wallet) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -179,9 +206,24 @@ let updateWalletBalanceById = async (wallet) => {
     { new: true }
   );
 
+  let receiptInfo = {};
+  if (wallet.empId) {
+    receiptInfo["receiverId"] = wallet.empId;
+  } else if (wallet.flcId) {
+    receiptInfo["receiverId"] = wallet.flcId;
+  }
+  receiptInfo["isCreatedByAdmin"] = wallet.isCreatedByAdmin;
+  receiptInfo["createdAt"] = new Date();
+  receiptInfo["updatedValue"] = wallet.balance;
+  if (wallet.adminId) {
+    receiptInfo["createdBy"] = wallet.adminId;
+  }
+  let receiptInstance = new ReceiptModel(receiptInfo);
+  let createdReceipt = await receiptInstance.save({ session });
   await session.commitTransaction();
   session.endSession();
   if (updatedWallet) {
+    console.log(updatedWallet);
     return { code: 200, message: "Cập nhật thành công!" };
   } else {
     return { code: 400, message: "Gặp lỗi!" };
@@ -192,5 +234,5 @@ module.exports = {
   createWallet,
   getWalletOfEndUserByCreatedBy,
   payForAcceptedContractsProcedure,
-  updateWalletBalanceById,
+  updateWalletBalanceByIdOnWebAdmin,
 };

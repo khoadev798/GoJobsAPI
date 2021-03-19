@@ -127,29 +127,36 @@ let updateFlcWalletPage = (req, res) => {
 let updateEmpWalletById = async (req, res) => {
   let { empId, empName, balance, walletId, adminId } = req.body;
   // console.log(empId, balance, walletId, adminId);
-  let updateWalletResult = await walletService.updateWalletBalanceById({
-    empId,
-    balance,
-    walletId,
-    adminId,
-  });
+  let updateWalletResult = await walletService.updateWalletBalanceByIdOnWebAdmin(
+    {
+      empId,
+      balance,
+      walletId,
+      adminId,
+      isCreatedByAdmin: true,
+    }
+  );
   if (updateWalletResult.code == 200) {
-    res.redirect(`/web/freelancer?search=${empName}`);
+    res.redirect(`/web/employer?search=${empName}`);
   }
 };
 
 let updateFlcWalletById = async (req, res) => {
   let { flcId, flcName, balance, walletId, adminId } = req.body;
   // console.log(flcId, balance, walletId, adminId);
-  let updateWalletResult = await walletService.updateWalletBalanceById({
-    flcId,
-    balance,
-    walletId,
-    adminId,
-  });
-  if (updateWalletResult.code == 200) {
-    res.redirect(`/web/freelancer?search=${flcName}`);
-  }
+  let updateWalletResult = await walletService.updateWalletBalanceByIdOnWebAdmin(
+    {
+      flcId,
+      balance,
+      walletId,
+      adminId,
+      isCreatedByAdmin: true,
+    }
+  );
+  console.log(updateWalletResult);
+  // if (updateWalletResult.code == 200) {
+  res.redirect(`/web/freelancer?search=${flcName}`);
+  // }
 };
 
 module.exports = {
