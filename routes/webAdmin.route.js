@@ -18,13 +18,50 @@ route.post("/adminLogin", dbConn.conn, webAdminController.adminLogin);
 
 route.get(
   "/employer",
-  dbConn.conn,
   authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
   webAdminController.employerManagementPage
+);
+
+route.get(
+  "/freelancer",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.freelancerManagementPage
 );
 
 route.get("/forgotpassword", function (req, res) {
   res.render("forgotpassword", { layout: false });
+});
+
+route.get(
+  "/updateEmpWallet",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  webAdminController.updateEmpWalletPage
+);
+
+route.post(
+  "/updateEmpWalletWithId",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.updateEmpWalletById
+);
+
+route.get(
+  "/updateFlcWallet",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  webAdminController.updateFlcWalletPage
+);
+
+route.post(
+  "/updateFlcWalletWithId",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.updateFlcWalletById
+);
+
+route.get("/error", (req, res) => {
+  res.render("error", { layout: false, title: "Error" });
 });
 
 module.exports = route;
