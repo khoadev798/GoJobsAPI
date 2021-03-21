@@ -4,6 +4,7 @@ const freelancerService = require("../service/freelancer.service");
 const walletService = require("../service//wallet.service");
 const jobService = require("../service/job.service");
 const contractService = require("../service/contract.service");
+const receiptService = require("../service/receipt.service");
 const jwtHelper = require("../helpers/jwt.helper");
 let alert = require("alert");
 
@@ -214,14 +215,75 @@ let contractManagementPage = async (req, res) => {
   }
 };
 
+let receiptManagementPage = async (req, res) => {
+  let { search, from, to, sort, pageNumber, pageSize } = req.query;
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!pageSize) {
+    pageSize = 5;
+  }
+  if (!from) {
+    from = new Date("2000-01=01");
+  }
+  if (!to) {
+    to = new Date("2100-01-01");
+  }
+  let receiptPaginationForWebAdmin = await receiptService.receiptPaginationForWebAdmin(
+    {
+      search,
+      from,
+      to,
+      sort,
+      pageNumber,
+      pageSize,
+    }
+  );
+  let receiptList = receiptPaginationForWebAdmin.receipts;
+  let pageCount = receiptPaginationForWebAdmin.pageCount;
+  // res.send(receiptPaginationForWebAdmin);
+  res.render("receipt/tableReceipt", {
+    layout: "layout",
+    title: "Receipt",
+    admin: req.admin,
+    receiptList,
+    pageCount,
+    helpers: {
+      forInRange: function (from, to, incr, block) {
+        var accum = "";
+        for (var i = from; i <= to; i += incr) accum += block.fn(i);
+        return accum;
+      },
+    },
+  });
+};
+
+let receiptInfoPage = async (req, res) => {
+  let { _id } = req.query;
+
+  let receiptInfo = await receiptService.receiptInfoForWebAdmin({
+    _id,
+  });
+  let receipt = receiptInfo.receipt;
+  // res.send(receipt);
+  // let pageCount = receiptPaginationForWebAdmin.pageCount;
+  // res.send(receiptPaginationForWebAdmin);
+  res.render("receipt/receiptInfo", {
+    layout: "layout",
+    title: "Receipt",
+    admin: req.admin,
+    receipt,
+  });
+};
+
 let updateEmpWalletPage = (req, res) => {
-  let { empId, empName, walletId } = req.query;
-  // console.log(empId, empName, walletId);
+  let { empId, empEmail, walletId } = req.query;
+  // console.log(empId, empEmail, walletId);
   res.render("employer/updateEmpWallet", {
     layout: "layout",
     title: "Update EmpWallet",
     admin: req.admin,
-    info: { empId, empName, walletId },
+    info: { empId, empEmail, walletId },
   });
 };
 
@@ -283,4 +345,6 @@ module.exports = {
   updateFlcWalletById,
   jobManagementPage,
   contractManagementPage,
+  receiptManagementPage,
+  receiptInfoPage,
 };

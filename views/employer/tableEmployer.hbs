@@ -26,7 +26,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
+                        <thead class="thead-light">
                             <tr>
                                 <th>_id</th>
                                 <th>Name</th>
@@ -58,12 +58,12 @@
                     </table>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination float-right">
-                            <li class="page-item">
+                            {{!-- <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             {{!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
                             <li class="page-item"><a class="page-link" href="#">2</a></li>
                             <li class="page-item"><a class="page-link" href="#">3</a></li> --}}
@@ -71,12 +71,12 @@
                             <li class="page-item"><a class="page-link"
                                     href="/web/employer?pageNumber={{this}}">{{this}}</a></li>
                             {{/forInRange}}
-                            <li class="page-item">
+                            {{!-- <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>
-                            </li>
+                            </li> --}}
                         </ul>
                     </nav>
                 </div>

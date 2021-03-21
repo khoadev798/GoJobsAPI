@@ -44,6 +44,20 @@ route.get(
   webAdminController.contractManagementPage
 );
 
+route.get(
+  "/receipt",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.receiptManagementPage
+);
+
+route.get(
+  "/receiptInfo",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.receiptInfoPage
+);
+
 route.get("/forgotpassword", function (req, res) {
   res.render("forgotpassword", { layout: false });
 });

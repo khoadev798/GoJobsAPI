@@ -1,0 +1,34 @@
+<h1>Receipt receipt</h1>
+<h3><a href="/web/receipt">Back</a>
+    <form style="width:auto;max-height: 100%" action="/web/updateEmpWalletWithId" method="POST">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputEmail4">Sender _id</label>
+                <input type="text" class="form-control" name="empId" value="{{receipt.senderId}}" readonly>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputPassword4">Sender email</label>
+                <input type="text" class="form-control" name="empEmail" value="{{receipt.senderEmail}}" readonly>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputEmail4">Receiver _id</label>
+                <input type="text" class="form-control" name="empId" value="{{receipt.receiverId}}" readonly>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputPassword4">Receiver email</label>
+                <input type="text" class="form-control" name="empEmail" value="{{receipt.receiverEmail}}" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword4">Created at</label>
+            <input type="text" class="form-control" name="walletId" value="{{receipt.createdAt}}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="inputPassword4">Updated value</label>
+            <input type="text" class="form-control" name="walletId" value="{{receipt.updatedValue}}" readonly>
+        </div>
+    </form>
+    <br><br><br><br><br><br><br><br>

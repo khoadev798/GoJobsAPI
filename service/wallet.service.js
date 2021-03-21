@@ -223,15 +223,16 @@ let updateWalletBalanceByIdOnWebAdmin = async (wallet) => {
 
   let receiptInfo = {};
   if (wallet.empId) {
-    receiptInfo["receiverId"] = wallet.empId;
+    receiptInfo["receiverId"] = "emp#" + wallet.empId;
   } else if (wallet.flcId) {
-    receiptInfo["receiverId"] = wallet.flcId;
+    receiptInfo["receiverId"] = "flc#" + wallet.flcId;
   }
   receiptInfo["isCreatedByAdmin"] = wallet.isCreatedByAdmin;
   receiptInfo["createdAt"] = new Date();
   receiptInfo["updatedValue"] = wallet.balance;
   if (wallet.adminId) {
     receiptInfo["createdBy"] = wallet.adminId;
+    receiptInfo["senderId"] = "SYSTEM";
   }
   let receiptInstance = new ReceiptModel(receiptInfo);
   let createdReceipt = await receiptInstance.save({ session });

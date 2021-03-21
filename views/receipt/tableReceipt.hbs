@@ -4,13 +4,15 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 {{!-- <h6 class="m-0 font-weight-bold text-primary">Tất cả sách</h6> --}}
-                <h3><a href="/web/job">Jobs</a>
+                <h3><a href="/web/receipt">Receipts</a>
                     <!-- Topbar Search -->
-                    <form action="/web/job" method="GET"
+                    <form action="/web/receipt" method="GET"
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search float-right">
                         <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2" name="search">
+                            <label for="from">From:</label>&nbsp;&nbsp;
+                            <input type="date" id="from" name="from">&nbsp;&nbsp;
+                            <label for="from">To:</label>&nbsp;&nbsp;
+                            <input type="date" id="to" name="to">&nbsp;&nbsp;
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="fas fa-search fa-sm"></i>
@@ -29,26 +31,26 @@
                         <thead class="thead-dark">
                             <tr>
                                 <th>_id</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>Employer _id</th>
-                                <th>Employer email</th>
+                                <th>Sender _id</th>
+                                <th>Receiver _id</th>
+                                <th>Updated value</th>
+                                <th>Created at</th>
+                                <th>Created by</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each jobList}}
+                            {{#each receiptList}}
                             <tr>
                                 <td>{{_id}}</td>
-                                <td>{{jobTitle}}</td>
-                                <td>{{jobDescription}}</td>
-                                <td>{{jobStatus}}</td>
-                                <td>{{employer.[0]._id}}</td>
-                                <td>{{employer.[0].empEmail}}</td>
+                                <td>{{senderId}}</td>
+                                <td>{{receiverId}}</td>
+                                <td>{{updatedValue}}</td>
+                                <td>{{createdAt}}</td>
+                                <td>{{createdBy}}</td>
                                 <td>
-                                    &nbsp; &nbsp;&nbsp; &nbsp;
-                                    <a href="/web/contract?jobId={{_id}}"><i class="fas fa-eye"
+                                    &nbsp; &nbsp;
+                                    <a href="/web/receiptInfo?_id={{_id}}"><i class="fas fa-eye"
                                             aria-hidden="true"></i></a>
                                 </td>
                             </tr>
@@ -65,7 +67,8 @@
                             </li> --}}
 
                             {{#forInRange 1 pageCount 1}}
-                            <li class="page-item"><a class="page-link" href="/web/job?pageNumber={{this}}">{{this}}</a>
+                            <li class="page-item"><a class="page-link"
+                                    href="/web/receipt?pageNumber={{this}}">{{this}}</a>
                             </li>
                             {{/forInRange}}
                             {{!-- <li class="page-item">
