@@ -131,4 +131,31 @@ let receiptInfoForWebAdmin = async (receipt1) => {
   return { code: 200, receipt };
 };
 
-module.exports = { receiptPaginationForWebAdmin, receiptInfoForWebAdmin };
+let systemMonthlyIncome = async (condition) => {
+  let project = {
+    $project: {
+      name: 1,
+      year: { $year: "$createdAt" },
+      receiverId: "$receiverId",
+      month: { $month: "$createdAt" },
+      updatedValue: "$updatedValue",
+    },
+  };
+  let match = {
+    $match: { year: condition.year, receiverId: "SYSTEM" },
+  };
+  let group = {
+    $group: {
+      _id: "$month",
+      income: { $sum: "$updatedValue" },
+    },
+  };
+  console.log(condition);
+  let systemReceipts = await ReceiptModel.aggregate([project, match, group]);
+  return { code: 200, systemReceipts };
+};
+module.exports = {
+  receiptPaginationForWebAdmin,
+  receiptInfoForWebAdmin,
+  systemMonthlyIncome,
+};

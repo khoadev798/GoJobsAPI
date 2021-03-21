@@ -276,6 +276,105 @@ let receiptInfoPage = async (req, res) => {
   });
 };
 
+let statisticPage = async (req, res) => {
+  let { year } = req.query;
+  if (!year) {
+    year = new Date().getFullYear();
+  } else {
+    year = parseInt(year, 10);
+  }
+  let queryResult = await receiptService.systemMonthlyIncome({ year });
+  let receipts = queryResult.systemReceipts;
+  let chartInfoList = {
+    info: [],
+  };
+  // res.send(queryResult);
+  receipts.forEach((receipt) => {
+    if (receipt._id == 1) {
+      chartInfoList.info.push({
+        name: "Jan",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 2) {
+      chartInfoList.info.push({
+        name: "Feb",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 3) {
+      chartInfoList.info.push({
+        name: "March",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 4) {
+      chartInfoList.info.push({
+        name: "April",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 5) {
+      chartInfoList.info.push({
+        name: "May",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 6) {
+      chartInfoList.info.push({
+        name: "June",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 7) {
+      chartInfoList.info.push({
+        name: "July",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 8) {
+      chartInfoList.info.push({
+        name: "August",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 9) {
+      chartInfoList.info.push({
+        name: "Sep",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 10) {
+      chartInfoList.info.push({
+        name: "Oct",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 11) {
+      chartInfoList.info.push({
+        name: "Nov",
+        steps: receipt.income,
+      });
+    }
+    if (receipt._id == 12) {
+      chartInfoList.info.push({
+        name: "Dec",
+        steps: receipt.income,
+      });
+    }
+    chartInfoList.info.push({
+      name: "OK",
+      steps: 20000,
+    });
+  });
+  res.render("statistic/statistic", {
+    layout: "layout",
+    title: "Statistic",
+    admin: req.admin,
+    encodedJson: encodeURIComponent(JSON.stringify(chartInfoList)),
+  });
+};
+
 let updateEmpWalletPage = (req, res) => {
   let { empId, empEmail, walletId } = req.query;
   // console.log(empId, empEmail, walletId);
@@ -347,4 +446,5 @@ module.exports = {
   contractManagementPage,
   receiptManagementPage,
   receiptInfoPage,
+  statisticPage,
 };
