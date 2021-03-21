@@ -403,6 +403,98 @@ let markOneContractCancelled = async (_idContract) => {
   }
 };
 
+let contractPaginationForWebAdmin = async (pagination) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let searchRegex = new RegExp(pagination.search, "i");
+  let match = {
+    $match: {
+      $and: [
+        { jobId: mongoose.Types.ObjectId(pagination.jobId) },
+        {
+          $or: [{ contractStatus: { $regex: searchRegex } }],
+        },
+      ],
+    },
+  };
+
+  join = {
+    $lookup: {
+      from: "freelancers",
+      localField: "flcId",
+      foreignField: "_id",
+      as: "freelancer",
+      // $project: "empEmail",
+    },
+  };
+
+  let skip = {
+    $skip: (pagination.pageNumber - 1) * pagination.pageSize,
+  };
+  let limit = {
+    $limit: pagination.pageNumber * pagination.pageSize,
+  };
+
+  let sort;
+  let contractsAndFreelancerWithCondition;
+  if (pagination.sort) {
+    sort = {
+      $sort: { contractStatus: pagination.sort == "asc" ? 1 : -1 },
+    };
+    contractsAndFreelancerWithCondition = await ContractModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+      sort,
+      {
+        $project: {
+          _id: 1,
+          contractStatus: 1,
+          createdAt: 1,
+          "freelancer._id": 1,
+          "freelancer.flcEmail": 1,
+        },
+      },
+    ]);
+  } else {
+    contractsAndFreelancerWithCondition = await ContractModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+      {
+        $project: {
+          _id: 1,
+          contractStatus: 1,
+          createdAt: 1,
+          "freelancer._id": 1,
+          "freelancer.flcEmail": 1,
+        },
+      },
+    ]);
+  }
+  // console.log(contractsAndFreelancerWithCondition);
+  let contractCount = await ContractModel.countDocuments({
+    $and: [
+      { jobId: mongoose.Types.ObjectId(pagination.jobId) },
+      {
+        $or: [{ contractStatus: { $regex: searchRegex } }],
+      },
+    ],
+  });
+
+  await session.commitTransaction();
+  session.endSession();
+  // console.log(contractCount);
+  let pageCount = Math.ceil(contractCount / 5);
+  return {
+    code: 200,
+    contracts: contractsAndFreelancerWithCondition,
+    pageCount,
+  };
+};
+
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -413,4 +505,5 @@ module.exports = {
   updateStatusOfContractById,
   markContractsCompletedAndPayFreelancers,
   markOneContractCancelled,
+  contractPaginationForWebAdmin,
 };

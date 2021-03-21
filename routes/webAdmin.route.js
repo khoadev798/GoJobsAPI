@@ -30,6 +30,20 @@ route.get(
   webAdminController.freelancerManagementPage
 );
 
+route.get(
+  "/job",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.jobManagementPage
+);
+
+route.get(
+  "/contract",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.contractManagementPage
+);
+
 route.get("/forgotpassword", function (req, res) {
   res.render("forgotpassword", { layout: false });
 });

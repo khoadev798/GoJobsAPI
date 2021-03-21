@@ -14,6 +14,7 @@ const path = require("path");
 const fcm = require("fcm-notification");
 const FCM = new fcm(path.join(__dirname, "../privatefile.json"));
 const Notification = require("../model/notification");
+const { ObjectId } = require("bson");
 const NotificationModel = mongoose.model("Notification", Notification);
 // const serviceAccount = require("../privatefile.json");
 
@@ -158,21 +159,8 @@ let getJobsOfOneEmployerById = async (empId) => {
   );
 };
 
-let getAllJobTypes = async () => {
-  let jobTypes = await JobModel.aggregate([
-    {
-      $group: {
-        _id: { jobField: "$jobField" },
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  return { code: 200, jobTypes: jobTypes };
-};
-
 let jobPagination = async (pagination) => {
   let searchRegex = new RegExp(pagination.search, "i");
-
   let query = {
     $and: [
       {
@@ -214,12 +202,104 @@ let jobPaginationWithTime = async (pagination) => {
   return { code: 200, jobs: jobsWithConditions };
 };
 
+let jobPaginationForWebAdmin = async (pagination) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let searchRegex = new RegExp(pagination.search, "i");
+  let match = {
+    $match: {
+      $or: [
+        { jobTitle: { $regex: searchRegex } },
+        { jobDescription: { $regex: searchRegex } },
+        {
+          empId: ObjectId.isValid(pagination.search)
+            ? mongoose.Types.ObjectId(pagination.search)
+            : "",
+        },
+      ],
+    },
+  };
+
+  join = {
+    $lookup: {
+      from: "employers",
+      localField: "empId",
+      foreignField: "_id",
+      as: "employer",
+      // $project: "empEmail",
+    },
+  };
+
+  let skip = {
+    $skip: (pagination.pageNumber - 1) * pagination.pageSize,
+  };
+  let limit = {
+    $limit: pagination.pageNumber * pagination.pageSize,
+  };
+
+  let sort;
+  let jobsAndEmpWithCondition;
+  if (pagination.sort) {
+    sort = {
+      $sort: { jobTitle: pagination.sort == "asc" ? 1 : -1 },
+    };
+    jobsAndEmpWithCondition = await JobModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+      sort,
+      {
+        $project: {
+          _id: 1,
+          jobTitle: 1,
+          jobDescription: 1,
+          jobStatus: 1,
+          "employer._id": 1,
+          "employer.empEmail": 1,
+        },
+      },
+    ]);
+  } else {
+    jobsAndEmpWithCondition = await JobModel.aggregate([
+      match,
+      join,
+      skip,
+      limit,
+      {
+        $project: {
+          _id: 1,
+          jobTitle: 1,
+          jobDescription: 1,
+          jobStatus: 1,
+          "employer._id": 1,
+          "employer.empEmail": 1,
+        },
+      },
+    ]);
+  }
+  // console.log(jobsAndEmpWithCondition);
+  let jobCount = await JobModel.countDocuments({
+    $or: [
+      { jobTitle: { $regex: searchRegex } },
+      { jobDescription: { $regex: searchRegex } },
+      { createdBy: { $regex: searchRegex } },
+    ],
+  });
+
+  await session.commitTransaction();
+  session.endSession();
+  // console.log(jobCount);
+  let pageCount = Math.ceil(jobCount / 5);
+  return { code: 200, jobs: jobsAndEmpWithCondition, pageCount };
+};
+
 module.exports = {
   createNewJob,
   getAllJobs,
   getAllJobsAndEmployerInfo,
   getJobsOfOneEmployerById,
-  getAllJobTypes,
   jobPagination,
   jobPaginationWithTime,
+  jobPaginationForWebAdmin,
 };

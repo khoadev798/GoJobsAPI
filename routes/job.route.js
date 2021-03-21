@@ -5,8 +5,6 @@ const jobController = require("../controller/job.controller");
 const sendNotificationController = require("../controller/notifycationSendApp.controller");
 route.post("/createNewJob", dbConn.conn, jobController.createNewJob);
 
-route.get("/allJobTypes", dbConn.conn, jobController.getAllJobTypes);
-
 route.get("/allJobs", dbConn.conn, jobController.getAllJobs);
 
 route.get("/allJobs", dbConn.conn, jobController.getAllJobsOfEmployerById);
@@ -15,7 +13,11 @@ route.get("/jobPagination", dbConn.conn, jobController.jobPagination);
 
 route.get("/oneJobFullDetail", (req, res) => {});
 
-route.get("/jobPaginationWithTime", dbConn.conn, jobController.jobPaginationWithTime);
+route.get(
+  "/jobPaginationWithTime",
+  dbConn.conn,
+  jobController.jobPaginationWithTime
+);
 
 route.put("/", (req, res) => {
   res.send("Update job");

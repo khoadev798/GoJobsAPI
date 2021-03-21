@@ -4,7 +4,7 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 {{!-- <h6 class="m-0 font-weight-bold text-primary">Tất cả sách</h6> --}}
-                <h3><a href="/web/employer">DS Employer</a>
+                <h3><a href="/web/employer">Employers</a>
                     <!-- Topbar Search -->
                     <form action="/web/employer" method="GET"
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search float-right">
@@ -22,6 +22,7 @@
 
 
             </div>
+
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
@@ -48,7 +49,7 @@
                                 <td>
                                     &nbsp; &nbsp;&nbsp; &nbsp;
                                     <a
-                                        href="/web/updateEmpWallet?empId={{_id}}&empName={{empName}}&walletId={{wallet.[0]._id}}"><i
+                                        href="/web/updateEmpWallet?empId={{_id}}&empEmail={{empEmail}}&walletId={{wallet.[0]._id}}"><i
                                             class="fas fa-pen" aria-hidden="true"></i></a>
                                 </td>
                             </tr>

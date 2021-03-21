@@ -1,12 +1,12 @@
 <div class="card img-fluid" style="max-width:100%; height: auto">
-    <img class="card-img-top" src="image/pkl2.jpg" alt="Card image" style="opacity:0.5">
+    <img class="card-img-top" src="image/pkl4.jpg" alt="Card image" style="opacity:0.5">
     <div class="card-img-overlay">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 {{!-- <h6 class="m-0 font-weight-bold text-primary">Tất cả sách</h6> --}}
-                <h3><a href="/web/freelancer">Freelancers</a>
+                <h3><a href="/web/job">Jobs</a>
                     <!-- Topbar Search -->
-                    <form action="/web/freelancer" method="GET"
+                    <form action="/web/job" method="GET"
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search float-right">
                         <div class="input-group">
                             <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
@@ -24,32 +24,32 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
+
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
+                        <thead class="thead-dark">
                             <tr>
                                 <th>_id</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone No</th>
-                                <th>Wallet _id</th>
-                                <th>Wallet balance</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Employer _id</th>
+                                <th>Employer email</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each freelancerList}}
+                            {{#each jobList}}
                             <tr>
                                 <td>{{_id}}</td>
-                                <td>{{flcName}}</td>
-                                <td>{{flcEmail}}</td>
-                                <td>{{flcPhone}}</td>
-                                <td>{{wallet.[0]._id}}</td>
-                                <td>{{wallet.[0].balance}}</td>
+                                <td>{{jobTitle}}</td>
+                                <td>{{jobDescription}}</td>
+                                <td>{{jobStatus}}</td>
+                                <td>{{employer.[0]._id}}</td>
+                                <td>{{employer.[0].empEmail}}</td>
                                 <td>
                                     &nbsp; &nbsp;&nbsp; &nbsp;
-                                    <a
-                                        href="/web/updateFlcWallet?flcId={{_id}}&flcEmail={{flcEmail}}&walletId={{wallet.[0]._id}}"><i
-                                            class="fas fa-pen" aria-hidden="true"></i></a>
+                                    <a href="/web/contract?jobId={{_id}}"><i class="fas fa-eye"
+                                            aria-hidden="true"></i></a>
                                 </td>
                             </tr>
                             {{/each}}
@@ -63,12 +63,10 @@
                                     <span class="sr-only">Previous</span>
                                 </a>
                             </li>
-                            {{!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li> --}}
+
                             {{#forInRange 1 pageCount 1}}
-                            <li class="page-item"><a class="page-link"
-                                    href="/web/freelancer?pageNumber={{this}}">{{this}}</a></li>
+                            <li class="page-item"><a class="page-link" href="/web/job?pageNumber={{this}}">{{this}}</a>
+                            </li>
                             {{/forInRange}}
                             <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Next">

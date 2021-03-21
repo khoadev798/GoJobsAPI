@@ -40,9 +40,9 @@ const http = require("http").Server(app);
 
 const io = require("socket.io")(http);
 
-app.use(express.json({ limit: "15360mb", type: "application/json" }));
+app.use(bodyParser.json({ limit: "15360mb", type: "application/json" }));
 app.use(
-  express.urlencoded({
+  bodyParser.urlencoded({
     limit: "15360mb",
     extended: true,
     // type: "application/json",
