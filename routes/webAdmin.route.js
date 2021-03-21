@@ -58,6 +58,13 @@ route.get(
   webAdminController.receiptInfoPage
 );
 
+route.get(
+  "/statistic",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.statisticPage
+);
+
 route.get("/forgotpassword", function (req, res) {
   res.render("forgotpassword", { layout: false });
 });
