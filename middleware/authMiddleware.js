@@ -35,7 +35,8 @@ let isAuthOnWebAdminFromCookieToken = async (req, res, next) => {
   // console.log(req.cookies.token);
   try {
     if (!token) {
-      return res.status(401).json("You need to Login");
+      // return res.status(401).json("You need to Login");
+      res.redirect("/web");
     }
     const decode = await jwt.verify(token, GLOBAL.ACCESS_TOKEN_SECRET);
     req.admin = {

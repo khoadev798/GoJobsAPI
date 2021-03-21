@@ -5,9 +5,9 @@ const Employer = require("../model/employer");
 const Freelancer = require("../model/freelancer");
 
 const Receipt = new Schema({
-  receiverId: { type: String },
-  senderId: { type: String },
-  createdBy: { type: String },
+  receiverId: { type: String, default: null },
+  senderId: { type: String, default: null },
+  createdBy: { type: String, default: null },
   createdAt: { type: Date, required: true },
   isCreatedByAdmin: { type: Boolean, default: false },
   updatedValue: { type: Number, required: true },

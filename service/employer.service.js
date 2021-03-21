@@ -200,9 +200,7 @@ let employerPagination = async (pagination) => {
   let limit = {
     $limit: pagination.pageNumber * pagination.pageSize,
   };
-  let count = {
-    $count: "totalCount",
-  };
+
   let sort;
   let employersAndWalletWithConditions;
   if (pagination.sort) {
@@ -215,7 +213,6 @@ let employerPagination = async (pagination) => {
       skip,
       limit,
       sort,
-      count,
     ]);
   } else {
     employersAndWalletWithConditions = await EmployerModel.aggregate([

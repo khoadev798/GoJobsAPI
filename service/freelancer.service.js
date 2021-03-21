@@ -176,9 +176,7 @@ let flcPaginationForAdminWeb = async (pagination) => {
   let limit = {
     $limit: pagination.pageNumber * pagination.pageSize,
   };
-  let count = {
-    $count: "totalCount",
-  };
+
   let sort;
   let flcAndWalletsWithConditions;
   if (pagination.sort) {
@@ -191,7 +189,6 @@ let flcPaginationForAdminWeb = async (pagination) => {
       skip,
       limit,
       sort,
-      count,
     ]);
   } else {
     flcAndWalletsWithConditions = await FreelancerModel.aggregate([

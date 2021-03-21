@@ -114,6 +114,8 @@ let payForAcceptedContractsProcedure = async (
       { new: true }
     );
 
+    // let empReceitpInstance = new ReceiptModel(receiptForEmployer);
+
     // Cộng 25% số tiền vào wallet của flc liên quan
     let updateFlcWalletList = [];
 
@@ -153,6 +155,19 @@ let payForAcceptedContractsProcedure = async (
         console.log("Đã ghi chép các receipt!", receipts);
       }
     );
+
+    let receiptForEmp = {
+      senderId: walletOwnerId,
+      updatedValue: -totalPayment,
+      createdAt: new Date(),
+      createdBy: walletOwnerId,
+    };
+    let receiptForEmpInstance = new ReceiptModel(receiptForEmp);
+    let createdReceiptForEmp = await receiptForEmpInstance.save({
+      session: session,
+    });
+
+    console.log("Emp bi tru tien", createdReceiptForEmp);
     // update các contracts ở bước này
     let contractUpdate = {
       $set: {
@@ -208,15 +223,16 @@ let updateWalletBalanceByIdOnWebAdmin = async (wallet) => {
 
   let receiptInfo = {};
   if (wallet.empId) {
-    receiptInfo["receiverId"] = wallet.empId;
+    receiptInfo["receiverId"] = "emp#" + wallet.empId;
   } else if (wallet.flcId) {
-    receiptInfo["receiverId"] = wallet.flcId;
+    receiptInfo["receiverId"] = "flc#" + wallet.flcId;
   }
   receiptInfo["isCreatedByAdmin"] = wallet.isCreatedByAdmin;
   receiptInfo["createdAt"] = new Date();
   receiptInfo["updatedValue"] = wallet.balance;
   if (wallet.adminId) {
     receiptInfo["createdBy"] = wallet.adminId;
+    receiptInfo["senderId"] = "SYSTEM";
   }
   let receiptInstance = new ReceiptModel(receiptInfo);
   let createdReceipt = await receiptInstance.save({ session });

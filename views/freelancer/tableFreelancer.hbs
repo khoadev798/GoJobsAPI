@@ -1,10 +1,10 @@
 <div class="card img-fluid" style="max-width:100%; height: auto">
-    <img class="card-img-top" src="image/pkl4.jpg" alt="Card image" style="opacity:0.5">
+    <img class="card-img-top" src="image/pkl2.jpg" alt="Card image" style="opacity:0.5">
     <div class="card-img-overlay">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 {{!-- <h6 class="m-0 font-weight-bold text-primary">Tất cả sách</h6> --}}
-                <h3><a href="/web/freelancer">DS Freelancer</a>
+                <h3><a href="/web/freelancer">Freelancers</a>
                     <!-- Topbar Search -->
                     <form action="/web/freelancer" method="GET"
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search float-right">
@@ -25,7 +25,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
+                        <thead class="thead-light">
                             <tr>
                                 <th>_id</th>
                                 <th>Name</th>
@@ -48,7 +48,7 @@
                                 <td>
                                     &nbsp; &nbsp;&nbsp; &nbsp;
                                     <a
-                                        href="/web/updateFlcWallet?flcId={{_id}}&flcName={{flcName}}&walletId={{wallet.[0]._id}}"><i
+                                        href="/web/updateFlcWallet?flcId={{_id}}&flcEmail={{flcEmail}}&walletId={{wallet.[0]._id}}"><i
                                             class="fas fa-pen" aria-hidden="true"></i></a>
                                 </td>
                             </tr>
@@ -57,12 +57,12 @@
                     </table>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination float-right">
-                            <li class="page-item">
+                            {{!-- <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             {{!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
                             <li class="page-item"><a class="page-link" href="#">2</a></li>
                             <li class="page-item"><a class="page-link" href="#">3</a></li> --}}
@@ -70,12 +70,12 @@
                             <li class="page-item"><a class="page-link"
                                     href="/web/freelancer?pageNumber={{this}}">{{this}}</a></li>
                             {{/forInRange}}
-                            <li class="page-item">
+                            {{!-- <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>
-                            </li>
+                            </li> --}}
                         </ul>
                     </nav>
                 </div>

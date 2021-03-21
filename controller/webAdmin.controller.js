@@ -1,8 +1,12 @@
 const adminService = require("../service/admin.service");
 const employerService = require("../service/employer.service");
 const freelancerService = require("../service/freelancer.service");
-let walletService = require("../service//wallet.service");
+const walletService = require("../service//wallet.service");
+const jobService = require("../service/job.service");
+const contractService = require("../service/contract.service");
+const receiptService = require("../service/receipt.service");
 const jwtHelper = require("../helpers/jwt.helper");
+let alert = require("alert");
 
 let loginPage = (req, res, next) => {
   res.render("login", { layout: false, title: "Login" });
@@ -102,30 +106,200 @@ let freelancerManagementPage = async (req, res) => {
   });
 };
 
+let jobManagementPage = async (req, res) => {
+  let { search, sort, filter, pageNumber, pageSize } = req.query;
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!pageSize) {
+    pageSize = 5;
+  }
+  let jobPaginationForWebAdmin = await jobService.jobPaginationForWebAdmin({
+    search,
+    sort,
+    filter,
+    pageNumber,
+    pageSize,
+  });
+  let jobList = jobPaginationForWebAdmin.jobs;
+  let pageCount = jobPaginationForWebAdmin.pageCount;
+  // res.send(jobPaginationForWebAdmin);
+  res.render("job/tableJob", {
+    layout: "layout",
+    title: "Job",
+    admin: req.admin,
+    jobList,
+    pageCount,
+    helpers: {
+      forInRange: function (from, to, incr, block) {
+        var accum = "";
+        for (var i = from; i <= to; i += incr) accum += block.fn(i);
+        return accum;
+      },
+    },
+  });
+};
+
+let contractManagementPage = async (req, res) => {
+  let { jobId, search, sort, filter, pageNumber, pageSize } = req.query;
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!pageSize) {
+    pageSize = 5;
+  }
+
+  let contractPaginationForWebAdmin = await contractService.contractPaginationForWebAdmin(
+    {
+      jobId,
+      search,
+      sort,
+      filter,
+      pageNumber,
+      pageSize,
+    }
+  );
+  let contractList = contractPaginationForWebAdmin.contracts;
+  let pageCount = contractPaginationForWebAdmin.pageCount;
+
+  if (contractList.length > 0) {
+    let statusArray = {
+      array: [
+        ["Status", "Contract status"],
+        ["APPROVED", 0],
+        ["ACCEPTED", 0],
+        ["REJECTED", 0],
+        ["COMPLETED", 0],
+        ["CANCELLED", 0],
+      ],
+    };
+
+    contractList.forEach((contract) => {
+      if (contract.contractStatus == "APPROVED") {
+        statusArray.array[1][1] = statusArray.array[1][1] + 1;
+      }
+      if (contract.contractStatus == "ACCPETED") {
+        statusArray.array[2][2] = statusArray.array[2][2] + 1;
+      }
+      if (contract.contractStatus == "REJECTED") {
+        statusArray.array[3][3] = statusArray.array[3][3] + 1;
+      }
+      if (contract.contractStatus == "COMPLETED") {
+        statusArray.array[4][4] = statusArray.array[4][4] + 1;
+      }
+      if (contract.contractStatus == "CANCELLED") {
+        statusArray.array[5][5] = statusArray.array[5][5] + 1;
+      }
+    });
+
+    res.render("contract/tableContract", {
+      layout: "layout",
+      title: "Contract",
+      admin: req.admin,
+      jobId,
+      contractList,
+      pageCount,
+      encodedJson: encodeURIComponent(JSON.stringify(statusArray)),
+      // array: statusArray.array,
+      helpers: {
+        forInRange: function (from, to, incr, block) {
+          var accum = "";
+          for (var i = from; i <= to; i += incr) accum += block.fn(i);
+          return accum;
+        },
+      },
+    });
+  } else {
+    alert("This job has no contract");
+    res.redirect("/web/job");
+  }
+};
+
+let receiptManagementPage = async (req, res) => {
+  let { search, from, to, sort, pageNumber, pageSize } = req.query;
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!pageSize) {
+    pageSize = 5;
+  }
+  if (!from) {
+    from = new Date("2000-01=01");
+  }
+  if (!to) {
+    to = new Date("2100-01-01");
+  }
+  let receiptPaginationForWebAdmin = await receiptService.receiptPaginationForWebAdmin(
+    {
+      search,
+      from,
+      to,
+      sort,
+      pageNumber,
+      pageSize,
+    }
+  );
+  let receiptList = receiptPaginationForWebAdmin.receipts;
+  let pageCount = receiptPaginationForWebAdmin.pageCount;
+  // res.send(receiptPaginationForWebAdmin);
+  res.render("receipt/tableReceipt", {
+    layout: "layout",
+    title: "Receipt",
+    admin: req.admin,
+    receiptList,
+    pageCount,
+    helpers: {
+      forInRange: function (from, to, incr, block) {
+        var accum = "";
+        for (var i = from; i <= to; i += incr) accum += block.fn(i);
+        return accum;
+      },
+    },
+  });
+};
+
+let receiptInfoPage = async (req, res) => {
+  let { _id } = req.query;
+
+  let receiptInfo = await receiptService.receiptInfoForWebAdmin({
+    _id,
+  });
+  let receipt = receiptInfo.receipt;
+  // res.send(receipt);
+  // let pageCount = receiptPaginationForWebAdmin.pageCount;
+  // res.send(receiptPaginationForWebAdmin);
+  res.render("receipt/receiptInfo", {
+    layout: "layout",
+    title: "Receipt",
+    admin: req.admin,
+    receipt,
+  });
+};
+
 let updateEmpWalletPage = (req, res) => {
-  let { empId, empName, walletId } = req.query;
-  // console.log(empId, empName, walletId);
+  let { empId, empEmail, walletId } = req.query;
+  // console.log(empId, empEmail, walletId);
   res.render("employer/updateEmpWallet", {
     layout: "layout",
     title: "Update EmpWallet",
     admin: req.admin,
-    info: { empId, empName, walletId },
+    info: { empId, empEmail, walletId },
   });
 };
 
 let updateFlcWalletPage = (req, res) => {
-  let { flcId, flcName, walletId } = req.query;
-  console.log(flcId, flcName, walletId);
+  let { flcId, flcEmail, walletId } = req.query;
+  console.log(flcId, flcEmail, walletId);
   res.render("freelancer/updateFlcWallet", {
     layout: "layout",
     title: "Update FlcWallet",
     admin: req.admin,
-    info: { flcId, flcName, walletId },
+    info: { flcId, flcEmail, walletId },
   });
 };
 
 let updateEmpWalletById = async (req, res) => {
-  let { empId, empName, balance, walletId, adminId } = req.body;
+  let { empId, empEmail, balance, walletId, adminId } = req.body;
   // console.log(empId, balance, walletId, adminId);
   let updateWalletResult = await walletService.updateWalletBalanceByIdOnWebAdmin(
     {
@@ -137,12 +311,12 @@ let updateEmpWalletById = async (req, res) => {
     }
   );
   if (updateWalletResult.code == 200) {
-    res.redirect(`/web/employer?search=${empName}`);
+    res.redirect(`/web/employer?search=${empEmail}`);
   }
 };
 
 let updateFlcWalletById = async (req, res) => {
-  let { flcId, flcName, balance, walletId, adminId } = req.body;
+  let { flcId, flcEmail, balance, walletId, adminId } = req.body;
   // console.log(flcId, balance, walletId, adminId);
   let updateWalletResult = await walletService.updateWalletBalanceByIdOnWebAdmin(
     {
@@ -155,7 +329,7 @@ let updateFlcWalletById = async (req, res) => {
   );
   console.log(updateWalletResult);
   // if (updateWalletResult.code == 200) {
-  res.redirect(`/web/freelancer?search=${flcName}`);
+  res.redirect(`/web/freelancer?search=${flcEmail}`);
   // }
 };
 
@@ -169,4 +343,8 @@ module.exports = {
   freelancerManagementPage,
   updateFlcWalletPage,
   updateFlcWalletById,
+  jobManagementPage,
+  contractManagementPage,
+  receiptManagementPage,
+  receiptInfoPage,
 };

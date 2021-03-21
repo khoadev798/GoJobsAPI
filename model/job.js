@@ -8,9 +8,9 @@ const Job = new Schema({
   jobTitle: { type: String, required: true },
   jobDescription: { type: String, required: true },
   jobPaymentType: { type: String, required: true }, // ("Hourly", "Daily", "Weekly", "After-done"  )
-  jobSalaryPerHour: { type: Number, default: null },
-  jobSalaryPerDay: { type: Number, default: null },
-  jobSalaryPerWeek: { type: Number, default: null },
+  jobSalary: { type: Number, default: null },
+  // jobSalaryPerDay: { type: Number, default: null },
+  // jobSalaryPerWeek: { type: Number, default: null },
   jobSalaryAfterDone: { type: Number, default: null },
   experienceRequired: { type: Boolean, default: false },
   jobField: { type: String, required: true }, // ("LDPT", "IT", "F&B",...)
