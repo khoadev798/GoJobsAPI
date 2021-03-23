@@ -6,6 +6,8 @@ Job.plugin(mongoosePaginate);
 const Employer = require("../model/employer");
 const JobModel = mongoose.model("Job", Job);
 const EmployerModel = mongoose.model("Employer", Employer);
+const Freelancer = require("../model/freelancer");
+const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 const Follow = require("../model/follow");
 const FollowModel = mongoose.model("Follow", Follow);
 const util = require("../util/data.util");
@@ -14,6 +16,7 @@ const path = require("path");
 const fcm = require("fcm-notification");
 const FCM = new fcm(path.join(__dirname, "../privatefile.json"));
 const Notification = require("../model/notification");
+
 const NotificationModel = mongoose.model("Notification", Notification);
 // const serviceAccount = require("../privatefile.json");
 
@@ -25,20 +28,36 @@ let createNewJob = async (job) => {
   await jobInstance.save({ session: session });
   let isFollowExistedResult = await isFollowExisted(job);
   if (isFollowExistedResult.code == 200) {
+   
     let tokenlists = isFollowExistedResult.follow;
     let Tokens = [];
     let flcIds = [];
 
     tokenlists.forEach((token) => {
-      Tokens = Tokens.concat(token.tokenDeviceWithFlc);
+     
       flcIds = flcIds.concat(token.flcId);
     });
-    let endTokens = await Promise.all(Tokens).then((values) => {
-      return values;
-    });
+    
     let endFlcIds = await Promise.all(flcIds).then((values) => {
       return values;
     });
+
+    let findTokenDevice = await FreelancerModel.find({
+      _id: {$in: endFlcIds}
+    },
+      "flcTokenDevice",
+      (err, docs) =>{
+        if(err) handleError(err);
+        return docs;
+      }
+    );
+      findTokenDevice.forEach((token) =>{
+        Tokens = Tokens.concat(token.flcTokenDevice);
+      })
+      let endTokens = await Promise.all(Tokens).then((values) => {
+        return values;
+      });
+      console.log("endTokens: ", endTokens);
 
     let notification = {
       flcId: endFlcIds,
@@ -50,26 +69,24 @@ let createNewJob = async (job) => {
       if (err) handleError(err);
       return console.log(doc);
     });
+    var message = {
+      data: {
+        score: '850',
+        time: '2:45'
+      },
+      notification:{
+        title : 'Navish',
+        body : 'Test message by navish'
+      }
+    };
+    FCM.sendToMultipleToken(message, endTokens, function(err, response) {
+        if(err){
+            console.log('err--', err);
+        }else {
+            console.log('response-----', response);
+        }
 
-    console.log("toekn:", tokenlists);
-    // var message = {
-    //   data: {
-    //     score: '850',
-    //     time: '2:45'
-    //   },
-    //   notification:{
-    //     title : 'Navish',
-    //     body : 'Test message by navish'
-    //   }
-    // };
-    // FCM.sendToMultipleToken(message, endTokens, function(err, response) {
-    //     if(err){
-    //         console.log('err--', err);
-    //     }else {
-    //         console.log('response-----', response);
-    //     }
-
-    // })
+    })
   }
 
   console.log("new jobs: ", jobInstance);
@@ -81,7 +98,7 @@ let createNewJob = async (job) => {
 let isFollowExisted = async (job) => {
   let found = await FollowModel.find(
     { empId: job.empId },
-    "tokenDeviceWithFlc flcId",
+    "flcId",
     (err, doc) => {
       if (err) return handleError(err);
       return doc;
@@ -101,6 +118,7 @@ let isFollowExisted = async (job) => {
     };
   }
 };
+
 
 let getAllJobs = async () => {
   let jobs = [];
@@ -222,4 +240,5 @@ module.exports = {
   getAllJobTypes,
   jobPagination,
   jobPaginationWithTime,
+  FCM,
 };

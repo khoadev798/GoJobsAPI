@@ -18,6 +18,7 @@ const ObjectId = Schema.ObjectId;
 // confirmedAt;
 
 const Employer = new Schema({
+  empTokenDevice: {type: [String], default: [], required: true},
   empName: { type: String, default: null },
   empType: { type: String, default: null },
   empEmail: { type: String, required: true },
@@ -28,7 +29,7 @@ const Employer = new Schema({
   empTaxCode: { type: String, default: null },
   empLogo: { type: String, default: null },
   empDescription: { type: String, default: null },
-  empTerm: { type: String, required: true },
+  empTerm: { type: Boolean, required: true },
   empStatus: { type: String, required: true, default: "Registered" },
   createdAt: { type: Date },
   // confirmedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },

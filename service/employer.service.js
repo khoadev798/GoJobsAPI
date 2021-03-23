@@ -37,6 +37,8 @@ let employerCreate = async (employer) => {
 let login = async (employer) => {
   const isEmployerExisted = await findEmployerByEmail(employer);
   console.log(isEmployerExisted);
+  const session = await mongoose.startSession();
+  session.startTransaction();
   if (isEmployerExisted.code == 200) {
     if (
       bcrypt.compareSync(
@@ -51,12 +53,28 @@ let login = async (employer) => {
         ACCESS_TOKEN_SECRET,
         ACCESS_TOKEN_LIFE
       );
+      let filter = {
+        $and: [
+          { _id: _id },
+          { empTokenDevice: { $ne: employer.empTokenDevice } },
+        ]
+      }
+      await EmployerModel.findOneAndUpdate(
+        filter,
+        { $push: { empTokenDevice: employer.empTokenDevice } },
+        (err, docs) => {
+          if (err) handleError(err);
+          console.log("add flcTokenDevice", docs);
+        }
+      )
+      await session.commitTransaction();
+      session.endSession();
       return {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         empEmail: isEmployerExisted.employer.empEmail,
         _id: _id,
-        accessToken: accessToken,
+        accessTokenDb: accessToken,
       };
     } else {
       console.log("Incorrect");
@@ -110,36 +128,6 @@ let findEmployerById = async (employer) => {
       code: GLOBAL.SUCCESS_CODE,
       message: "Either email or nationalId taken!",
       employer: found,
-    };
-  }
-};
-
-let findEmployerByEmailOrNationalId = async (employer) => {
-  let found = await EmployerModel.findOne(
-    {
-      $or: [
-        { empTaxCode: employer.empNationalId },
-        { empEmail: employer.empEmail },
-      ],
-    },
-    (err, doc) => {
-      if (err) return handleError(err);
-      return doc;
-    }
-  );
-
-  // console.log(found);
-
-  if (found == undefined) {
-    return {
-      code: GLOBAL.NOT_FOUND_CODE,
-      message: "Employer not found!",
-    };
-  } else {
-    return {
-      code: GLOBAL.SUCCESS_CODE,
-      message: "Either email or nationalId taken!",
-      employer: { ...found },
     };
   }
 };
@@ -237,9 +225,54 @@ let employerPagination = async (pagination) => {
   let pageCount = Math.round(empCount / 5);
   return { code: 200, employers: employersAndWalletWithConditions, pageCount };
 };
+
+let updateTokenWithEmpId = async (employer) => {
+  let filter = {
+    $and: [
+      { _id: employer._id },
+      { empTokenDevice: { $eq: employer.empTokenDevice } },
+    ]
+  }
+  await EmployerModel.findOneAndUpdate(
+    filter,
+    { $pull: { empTokenDevice: employer.empTokenDevice } },
+    (err, docs) => {
+      if (err) return handlerError(err);
+      console.log("updated: ", docs);
+    });
+  return { code: GLOBAL.SUCCESS_CODE, message: "updated success!" };
+}
+
+let updatePassword = async (employer) => {
+  let checkInfo = await login(employer);
+  if (checkInfo.code == 200) {
+    const updatingEmp = util.hashPassword({
+      empEmail: employer.empEmail,
+      empPassword: employer.empNewPassword,
+    });
+    console.log(updatingEmp);
+    const filter = { empEmail: updatingEmp.empEmail };
+    const update = {
+      empPassword: updatingEmp.empPassword,
+      salt: updatingEmp.salt,
+    };
+    let doc = await EmployerModel.findOneAndUpdate(filter, update, { new: true });
+    if (doc) {
+      return { code: GLOBAL.SUCCESS_CODE, message: `User's password updated!` };
+    }
+  } else {
+    return {
+      code: GLOBAL.BAD_REQUEST_CODE,
+      message: `Provided info's incorrect!`,
+    };
+  }
+};
+
 module.exports = {
   employerCreate,
   login,
   updateEmployerInfo,
   employerPagination,
+  updateTokenWithEmpId,
+  updatePassword,
 };

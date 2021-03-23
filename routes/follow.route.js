@@ -15,10 +15,10 @@ route.delete(
     followController.delFollow
 );
 
-route.post(
-    "/updateTokens",
-    dbConn.conn,
-    followController.updateTokenWithFlcId
-)
+// route.post(
+//     "/updateTokens",
+//     dbConn.conn,
+//     followController.updateTokenWithFlcId
+// )
 
 module.exports = route;

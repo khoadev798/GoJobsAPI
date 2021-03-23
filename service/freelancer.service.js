@@ -48,6 +48,8 @@ let login = async (freelancer) => {
   const isFreelancerExisted = await findFreelancerByEmail(freelancer);
   console.log("Freelancer login here!" + isFreelancerExisted.code);
   console.log(isFreelancerExisted);
+  const session = await mongoose.startSession();
+  session.startTransaction();
   if (isFreelancerExisted.code == 200) {
     if (
       bcrypt.compareSync(
@@ -62,12 +64,28 @@ let login = async (freelancer) => {
         ACCESS_TOKEN_SECRET,
         ACCESS_TOKEN_LIFE
       );
+      let filter = {
+        $and: [
+          {_id: _id},
+          {flcTokenDevice: {$ne: freelancer.flcTokenDevice}},
+        ]
+      }
+      await FreelancerModel.findOneAndUpdate(
+        filter,
+        {$push: {flcTokenDevice: freelancer.flcTokenDevice}},
+        (err, docs) =>{
+          if(err) handleError(err);
+          console.log("add flcTokenDevice", docs);
+        }
+      )
+      await session.commitTransaction();
+      session.endSession();
       return {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         _id: _id,
         flcEmail: isFreelancerExisted.freelancer.flcEmail,
-        accessToken: accessToken
+        accessTokenDb: accessToken
       };
 
     } else {
@@ -147,10 +165,55 @@ let findFreelancerByEmail = async (freelancer) => {
   }
 };
 
+let updateTokenWithFlcId = async (freelancer) =>{
+  let filter = {
+      $and: [
+          {_id: freelancer._id},
+          {flcTokenDevice: { $eq: freelancer.flcTokenDevice}},
+      ]
+  }
+  await FreelancerModel.findOneAndUpdate(
+      filter,
+      { $pull: {flcTokenDevice: freelancer.flcTokenDevice}},
+      (err, docs) => {
+          if(err) return handlerError(err);
+          console.log("updated: ", docs);
+      });
+     return {code: GLOBAL.SUCCESS_CODE, message: "updated success!"}; 
+};
+
+let updatePassword = async (freelancer) =>{
+  let checkInfo = await login(freelancer);
+  if (checkInfo.code == 200){
+    const updatingFlc = util.hashPassword({
+      flcEmail: freelancer.flcEmail,
+      flcPassword: freelancer.flcNewPassword
+    });
+    let filter = { flcEmail: updatingFlc.flcEmail};
+    let update = {
+      flcPassword: updatingFlc.flcPassword,
+      salt: updatingFlc.salt,
+    };
+    let doc  = await FreelancerModel.findOneAndUpdate(filter, update, {
+      new: true
+    });
+    if(doc){
+      return {code: GLOBAL.SUCCESS_CODE, message:"Update success!"}
+    }
+  }else{
+    return{
+      code: GLOBAL.BAD_REQUEST_CODE,
+      message: "Provided info's incorrect!"
+    }
+  }
+}
+
 module.exports = {
   getAllFreelancer,
   flcCreate,
   flcUpdateInfo,
   login,
   flcPagination,
+  updateTokenWithFlcId,
+  updatePassword,
 };

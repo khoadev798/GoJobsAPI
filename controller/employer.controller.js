@@ -4,6 +4,7 @@ const employerService = require("../service/employer.service");
 
 let register = async (req, res, next) => {
   let {
+    empTokenDevice,
     empTypeId, // required
     empName, // required
     empEmail, // required
@@ -14,7 +15,7 @@ let register = async (req, res, next) => {
     empLogo, // default: null
     empDescription, // default: null
     empTerm,
-  } = req.query;
+  } = req.body;
 
   let empInfo = infoValidation.removeUndefinedKeyValue({
     empTypeId,
@@ -27,28 +28,31 @@ let register = async (req, res, next) => {
     empLogo,
     empDescription,
     empTerm,
+    empTokenDevice
   });
   // console.log("Employer info:", empInfo);
+
   const registerResult = await employerService.employerCreate(empInfo);
   res.status(registerResult.code).send({
     message: registerResult.message,
   });
+  console.log(registerResult);
 };
 
 let login = async (req, res, next) => {
-  let { empEmail, empPassword } = req.query;
+  let { empEmail, empPassword, empTokenDevice } = req.body;
   const loginResult = await employerService.login({
     empEmail,
     empPassword,
+    empTokenDevice
   });
-  if (loginResult.code == 200) {
+
     res.status(loginResult.code).send({
       message: loginResult.message,
       _id: loginResult._id,
       empEmail: loginResult.empEmail,
-      accessToken: loginResult.accessToken,
+      accessTokenDb: loginResult.accessTokenDb,
     });
-  }
 };
 
 let updatedInfo = async (req, res, next) => {
@@ -108,10 +112,20 @@ let empPagination = async (req, res) => {
   res.status(empPaginationResult.code).send(empPaginationResult);
 };
 
+let updateTokenWithEmpId = async (req, res) =>{
+  let {_id, empTokenDevice} = req.query;
+  let updateTokenWithEmpIdResult = await employerService.updateTokenWithEmpId({
+    _id,
+    empTokenDevice,
+  });
+  res.status(updateTokenWithEmpIdResult.code).send(updateTokenWithEmpIdResult.message);
+}
+
 module.exports = {
   register,
   login,
   updatePassword,
   updatedInfo,
   empPagination,
+  updateTokenWithEmpId
 };

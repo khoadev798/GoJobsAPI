@@ -9,4 +9,16 @@ route.post(
     messageController.newMessage,
 )
 
+route.get(
+    "/getNotificationMessageByEmp",
+    dbConn.conn,
+    messageController.getNotificationMessageByEmp,
+)
+
+route.get(
+    "/getNotificationMessageByFlc",
+    dbConn.conn,
+    messageController.getNotificationMessageByFlc
+)
+
 module.exports = route;

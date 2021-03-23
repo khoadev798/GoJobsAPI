@@ -26,12 +26,12 @@ route.get(
   freelancerController.getAllFreelancer
 );
 
-// route.put(
-//   "/updatePassword",
-//   dbConn.conn,
-//   authMiddleware.isAuth,
-//   freelancerController.updateFreelancer
-// );
+route.put(
+  "/updatePassword",
+  dbConn.conn,
+  authMiddleware.isAuth,
+  freelancerController.updatePassword
+);
 
 route.get(
   "/flcPaginations",
@@ -43,6 +43,12 @@ route.put(
   "/flcUpdatedInfo",
   dbConn.conn,
   freelancerController.updateFreelancerInfo,
+)
+
+route.put(
+  "/flcUpdateToken",
+  dbConn.conn,
+  freelancerController.updateTokenWithFlcId
 )
 
 module.exports = route;

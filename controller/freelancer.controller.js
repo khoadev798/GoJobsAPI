@@ -1,7 +1,7 @@
 const flcService = require("../service/freelancer.service");
 
 let createFreelancer = async (req, res) => {
-  let { flcEmail, flcPassword, flcTerm } = req.query;
+  let { flcEmail, flcPassword, flcTerm } = req.body;
   console.log("new freelancer: ", flcEmail);
   
     let flcCreateResult = await flcService.flcCreate({
@@ -13,11 +13,12 @@ let createFreelancer = async (req, res) => {
   }
 
 let loginFreelancer = async (req, res, next) => {
-  let { flcEmail, flcPassword } = req.query;
+  let { flcEmail, flcPassword, flcTokenDevice } = req.body;
   console.log("Freelancer login: " + flcEmail);
   let flcLoginResult = await flcService.login({
     flcEmail,
-    flcPassword
+    flcPassword,
+    flcTokenDevice
   });
   
     res.status(flcLoginResult.code).send({
@@ -78,10 +79,32 @@ let flcPagination = async (req, res) =>{
   res.status(pagingResult.code).send(pagingResult.freelancers);
 }
 
+let updateTokenWithFlcId = async (req, res) =>{
+  let {_id, flcTokenDevice} = req.query;
+  let updateTokenWithFlcIdResult = await flcService.updateTokenWithFlcId({
+    _id,
+    flcTokenDevice,
+  });
+  res.status(updateTokenWithFlcIdResult.code).send(updateTokenWithFlcIdResult.message);
+}
+
+let updatePassword = async (req, res)=>{
+  let {flcEmail, flcPassword, flcNewPassword} = req.body;
+  let updatedPasswordResult = await flcService.updatePassword({
+    flcEmail,
+    flcPassword,
+    flcNewPassword
+  });
+    res.status(updatedPasswordResult.code).send(updatedPasswordResult.message);
+  
+}
+
 module.exports = {
   createFreelancer,
   getAllFreelancer,
   updateFreelancerInfo,
   loginFreelancer,
   flcPagination,
+  updateTokenWithFlcId,
+  updatePassword
 };

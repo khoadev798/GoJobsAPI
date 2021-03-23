@@ -25,7 +25,7 @@ let empEmailValidate = (req, res, next) => {
 };
 
 let flcEmailValidate = (req, res, next) => {
-  let { flcEmail } = req.query;
+  let { flcEmail } = req.body;
   console.log(flcEmail);
   if (flcEmail.match(GLOBAL.EMAIL_REGEX)) {
     console.log("Processing input...");

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const Freelancer = new Schema({
   // coTypeId: { type: Schema.Types.ObjectId, required: true },
-
+  flcTokenDevice: {type: [String], default: [], required: true},
   flcEmail: { type: String, required: true },
   flcPassword: { type: String, required: true },
   flcName: { type: String, default: null },
@@ -17,7 +17,7 @@ const Freelancer = new Schema({
   flcJobTitle: { type: String, default: null },
   flcRating: {type: Number, default: 0},
   flcLanguages: { type: String, default: null },
-  flcTerm: { type: String, required: true },
+  flcTerm: { type: Boolean, required: true },
   createdAt: { type: Date },
   updatedPasswordAt: {
     type: Date,

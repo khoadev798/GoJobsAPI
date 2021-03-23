@@ -29,26 +29,11 @@ let delFollow = async (follow) =>{
     return {code: GLOBAL.SUCCESS_CODE, message: "delete Follow success!"};
 };
 
-let updateTokenWithFlcId = async (follow) =>{
-    let filter = {
-        $and: [
-            {flcId: follow.flcId},
-            {tokenDeviceWithFlc: { $ne: follow.tokenDeviceWithFlc}},
-        ]
-    }
-    await FollowModel.updateMany(
-        filter,
-        { $push: {tokenDeviceWithFlc: follow.tokenDeviceWithFlc}},
-        (err, docs) => {
-            if(err) return handlerError(err);
-            console.log("updated: ", docs);
-        });
-       return {code: GLOBAL.SUCCESS_CODE, message: "updated success!"}; 
-}
+
 
 
 module.exports = {
     createFollow,
     delFollow,
-    updateTokenWithFlcId
+   // updateTokenWithFlcId
 }
