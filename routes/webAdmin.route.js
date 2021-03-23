@@ -18,13 +18,85 @@ route.post("/adminLogin", dbConn.conn, webAdminController.adminLogin);
 
 route.get(
   "/employer",
-  dbConn.conn,
   authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
   webAdminController.employerManagementPage
+);
+
+route.get(
+  "/freelancer",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.freelancerManagementPage
+);
+
+route.get(
+  "/job",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.jobManagementPage
+);
+
+route.get(
+  "/contract",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.contractManagementPage
+);
+
+route.get(
+  "/receipt",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.receiptManagementPage
+);
+
+route.get(
+  "/receiptInfo",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.receiptInfoPage
+);
+
+route.get(
+  "/statistic",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.statisticPage
 );
 
 route.get("/forgotpassword", function (req, res) {
   res.render("forgotpassword", { layout: false });
+});
+
+route.get(
+  "/updateEmpWallet",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  webAdminController.updateEmpWalletPage
+);
+
+route.post(
+  "/updateEmpWalletWithId",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.updateEmpWalletById
+);
+
+route.get(
+  "/updateFlcWallet",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  webAdminController.updateFlcWalletPage
+);
+
+route.post(
+  "/updateFlcWalletWithId",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.updateFlcWalletById
+);
+
+route.get("/error", (req, res) => {
+  res.render("error", { layout: false, title: "Error" });
 });
 
 module.exports = route;

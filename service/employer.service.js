@@ -4,7 +4,9 @@ const GLOBAL = require("../global/global");
 const jwtHelper = require("../helpers/jwt.helper");
 const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 const Employer = require("../model/employer");
+const Receipt = require("../model/receipt");
 const EmployerModel = mongoose.model("Employer", Employer);
+const ReceiptModel = mongoose.model("Receipt", Receipt);
 const walletService = require("./wallet.service");
 const util = require("../util/data.util");
 
@@ -186,9 +188,7 @@ let employerPagination = async (pagination) => {
   let limit = {
     $limit: pagination.pageNumber * pagination.pageSize,
   };
-  let count = {
-    $count: "totalCount",
-  };
+
   let sort;
   let employersAndWalletWithConditions;
   if (pagination.sort) {
@@ -201,7 +201,6 @@ let employerPagination = async (pagination) => {
       skip,
       limit,
       sort,
-      count,
     ]);
   } else {
     employersAndWalletWithConditions = await EmployerModel.aggregate([
@@ -211,7 +210,6 @@ let employerPagination = async (pagination) => {
       limit,
     ]);
   }
-
   // console.log(employersAndWalletWithConditions);
   let empCount = await EmployerModel.countDocuments({
     $or: [
@@ -219,10 +217,11 @@ let employerPagination = async (pagination) => {
       { empName: { $regex: searchRegex } },
     ],
   });
+
   await session.commitTransaction();
   session.endSession();
   // console.log(empCount);
-  let pageCount = Math.round(empCount / 5);
+  let pageCount = Math.ceil(empCount / 5);
   return { code: 200, employers: employersAndWalletWithConditions, pageCount };
 };
 

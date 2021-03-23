@@ -24,4 +24,18 @@ let payForAcceptedContracts = async (req, res) => {
   );
   res.status(paymentResult.code).send(paymentResult.result);
 };
-module.exports = { getWalletInfoOfEndUser, payForAcceptedContracts };
+
+// let updateWalletBalanceByIdByAdmin = async (req, res) => {
+//   let { _id, balance, updatedBy } = req.body;
+
+//   let updatedWalletResult = await walletService.updateWalletBalanceById({
+//     _id,
+//     balance,
+//     updatedBy,
+//   });
+// };
+
+module.exports = {
+  getWalletInfoOfEndUser,
+  payForAcceptedContracts,
+};

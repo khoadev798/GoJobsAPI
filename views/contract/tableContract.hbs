@@ -1,16 +1,17 @@
 <div class="card img-fluid" style="max-width:100%; height: auto">
     <img class="card-img-top" src="image/pkl4.jpg" alt="Card image" style="opacity:0.5">
     <div class="card-img-overlay">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
+        <div class="card shadow mb-4 float-left" style="max-width:67.5%">
+            <div class=" card-header py-3">
                 {{!-- <h6 class="m-0 font-weight-bold text-primary">Tất cả sách</h6> --}}
-                <h3><a href="/web/employer">Employers</a>
+                <h3><a href="/web/job">Back to job!</a>
                     <!-- Topbar Search -->
-                    <form action="/web/employer" method="GET"
+                    <form action="/web/contract" method="GET"
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search float-right">
                         <div class="input-group">
                             <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                                 aria-label="Search" aria-describedby="basic-addon2" name="search">
+                            <input type="hidden" name="jobId" value={{jobId}}>
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="fas fa-search fa-sm"></i>
@@ -26,62 +27,81 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                        <thead class="thead-light">
+                        <thead class="thead-dark">
                             <tr>
                                 <th>_id</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone No</th>
-                                <th>Wallet _id</th>
-                                <th>Wallet balance</th>
-                                <th>Action</th>
+                                <th>Status</th>
+                                <th>Created at</th>
+                                <th>Freelancer _id</th>
+                                <th>Freelancer email</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each employerList}}
+                            {{#each contractList}}
                             <tr>
                                 <td>{{_id}}</td>
-                                <td>{{empName}}</td>
-                                <td>{{empEmail}}</td>
-                                <td>{{empPhone}}</td>
-                                <td>{{wallet.[0]._id}}</td>
-                                <td>{{wallet.[0].balance}}</td>
-                                <td>
-                                    &nbsp; &nbsp;&nbsp; &nbsp;
-                                    <a
-                                        href="/web/updateEmpWallet?empId={{_id}}&empEmail={{empEmail}}&walletId={{wallet.[0]._id}}"><i
-                                            class="fas fa-pen" aria-hidden="true"></i></a>
-                                </td>
+                                <td>{{contractStatus}}</td>
+                                <td>{{createdAt}}</td>
+                                <td>{{freelancer.[0]._id}}</td>
+                                <td>{{freelancer.[0].flcEmail}}</td>
+
                             </tr>
                             {{/each}}
                         </tbody>
                     </table>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination float-right">
-                            {{!-- <li class="page-item">
+                            <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                     <span class="sr-only">Previous</span>
                                 </a>
-                            </li> --}}
+                            </li>
                             {{!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
                             <li class="page-item"><a class="page-link" href="#">2</a></li>
                             <li class="page-item"><a class="page-link" href="#">3</a></li> --}}
                             {{#forInRange 1 pageCount 1}}
                             <li class="page-item"><a class="page-link"
-                                    href="/web/employer?pageNumber={{this}}">{{this}}</a></li>
+                                    href="/web/employer?pageNumber={{this}}">{{this}}</a>
+                            </li>
                             {{/forInRange}}
-                            {{!-- <li class="page-item">
+                            <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                     <span class="sr-only">Next</span>
                                 </a>
-                            </li> --}}
+                            </li>
                         </ul>
                     </nav>
                 </div>
+
             </div>
         </div>
+        <div class="float-right" style="max-width:32.5%;height:auto" id="piechart"></div>
     </div>
-
 </div>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+    // Load google charts
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Draw the chart and set the chart values
+    function drawChart() {
+        var decodedJson = decodeURIComponent("{{{encodedJson}}}");
+        var jsonObj = JSON.parse(decodedJson);
+
+        console.log(jsonObj);
+        var data = google.visualization.arrayToDataTable(jsonObj.array);
+
+        // Optional; add a title and set the width and height of the chart
+        var options = { 'title': 'Status analysis', 'width': 550, 'height': 400 };
+
+        // Display the chart inside the <div> element with id="piechart"
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(data, options);
+    }
+</script>

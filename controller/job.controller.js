@@ -9,10 +9,7 @@ const createNewJob = async (req, res) => {
     jobTitle, // required
     jobDescription, // required
     jobPaymentType, // ("Hourly", "Daily", "Weekly", "After-done"  ) // required
-    jobSalaryPerHour, // default: null
-    jobSalaryPerDay, // default: null
-    jobSalaryPerWeek, // default: null
-    jobSalaryAfterDone, // default: null
+    jobSalary, // default: null
     jobStart, // required
     jobEnd, // required
     jobDuration, // default: null
@@ -30,10 +27,7 @@ const createNewJob = async (req, res) => {
     jobTitle, // required
     jobDescription, // required
     jobPaymentType, // ("Hourly", "Daily", "Weekly", "After-done"  ) // required
-    jobSalaryPerHour, // default: null
-    jobSalaryPerDay, // default: null
-    jobSalaryPerWeek, // default: null
-    jobSalaryAfterDone, // default: null
+    jobSalary,
     jobStart, // required
     jobEnd, // required
     jobDuration, // default: null
@@ -58,11 +52,6 @@ const getAllJobsOfEmployerById = async (req, res) => {
   let { empId } = req.query;
   let jobsOfEmpResult = await jobService.getJobsOfOneEmployerById(empId);
   res.status(jobsOfEmpResult.code).send(jobsOfEmpResult.jobs);
-};
-
-const getAllJobTypes = async (req, res) => {
-  let jobTypesResult = await jobService.getAllJobTypes();
-  res.status(jobTypesResult.code).send(jobTypesResult.jobTypes);
 };
 
 const jobPagination = async (req, res) => {
@@ -94,7 +83,7 @@ module.exports = {
   createNewJob,
   getAllJobs,
   getAllJobsOfEmployerById,
-  getAllJobTypes,
+
   jobPagination,
-  jobPaginationWithTime
+  jobPaginationWithTime,
 };

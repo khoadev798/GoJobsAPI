@@ -58,6 +58,7 @@ let getContractsByJobIdAndContractStatus = async (req, res) => {
 
 let updateContractStatusById = async (req, res) => {
   let { _id, contractStatus, updatedBy } = req.query;
+
   let updateResult = await contractService.updateStatusOfContractById({
     _id,
     contractStatus,
