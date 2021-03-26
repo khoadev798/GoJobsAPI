@@ -2,7 +2,7 @@ const flcService = require("../service/freelancer.service");
 
 let createFreelancer = async (req, res) => {
 
-  let { flcEmail, flcPassword, flcTerm, flcName, flcPhone } = req.body;
+  let { flcEmail, flcPassword, flcTerm } = req.body;
 
   console.log("new freelancer: ", flcEmail);
 
@@ -10,8 +10,7 @@ let createFreelancer = async (req, res) => {
     flcEmail,
     flcPassword,
     flcTerm,
-    flcName,
-    flcPhone,
+    
   });
   res.status(flcCreateResult.code).send(flcCreateResult.message);
 };
@@ -42,7 +41,7 @@ let getAllFreelancer = async (req, res) => {
 
 let updateFreelancerInfo = async (req, res) => {
   let {
-    flcEmail,
+    _id,
     flcName,
     flcPhone,
     flcBirthday,
@@ -53,10 +52,10 @@ let updateFreelancerInfo = async (req, res) => {
     flcMajor,
     flcJobTitle,
     flcLanguages,
-  } = req.query;
+  } = req.body;
   const updatedInfoResult = await flcService.flcUpdateInfo({
+    _id,
     flcName,
-    flcEmail,
     flcPhone,
     flcBirthday,
     flcAvatar,
@@ -67,7 +66,8 @@ let updateFreelancerInfo = async (req, res) => {
     flcJobTitle,
     flcLanguages,
   });
-  res.status(updatedInfoResult.code).send(updatedInfoResult.doc);
+  console.log(updatedInfoResult.code);
+  res.status(updatedInfoResult.code).send(updatedInfoResult.freelancer);
 };
 
 let flcPagination = async (req, res) => {
@@ -80,8 +80,30 @@ let flcPagination = async (req, res) => {
     pageNumber,
     pageSize,
   });
+  
   res.status(pagingResult.code).send(pagingResult.freelancers);
 };
+
+let flcPaginationAll = async (req, res) =>{
+  let { sort, pageNumber, pageSize} = req.query;
+  let flcPaginationAllResult = await flcService.flcPaginationAll({
+    sort,
+    pageNumber,
+    pageSize,
+  });
+  res.status(flcPaginationAllResult.code).send(flcPaginationAllResult.freelancers);
+}
+
+let flcPaginationWithAddress = async (req, res)=>{
+  let {sort, search, pageNumber, pageSize} = req.query;
+  let flcPaginationWithAddressResult = await flcService.flcPaginationWithAddress({
+    sort,
+    search,
+    pageNumber,
+    pageSize
+  });
+  res.status(flcPaginationWithAddressResult.code).send(flcPaginationWithAddressResult.freelancers);
+}
 
 let updateTokenWithFlcId = async (req, res) =>{
   let {_id, flcTokenDevice} = req.query;
@@ -110,5 +132,7 @@ module.exports = {
   loginFreelancer,
   flcPagination,
   updateTokenWithFlcId,
-  updatePassword
+  updatePassword,
+  flcPaginationAll,
+  flcPaginationWithAddress
 };

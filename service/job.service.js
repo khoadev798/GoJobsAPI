@@ -63,7 +63,9 @@ let createNewJob = async (job) => {
 
     let notification = {
       flcId: endFlcIds,
+      empId: job.empId,
       jobId: jobInstance._id,
+      createdBy: "Employer",
       createdAt: new Date(),
     };
     let notificationInstance = new NotificationModel(notification);
@@ -209,7 +211,7 @@ let jobPagination = async (pagination) => {
 let jobPaginationWithTime = async (pagination) => {
   let jobsWithConditions = await JobModel.find(
     {},
-    "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    "_id empId jobTitle jobSalaryAfterDone jobField jobStart jobEnd jobStatus jobHeadCountTarget",
     {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
@@ -218,7 +220,7 @@ let jobPaginationWithTime = async (pagination) => {
     jobPublishDate: pagination.sort,
   });
   console.log(jobsWithConditions);
-  return { code: 200, jobs: jobsWithConditions };
+  return { code: 200, job: jobsWithConditions };
 };
 
 let jobPaginationForWebAdmin = async (pagination) => {
@@ -313,6 +315,24 @@ let jobPaginationForWebAdmin = async (pagination) => {
   return { code: 200, jobs: jobsAndEmpWithCondition, pageCount };
 };
 
+let getJobDetail = async (job)=>{
+  let jobDetail = await JobModel.findOne(
+    {
+    _id: job._id
+  },
+  {},
+  (err, doc)=>{
+    if(err) handleError(err);
+    return doc;
+  }
+  );
+  if(jobDetail != null){
+    return {code: GLOBAL.SUCCESS_CODE, jobDetail}
+  }else{
+    return{code: GLOBAL.NOT_FOUND_CODE, jobDetail: "Missing!"}
+  }
+}
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -322,4 +342,5 @@ module.exports = {
   jobPaginationWithTime,
   FCM,
   jobPaginationForWebAdmin,
+  getJobDetail,
 };

@@ -18,7 +18,7 @@ route.post("/empNewFeedback", dbConn.conn, (req, res) => {
 
 route.post("/login", dbConn.conn, employerController.login);
 
-route.put("/updatedEmployerInfo", dbConn.conn, employerController.updatedInfo);
+route.post("/updatedEmployerInfo", dbConn.conn, employerController.updatedInfo);
 
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 

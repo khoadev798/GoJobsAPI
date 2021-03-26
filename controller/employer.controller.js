@@ -58,30 +58,27 @@ let login = async (req, res, next) => {
 let updatedInfo = async (req, res, next) => {
   console.log("Employer updates info");
   let {
+    _id,
     empName,
     empPhone,
     empType,
     empAddress,
     empDescription,
-    empEmail,
-    empNationalId,
-  } = req.query;
+    empLogo,
+    empTaxCode,
+
+  } = req.body;
   let updatedInfoResult = await employerService.updateEmployerInfo({
+    _id,
+    empLogo,
+    empTaxCode,
     empName,
     empPhone,
     empType,
     empAddress,
     empDescription,
-    empEmail,
-    empNationalId,
   });
-  res.status(updatedInfoResult.code).send({
-    empName: updatedInfoResult.doc.empName,
-    empType: updatedInfoResult.doc.empType,
-    empPhone: updatedInfoResult.doc.empPhone,
-    empAddress: updatedInfoResult.doc.empAddress,
-    empDescription: updatedInfoResult.doc.empDescription,
-  });
+  res.status(updatedInfoResult.code).send(updatedInfoResult.doc);
 };
 
 let updatePassword = async (req, res, next) => {

@@ -21,4 +21,9 @@ route.get(
     messageController.getNotificationMessageByFlc
 )
 
+route.get(
+    "/getMessageDetail",
+    dbConn.conn,
+    messageController.getMessageDetail
+)
 module.exports = route;

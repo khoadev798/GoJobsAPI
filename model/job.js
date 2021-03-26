@@ -14,8 +14,8 @@ const Job = new Schema({
   jobSalaryAfterDone: { type: Number, default: null },
   experienceRequired: { type: Boolean, default: false },
   jobField: { type: String, required: true }, // ("LDPT", "IT", "F&B",...)
-  jobStart: { type: Date, reqired: true },
-  jobEnd: { type: Date, reqired: true },
+  jobStart: { type: String, reqired: true },
+  jobEnd: { type: String, reqired: true },
   jobDuration: { type: Number, required: true },
   jobPublishDate: { type: Date, default: null },
   jobStatus: { type: String, default: "Open" },

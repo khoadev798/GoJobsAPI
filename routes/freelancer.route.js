@@ -39,7 +39,7 @@ route.get(
   freelancerController.flcPagination
 ) 
 
-route.put(
+route.post(
   "/flcUpdatedInfo",
   dbConn.conn,
   freelancerController.updateFreelancerInfo,
@@ -49,6 +49,18 @@ route.put(
   "/flcUpdateToken",
   dbConn.conn,
   freelancerController.updateTokenWithFlcId
+)
+
+route.get(
+  "/flcPaginationAll",
+  dbConn.conn,
+  freelancerController.flcPaginationAll,
+)
+
+route.get(
+  "/flcPaginationWithAddress",
+  dbConn.conn,
+  freelancerController.flcPaginationWithAddress
 )
 
 module.exports = route;

@@ -75,15 +75,24 @@ const jobPaginationWithTime = async (req, res) => {
     pageNumber,
     pageSize,
   });
-
-  res.status(pagingResult.code).send(pagingResult.jobs);
+  console.log(pagingResult.code);
+  
+  res.status(pagingResult.code).send(pagingResult.job);
 };
+
+let getJobDetail = async (req, res) =>{
+  let {_id} = req.query;
+  let getJobDetailResult = await jobService.getJobDetail({
+    _id,
+  });
+  res.status(getJobDetailResult.code).send(getJobDetailResult.jobDetail);
+}
 
 module.exports = {
   createNewJob,
   getAllJobs,
   getAllJobsOfEmployerById,
-
+  getJobDetail,
   jobPagination,
   jobPaginationWithTime,
 };

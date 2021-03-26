@@ -19,8 +19,8 @@ let getNotification = async (notification) => {
                 }
             }
         },
-        "jobId"
-        ).populate("jobId")
+        "jobId empId"
+        ).populate("empId", "empName")
         .exec()
         .then(doc =>{
             notifi = [...doc]
@@ -31,29 +31,6 @@ let getNotification = async (notification) => {
         
     // }
      return {code:GLOBAL.SUCCESS_CODE, message: "get notification success!", notifi}
-}
-
-let findFlcFollowEmp = async (notification) => {
-    let found = await FollowModel.findOne(
-        { flcId: notification.flcId },
-        "_id",
-        (err, doc) => {
-            if (err) return handleError(err);
-            return doc;
-        }
-    );
-    if (found == undefined) {
-        return {
-            code: GLOBAL.NOT_FOUND_CODE,
-            message: "Follow not found!",
-        }
-    } else {
-        return {
-            code: GLOBAL.SUCCESS_CODE,
-            message: "follow is existed!",
-            follow: found,
-        }
-    }
 }
 
 module.exports = {

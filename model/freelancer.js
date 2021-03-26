@@ -8,7 +8,7 @@ const Freelancer = new Schema({
   flcPassword: { type: String, required: true },
   flcName: { type: String, default: null },
   flcPhone: { type: String, default: null },
-  flcBirthday: { type: Date, default: null },
+  flcBirthday: { type: String, default: null },
   flcAvatar: { type: String, default: null },
   flcSex: { type: String, default: null },
   flcAddress: { type: String, default: null },

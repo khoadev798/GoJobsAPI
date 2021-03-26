@@ -66,15 +66,15 @@ let login = async (freelancer) => {
       );
       let filter = {
         $and: [
-          {_id: _id},
-          {flcTokenDevice: {$ne: freelancer.flcTokenDevice}},
+          { _id: _id },
+          { flcTokenDevice: { $ne: freelancer.flcTokenDevice } },
         ]
       }
       await FreelancerModel.findOneAndUpdate(
         filter,
-        {$push: {flcTokenDevice: freelancer.flcTokenDevice}},
-        (err, docs) =>{
-          if(err) handleError(err);
+        { $push: { flcTokenDevice: freelancer.flcTokenDevice } },
+        (err, docs) => {
+          if (err) handleError(err);
           console.log("add flcTokenDevice", docs);
         }
       )
@@ -102,20 +102,20 @@ let login = async (freelancer) => {
 };
 
 let flcUpdateInfo = async (freelancer) => {
-  let isFlcExisted = await findFreelancerByEmail(freelancer);
+  let isFlcExisted = await findFreelancerById(freelancer);
 
   if (isFlcExisted.code == 200) {
     freelancer["updatedInfoAt"] = new Date();
-    const filter = { flcEmail: freelancer.flcEmail };
+    const filter = { _id: isFlcExisted.freelancer._id};
     const update = freelancer;
     let doc = await FreelancerModel.findOneAndUpdate(filter, update, {
       new: true,
     });
-    console.log("Cap nhat info thanh cong: ", doc);
+  console.log(doc);
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Cap nhat info thanh cong!",
-      doc,
+      freelancer: doc,
     };
   } else {
     return { code: GLOBAL.NOT_FOUND_CODE, message: "Tai khoan khong ton tai!" };
@@ -134,7 +134,7 @@ let flcPagination = async (pagination) => {
 
   let flcsWithConditions = await FreelancerModel.find(
     query,
-    "_id flcName flcPhone flcBirthda flcAvatar flcSex flcEdu flcMajor flcJobTitle flcRating",
+    "_id flcName flcAddress flcEmail flcPhone flcBirthday flcAvatar flcSex flcEdu flcMajor flcJobTitle flcRating",
     {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
@@ -145,6 +145,38 @@ let flcPagination = async (pagination) => {
   console.log(flcsWithConditions);
   return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions };
 };
+
+let flcPaginationAll = async (pagination) => {
+  let flcPaginationAllInstance = await FreelancerModel.find(
+    {},
+    "_id flcName flcAddress flcEmail flcPhone flcBirthday flcAvatar flcSex flcEdu flcMajor flcJobTitle flcRating",
+    {
+      skip: (pagination.pageNumber - 1) * pagination.pageSize,
+      limit: pagination.pageNumber * pagination.pageSize,
+    }
+  ).sort({
+    flcRating: pagination.sort,
+  });
+  return { code: GLOBAL.SUCCESS_CODE, freelancers: flcPaginationAllInstance };
+}
+
+let flcPaginationWithAddress = async (pagination) => {
+  let searchRegex = new RegExp(pagination.search, "i");
+  let query = {
+    flcAddress: { $regex: searchRegex },
+  }
+  let flcsWithConditions = await FreelancerModel.find(
+    query,
+    "_id flcName flcAddress flcEmail flcPhone flcBirthday flcAvatar flcSex flcEdu flcMajor flcJobTitle flcRating",
+    {
+      skip: (pagination.pageNumber - 1) * pagination.pageSize,
+      limit: pagination.pageNumber * pagination.pageSize,
+    }
+  ).sort({
+    flcRating: pagination.sort,
+  });
+  return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions }
+}
 
 let findFreelancerByEmail = async (freelancer) => {
   let found = await FreelancerModel.findOne(
@@ -168,43 +200,65 @@ let findFreelancerByEmail = async (freelancer) => {
   }
 };
 
-let updateTokenWithFlcId = async (freelancer) =>{
+let findFreelancerById = async (freelancer) => {
+  let found = await FreelancerModel.findOne(
+    { _id: freelancer._id },
+    (err, doc) => {
+      if (err) return handleError(err);
+      return doc;
+    }
+  );
+  if(found == undefined){
+    return {
+      code: GLOBAL.NOT_FOUND_CODE,
+      message: "Freelancer not found!",
+    };
+  }else{
+    return {
+      code: GLOBAL.SUCCESS_CODE,
+      message: "Freelancer Existed!",
+      freelancer: found,
+    }
+  }
+}
+
+let updateTokenWithFlcId = async (freelancer) => {
   let filter = {
-      $and: [
-          {_id: freelancer._id},
-          {flcTokenDevice: { $eq: freelancer.flcTokenDevice}},
-      ]
+    $and: [
+      { _id: freelancer._id },
+      { flcTokenDevice: { $eq: freelancer.flcTokenDevice } },
+    ]
   }
   await FreelancerModel.findOneAndUpdate(
-      filter,
-      { $pull: {flcTokenDevice: freelancer.flcTokenDevice}},
-      (err, docs) => {
-          if(err) return handlerError(err);
-          console.log("updated: ", docs);
-      });
-     return {code: GLOBAL.SUCCESS_CODE, message: "updated success!"}; 
+    filter,
+    { $pull: { flcTokenDevice: freelancer.flcTokenDevice } },
+    (err, docs) => {
+      if (err) return handlerError(err);
+      console.log("updated: ", docs);
+    });
+  return { code: GLOBAL.SUCCESS_CODE, message: "updated success!" };
 };
 
-let updatePassword = async (freelancer) =>{
+let updatePassword = async (freelancer) => {
   let checkInfo = await login(freelancer);
-  if (checkInfo.code == 200){
+  if (checkInfo.code == 200) {
     const updatingFlc = util.hashPassword({
       flcEmail: freelancer.flcEmail,
       flcPassword: freelancer.flcNewPassword
     });
-    let filter = { flcEmail: updatingFlc.flcEmail};
+    let filter = { flcEmail: updatingFlc.flcEmail };
     let update = {
       flcPassword: updatingFlc.flcPassword,
       salt: updatingFlc.salt,
     };
-    let doc  = await FreelancerModel.findOneAndUpdate(filter, update, {
+    let doc = await FreelancerModel.findOneAndUpdate(filter, update, {
       new: true
     });
-    if(doc){
-      return {code: GLOBAL.SUCCESS_CODE, message:"Update success!"}
+    if (doc) {
+      return { code: GLOBAL.SUCCESS_CODE, message: "Update success!" }
     }
-  }else{
-    return{
+  } else {
+    return {
       code: GLOBAL.BAD_REQUEST_CODE,
       message: "Provided info's incorrect!"
     }
@@ -282,7 +336,9 @@ module.exports = {
   flcUpdateInfo,
   login,
   flcPagination,
+  flcPaginationAll,
   updateTokenWithFlcId,
   updatePassword,
   flcPaginationForAdminWeb,
+  flcPaginationWithAddress,
 };

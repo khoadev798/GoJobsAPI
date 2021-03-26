@@ -7,7 +7,7 @@ route.post("/createNewJob", dbConn.conn, jobController.createNewJob);
 
 route.get("/allJobs", dbConn.conn, jobController.getAllJobs);
 
-route.get("/allJobs", dbConn.conn, jobController.getAllJobsOfEmployerById);
+route.get("/allJobsByEmpId", dbConn.conn, jobController.getAllJobsOfEmployerById);
 
 route.get("/jobPagination", dbConn.conn, jobController.jobPagination);
 
@@ -28,5 +28,11 @@ route.delete("/", (req, res) => {
 });
 
 route.post("/notification", sendNotificationController.sendNotification);
+
+route.get(
+  "/jobDetail",
+  dbConn.conn,
+  jobController.getJobDetail
+)
 
 module.exports = route;

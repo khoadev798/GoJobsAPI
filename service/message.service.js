@@ -17,10 +17,7 @@ let newMessage = async (message) => {
     if (isMessageExisted.code == 404) {
         message["createdAt"] = new Date();
         let messageInstance = new MessageModel(message);
-        await messageInstance.save((err, doc) => {
-            if (err) return handlerError(err);
-            return console.log(doc);
-        });
+        await messageInstance.save();
     } else if (isMessageExisted.code == 200) {
         let filter = {
             $and: [
@@ -38,7 +35,7 @@ let newMessage = async (message) => {
         );
     }
 
-    if (message.flcId == message.content[0].userId) {
+    if (message.empId == message.content[0].userId) {
         let flcTokenDevices;
         await MessageModel.findOne({
             flcId: message.flcId
@@ -66,7 +63,7 @@ let newMessage = async (message) => {
                 console.log("response------", response)
             }
         })
-    } else if (message.empId == message.content[0].userId) {
+    } else if ( message.flcId == message.content[0].userId) {
         let empTokenDevices;
         await MessageModel.findOne({
             empId: message.empId
@@ -167,7 +164,7 @@ let getNotificationMessageByFlc = async (message) => {
         await MessageModel.find({
             flcId: message.flcId
         },
-        "content"
+        "empId"
         ).populate("empId", "empName")
         .exec()
         .then(doc =>{
@@ -204,9 +201,27 @@ let getNotificationMessageByEmp = async (message) => {
      }
  }
 
+ let getMessageDetail = async (message) =>{
+     let messageDetail = await MessageModel.findOne(
+         {_id: message._id},
+         "content"
+     ).populate("empId flcId", "empName flcName")
+     .exec()
+     .then(doc =>{
+         return doc;
+     });
+     if(messageDetail != null){
+         return {code: GLOBAL.SUCCESS_CODE, messageDetail};
+     }else{
+         return {code: GLOBAL.NOT_FOUND_CODE, messageDetail: "Missing!"}
+     }
+ }
+
+
 module.exports = {
     newMessage,
     getNotificationMessageByEmp,
-    getNotificationMessageByFlc
+    getNotificationMessageByFlc,
+    getMessageDetail,
 }
 

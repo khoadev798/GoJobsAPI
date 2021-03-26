@@ -26,7 +26,6 @@ const swaggerDocument = YAML.load("docs/swagger.yaml");
 const jobRoute = require("./routes/job.route");
 const otpRoute = require("./routes/otp.route");
 const followRoute = require("./routes/follow.route");
-const webAdminRoute = require("./routes/webAdmin.route");
 const notificationRoute = require("./routes/notification.route");
 const messageRoute = require("./routes/messagge.route");
 
@@ -40,7 +39,8 @@ const http = require("http").Server(app);
 
 const io = require("socket.io")(http);
 
-app.use(bodyParser.urlencoded({ limit: "15360mb", type: "application/json", extended: true }));
+// app.use(bodyParser.urlencoded({ limit: "15360mb", type: "application/json", extended: true }));
+
 app.use(
   express.urlencoded({
     limit: "15360mb",
@@ -51,7 +51,7 @@ app.use(
 );
 
 /** Cookies setup here */
-
+app.use(express.json());
 app.use(
   cors({
     origin: ["http://localhost:80"],
@@ -143,6 +143,6 @@ app.engine(
   })
 );
 
-app.use("/web", webAdminRoute);
+//app.use("/web", webAdminRoute);
 
 /**END OF ANDMING WEBSITE */

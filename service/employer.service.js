@@ -91,12 +91,10 @@ let login = async (employer) => {
 };
 
 let updateEmployerInfo = async (employer) => {
-  let isEmployerExisted = await findEmployerByEmail(employer);
+  let isEmployerExisted = await findEmployerById(employer);
   if (isEmployerExisted.code == 200) {
-    const filter = { empEmail: employer.empEmail };
-    if (employer.empName || employer.empNationalId) {
-      employer["empStats"] = "Pending";
-    }
+    const filter = { _id: employer._id };
+
     const update = employer;
     let doc = await EmployerModel.findOneAndUpdate(filter, update, {
       new: true,
