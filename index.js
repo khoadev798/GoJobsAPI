@@ -15,13 +15,12 @@ const {
 
 const adminRoute = require("./routes/admin.route");
 const freelancerRoute = require("./routes/freelancer.route");
-const flcFeedbackRoute = require("./routes/flcFeedback.route");
+const feedbackRoute = require("./routes/feedback.route");
 const employerRoute = require("./routes/employer.route");
 const contractRoute = require("./routes/contract.route");
 const walletRoute = require("./routes/wallet.route");
 const sendMailRoute = require("./routes/sendMail.route");
 const locationRoute = require("./routes/location.route");
-const empFeedbackRoute = require("./routes/empFeedback.route");
 const swaggerDocument = YAML.load("docs/swagger.yaml");
 const jobRoute = require("./routes/job.route");
 const otpRoute = require("./routes/otp.route");
@@ -104,7 +103,7 @@ app.use("/admin", adminRoute);
 
 app.use("/freelancer", freelancerRoute);
 
-app.use("/flcFeedback", flcFeedbackRoute);
+app.use("/feedback", feedbackRoute);
 
 app.use("/employer", employerRoute);
 
@@ -115,8 +114,6 @@ app.use("/contract", contractRoute);
 app.use("/wallet", walletRoute);
 
 app.use("/location", locationRoute);
-
-app.use("/empFeedback", empFeedbackRoute);
 
 app.use("/follow", followRoute);
 

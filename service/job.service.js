@@ -343,4 +343,5 @@ module.exports = {
   FCM,
   jobPaginationForWebAdmin,
   getJobDetail,
+  isFollowExisted,
 };

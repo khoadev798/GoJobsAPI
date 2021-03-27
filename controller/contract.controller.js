@@ -7,7 +7,6 @@ let addNewContract = async (req, res) => {
     flcId,
     empId,
     contractStatus,
-    createdBy,
     jobTotalSalaryPerHeadCount,
   } = req.query;
 
@@ -17,7 +16,6 @@ let addNewContract = async (req, res) => {
       flcId,
       empId,
       contractStatus,
-      createdBy,
       jobTotalSalaryPerHeadCount,
     }
   );

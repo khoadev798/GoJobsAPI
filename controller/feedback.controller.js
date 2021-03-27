@@ -1,0 +1,46 @@
+const feedbackService = require("../service/feedback.service");
+
+let createEmpFeedback = async (req, res) => {
+  let { empId, jobId, flcId, comment, starRating } = req.query;
+  let empFeedbackCreateResult = await feedbackService.empFeedbackCreate({
+    empId,
+    jobId,
+    flcId,
+    comment,
+    starRating
+  });
+  res
+    .status(empFeedbackCreateResult.code)
+    .send(empFeedbackCreateResult.message);
+};
+
+let createFlcFeedback = async (req, res) =>{
+  let { empId, jobId, flcId, comment, starRating} = req.query;
+  let flcFeedbackCreateResult = await feedbackService.flcFeedbackCreate({
+    empId,
+    jobId,
+    flcId,
+    comment,
+    starRating
+  });
+  res.status(flcFeedbackCreateResult.code).send(flcFeedbackCreateResult.message);
+}
+
+let getFeedbackByFlcId = async (req, res)=>{
+  let {flcId} = req.query;
+  let getFeedbackByFlcIdResult = await feedbackService.getFeedbackByFlcId({flcId});
+  res.status(getFeedbackByFlcIdResult.code).send(getFeedbackByFlcIdResult.feedbacks);
+}
+
+let getFeedbackByEmpId = async(req, res) =>{
+  let {empId} = req.query;
+  let getFeedbackByEmpIdResult = await feedbackService.getFeedbackByEmpId({empId});
+  res.status(getFeedbackByEmpIdResult.code).send(getFeedbackByEmpIdResult.feedbacks);
+}
+
+module.exports = {
+  createEmpFeedback,
+  createFlcFeedback,
+  getFeedbackByFlcId,
+  getFeedbackByEmpId,
+};
