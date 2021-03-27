@@ -3,7 +3,7 @@ const route = express.Router();
 const webAdminController = require("../controller/webAdmin.controller");
 const authenMiddleware = require("../middleware/authMiddleware");
 const dbConn = require("../middleware/dbConn.middle");
-
+//On master checking webAdmin
 route.use(express.static("public"));
 
 route.get("/", dbConn.conn, webAdminController.loginPage);
