@@ -27,6 +27,7 @@ const otpRoute = require("./routes/otp.route");
 const followRoute = require("./routes/follow.route");
 const notificationRoute = require("./routes/notification.route");
 const messageRoute = require("./routes/messagge.route");
+const webAdminRoute = require("./routes/webAdmin.route");
 
 const GLOBAL = require("./global/global");
 
@@ -140,6 +141,6 @@ app.engine(
   })
 );
 
-//app.use("/web", webAdminRoute);
+app.use("/web", webAdminRoute);
 
 /**END OF ANDMING WEBSITE */
