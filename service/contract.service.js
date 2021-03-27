@@ -613,7 +613,7 @@ let contractPaginationForWebAdmin = async (pagination) => {
       },
     ]);
   }
-  // console.log(contractsAndFreelancerWithCondition);
+  console.log(contractsAndFreelancerWithCondition[0].freelancer);
   let contractCount = await ContractModel.countDocuments({
     $and: [
       { jobId: mongoose.Types.ObjectId(pagination.jobId) },
