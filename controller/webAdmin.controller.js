@@ -123,7 +123,7 @@ let jobManagementPage = async (req, res) => {
   });
   let jobList = jobPaginationForWebAdmin.jobs;
   let pageCount = jobPaginationForWebAdmin.pageCount;
-  // res.send(jobPaginationForWebAdmin);
+  console.log(jobList.length);
   res.render("job/tableJob", {
     layout: "layout",
     title: "Job",
@@ -166,6 +166,7 @@ let contractManagementPage = async (req, res) => {
     let statusArray = {
       array: [
         ["Status", "Contract status"],
+        ["APLLIED", 0],
         ["APPROVED", 0],
         ["ACCEPTED", 0],
         ["REJECTED", 0],
@@ -176,6 +177,9 @@ let contractManagementPage = async (req, res) => {
 
     contractList.forEach((contract) => {
       if (contract.contractStatus == "APPROVED") {
+        statusArray.array[1][1] = statusArray.array[1][1] + 1;
+      }
+      if (contract.contractStatus == "APPLIED") {
         statusArray.array[1][1] = statusArray.array[1][1] + 1;
       }
       if (contract.contractStatus == "ACCPETED") {
@@ -265,6 +269,7 @@ let receiptInfoPage = async (req, res) => {
     _id,
   });
   let receipt = receiptInfo.receipt;
+  console.log(receipt);
   // res.send(receipt);
   // let pageCount = receiptPaginationForWebAdmin.pageCount;
   // res.send(receiptPaginationForWebAdmin);

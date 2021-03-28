@@ -103,64 +103,67 @@ let createNewContractAtSituation = async (contract) => {
     await contractInstance.save((err, obj) => {
       if (err) return handleError(err);
     });
-   let listTokens = await findTokenDeviceEmp(contract);
-   let Tokens = [];
-  Tokens = listTokens.listTokens.empTokenDevice
+    let listTokens = await findTokenDeviceEmp(contract);
+    let Tokens = [];
+    Tokens = listTokens.listTokens.empTokenDevice;
 
-   let notification = {
-    flcId: contract.flcId,
-    empId: contract.empId,
-    jobId: contract.jobId,
-    createdBy: "Freelancer",
-    createdAt: new Date(),
-  };
-  let notificationInstance = new NotificationModel(notification);
-  await notificationInstance.save(notification, (err, doc) => {
-    if (err) handleError(err);
-    return console.log(doc);
-  });
-  var message = {
-    data: {
-      score: '850',
-      time: '2:45'
-    },
-    notification:{
-      title : 'Navish',
-      body : 'Test notifi employer by navish'
-    }
-  };
- jobService.FCM.sendToMultipleToken(message, Tokens, function(err, response) {
-      if(err){
-          console.log('err--', err);
-      }else {
-          console.log('response-----', response);
+    let notification = {
+      flcId: contract.flcId,
+      empId: contract.empId,
+      jobId: contract.jobId,
+      createdBy: "Freelancer",
+      createdAt: new Date(),
+    };
+    let notificationInstance = new NotificationModel(notification);
+    await notificationInstance.save(notification, (err, doc) => {
+      if (err) handleError(err);
+      return console.log(doc);
+    });
+    var message = {
+      data: {
+        score: "850",
+        time: "2:45",
+      },
+      notification: {
+        title: "Navish",
+        body: "Test notifi employer by navish",
+      },
+    };
+    jobService.FCM.sendToMultipleToken(
+      message,
+      Tokens,
+      function (err, response) {
+        if (err) {
+          console.log("err--", err);
+        } else {
+          console.log("response-----", response);
+        }
       }
+    );
 
-  })
-
-   await session.commitTransaction();
-   session.endSession();
+    await session.commitTransaction();
+    session.endSession();
     return { code: 200, message: "Thao tac thanh cong!" };
   } else {
     return { code: 409, message: "Contract da ton tai!" };
   }
 };
 
-let findTokenDeviceEmp = async (contract)=>{
+let findTokenDeviceEmp = async (contract) => {
   let found = await EmployerModel.findOne(
-    {_id: contract.empId},
+    { _id: contract.empId },
     "empTokenDevice",
-    (err, doc) =>{
-      if(err) handleError(err);
+    (err, doc) => {
+      if (err) handleError(err);
       return doc;
     }
   );
-  if(found == undefined){
-    return {code: GLOBAL.NOT_FOUND_CODE, message: "Employer khong ton tai"}
-  }else{
-    return {code: GLOBAL.SUCCESS_CODE, listTokens: found}
+  if (found == undefined) {
+    return { code: GLOBAL.NOT_FOUND_CODE, message: "Employer khong ton tai" };
+  } else {
+    return { code: GLOBAL.SUCCESS_CODE, listTokens: found };
   }
-}
+};
 
 let deleteContractById = async (contract) => {
   let deleteResult = await ContractModel.deleteOne(
@@ -613,7 +616,7 @@ let contractPaginationForWebAdmin = async (pagination) => {
       },
     ]);
   }
-  console.log(contractsAndFreelancerWithCondition[0].freelancer);
+  // console.log(contractsAndFreelancerWithCondition[0].freelancer);
   let contractCount = await ContractModel.countDocuments({
     $and: [
       { jobId: mongoose.Types.ObjectId(pagination.jobId) },
