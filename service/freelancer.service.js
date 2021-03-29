@@ -242,7 +242,7 @@ let updateTokenWithFlcId = async (freelancer) => {
 let updatePassword = async (freelancer) => {
   let checkInfo = await login(freelancer);
   if (checkInfo.code == 200) {
-    const updatingFlc = util.hashPassword({
+    const updatingFlc = util.flcHashPassword({
       flcEmail: freelancer.flcEmail,
       flcPassword: freelancer.flcNewPassword
     });

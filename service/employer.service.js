@@ -243,7 +243,7 @@ let updateTokenWithEmpId = async (employer) => {
 let updatePassword = async (employer) => {
   let checkInfo = await login(employer);
   if (checkInfo.code == 200) {
-    const updatingEmp = util.hashPassword({
+    const updatingEmp = util.empHashPassword({
       empEmail: employer.empEmail,
       empPassword: employer.empNewPassword,
     });

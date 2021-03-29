@@ -45,4 +45,10 @@ route.put(
   contractController.markOneContractCancelled
 );
 
+route.get(
+  "/getJobByContractStatus",
+  dbConn.conn,
+  contractController.getJobByContractStatus
+)
+
 module.exports = route;

@@ -6,8 +6,32 @@ const dbConn = require("../middleware/dbConn.middle");
 route.post(
     "/createFollow",
     dbConn.conn,
-    followController.createFollow
+    followController.createFlcFollowEmp
 );
+
+route.post(
+    "/createEmpFollowFlc",
+    dbConn.conn,
+    followController.createEmpFollowFlc
+);
+
+route.post(
+    "/createFlcFollowJob",
+    dbConn.conn,
+    followController.createFlcFollowJob
+);
+
+route.get(
+    "/getJobByFlcFollow",
+    dbConn.conn,
+    followController.getJobByFlcFollow
+)
+
+route.get(
+    "/getFlcByEmpFollow",
+    dbConn.conn,
+    followController.getFlcByEmpFollow,
+)
 
 route.delete(
     "/delFollow",

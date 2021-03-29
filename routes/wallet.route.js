@@ -3,7 +3,7 @@ const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
 const walletController = require("../controller/wallet.controller");
 
-route.get("/", dbConn.conn, walletController.getWalletInfoOfEndUser);
+route.get("/getWallet", dbConn.conn, walletController.getWalletInfoOfEndUser);
 
 route.put(
   "/payForAcceptedContracts",

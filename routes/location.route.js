@@ -9,17 +9,27 @@ let handleErrors = (res) => {
   return res;
 };
 //Lấy về toàn bộ danh mục Tỉnh/Thành phố
-route.get("/city", (req, res) => {
-  fetch("https://thongtindoanhnghiep.co/api/city")
+route.get("/city", async (req, res) => {
+  let listCity = await fetch("https://thongtindoanhnghiep.co/api/city")
     .then(handleErrors)
     .then((res1) => res1.json())
     .then((data) => {
-      console.log("DS Tinh/TP", data);
-      res.status(200).send(data);
+      return data;
     })
     .catch((err) => {
       res.status(400).send(err);
     });
+  let list = [];
+  let cityList = [];
+  list = listCity.LtsItem;
+  list.forEach((title) => {
+    cityList.push({ title: title.Title, ID: title.ID });
+  });
+  let endList = await Promise.all(cityList).then((values) => {
+    return values;
+  });
+  res.send(endList);
+
 });
 
 //Lấy về chi tiết một Tỉnh/Thành phố
@@ -38,19 +48,27 @@ route.get("/city/:id", (req, res) => {
     });
 });
 //Lấy về toàn bộ Quận/Huyện theo Tỉnh/Thành phố
-route.get("/city/:id/district", (req, res) => {
+route.get("/city/:id/district", async (req, res) => {
   let { id } = req.params;
-  console.log(id);
-  fetch(`https://thongtindoanhnghiep.co/api/city/${id}/district`)
+  let listDistrict = await fetch(`https://thongtindoanhnghiep.co/api/city/${id}/district`)
     .then(handleErrors)
     .then((res1) => res1.json())
     .then((data) => {
-      console.log("DS quan huyen", data);
-      res.status(200).send(data);
+      return data;
     })
     .catch((err) => {
       res.status(400).send(err);
     });
+    let list = [];
+    let districtList = [];
+    list = listDistrict;
+    list.forEach((title) => {
+      districtList = districtList.concat(title.Title);
+    });
+    let endList = await Promise.all(districtList).then((values) => {
+      return values;
+    });
+    res.send(endList);
 });
 //Lấy về chi tiết một Quận/Huyện
 route.get("/district/:id", (req, res) => {

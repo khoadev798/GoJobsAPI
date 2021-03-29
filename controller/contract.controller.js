@@ -82,6 +82,16 @@ let markOneContractCancelled = async (req, res) => {
   );
   res.status(cancelResult.code).send(cancelResult.result);
 };
+
+let getJobByContractStatus = async (req, res) =>{
+  let {contractStatus, empId} = req.query;
+  let getJobByContractStatusResult = await contractService.getJobByContractStatus({
+    contractStatus,
+    empId,
+  });
+  res.status(getJobByContractStatusResult.code).send(getJobByContractStatusResult.jobs);
+}
+
 module.exports = {
   getContractsByStatusOfFlc,
   addNewContract,
@@ -91,4 +101,5 @@ module.exports = {
   updateContractStatusById,
   markContractsCompleted,
   markOneContractCancelled,
+  getJobByContractStatus
 };

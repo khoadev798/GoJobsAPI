@@ -136,7 +136,7 @@ let createNewContractAtSituation = async (contract) => {
           console.log('response-----', response);
       }
 
-  })
+  });
 
    await session.commitTransaction();
    session.endSession();
@@ -325,25 +325,29 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
   if (contractList.length > 0) {
     // Lấy các freelancers từ flcId của contractList liên quan và cộng tiền vào wallet của họ
     let queryList = [];
+    let endFlcId = [];
     contractList.forEach(async (contract) => {
       let walletFilter = {
         createdBy: { $eq: contract.flcId },
       };
+      endFlcId.push(contract.flcId);
       let currentFlcWallet = WalletModel.findOne(walletFilter).exec();
       queryList.push(currentFlcWallet);
     });
     let flcWalletList = await Promise.all(queryList).then((values) => {
       return values;
     });
+    console.log("flcIds: " + endFlcId);
     console.log("flcWalletList", flcWalletList);
     let updateWalletList = [];
     let updateContractList = [];
     let createReceiptForFlcList = [];
-    let createReceiptForSystem = [];
+    let createReceiptForSystemList = [];
     contractList.forEach((contract, index) => {
       let walletFilter = {
         createdBy: { $eq: contract.flcId },
       };
+      
       let walletUpdate = {
         $set: {
           balance:
@@ -366,17 +370,17 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
         receiverId: "SYSTEM",
         senderId: "emp#" + contract.empId,
         createdAt: new Date(),
-        createdBy: "emp#" + contract.empId,
+        createdBy: "emp#" + contract.emp1Id,
       };
 
       let flcReceiptInstance = new ReceiptModel(receiptInfoForFlc);
       let systemReceiptInstance = new ReceiptModel(receiptInfoForSystem);
-      let flcReceipt = flcReceiptInstance.save({ session: sesssion }).finally();
+      let flcReceipt = flcReceiptInstance.save({ session: session }).finally();
       let systemReceipt = systemReceiptInstance
         .save({ session: session })
         .finally();
       createReceiptForFlcList.push(flcReceipt);
-      createReceiptForSystem.push(systemReceipt);
+      createReceiptForSystemList.push(systemReceipt);
       let updateWalletBalance = WalletModel.findOneAndUpdate(
         walletFilter,
         walletUpdate,
@@ -419,7 +423,7 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
     );
 
     let createdReceiptsForSystem = await Promise.all(
-      createdReceiptsForSystem
+      createReceiptForSystemList
     ).then((values) => {
       return values;
     });
@@ -634,6 +638,20 @@ let contractPaginationForWebAdmin = async (pagination) => {
   };
 };
 
+let getJobByContractStatus = async (contract) =>{
+  let job = await ContractModel.aggregate([
+    { $match: {
+      empId : mongoose.Types.ObjectId(contract.empId)
+    }},
+    {"$group" : {_id:{empId:"$empId",contractStatus:"$contractStatus"}}}
+  ]);
+  if(job == undefined){
+    return {code: GLOBAL.NOT_FOUND_CODE, jobs: "missing!"}
+  }else{
+    return {code: GLOBAL.SUCCESS_CODE, jobs: job}
+  }
+}
+
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -645,4 +663,5 @@ module.exports = {
   markContractsCompletedAndPayFreelancers,
   markOneContractCancelled,
   contractPaginationForWebAdmin,
+  getJobByContractStatus,
 };

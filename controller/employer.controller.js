@@ -83,12 +83,12 @@ let updatedInfo = async (req, res, next) => {
 
 let updatePassword = async (req, res, next) => {
   console.log("Employer updates password");
-  let { email, password, newPassword } = req.query;
-  console.log(email, typeof password, typeof newPassword);
+  let { empEmail, empPassword, empNewPassword } = req.body;
+  
   let newPasswordResult = await employerService.updatePassword({
-    email,
-    password,
-    newPassword,
+    empEmail,
+    empPassword,
+    empNewPassword,
   });
   // console.log(newPasswordResult);
   res.status(newPasswordResult.code).send(newPasswordResult.message);
