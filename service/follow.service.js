@@ -44,6 +44,10 @@ let getJobByFlcFollow = async (follow) => {
             ]
         },
         "jobId",
+        {
+            skip: (follow.pageNumber - 1) * follow.pageSize,
+            limit: follow.pageNumber * follow.pageSize,
+        }
     ).populate("jobId")
         .exec()
         .then(doc => {
@@ -65,6 +69,10 @@ let getFlcByEmpFollow = async (follow) => {
             ]
         },
         "flcId",
+        {
+            skip: (follow.pageNumber - 1) * follow.pageSize,
+            limit: follow.pageNumber * follow.pageSize,
+        }
     ).populate("flcId")
         .exec()
         .then(doc => {

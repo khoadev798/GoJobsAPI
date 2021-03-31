@@ -84,10 +84,12 @@ let markOneContractCancelled = async (req, res) => {
 };
 
 let getJobByContractStatus = async (req, res) =>{
-  let {contractStatus, empId} = req.query;
+  let {contractStatus, empId, pageNumber, pageSize} = req.query;
   let getJobByContractStatusResult = await contractService.getJobByContractStatus({
     contractStatus,
     empId,
+    pageNumber,
+    pageSize
   });
   res.status(getJobByContractStatusResult.code).send(getJobByContractStatusResult.jobs);
 }

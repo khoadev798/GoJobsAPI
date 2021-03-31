@@ -18,29 +18,29 @@ let newMessage = async (req, res) =>{
 
 let getNotificationMessageByEmp = async(req, res) =>{
     let {
-        empId,
+        empId, pageNumber, pageSize
     } = req.body;
 
     let getNotificationMessageResult = await messageService.getNotificationMessageByEmp({
-        empId,
+        empId, pageNumber, pageSize
     });
     res.status(getNotificationMessageResult.code).send(getNotificationMessageResult.listNotification);
 };
 
 let getNotificationMessageByFlc = async(req, res) =>{
     let {
-        flcId,
+        flcId, pageNumber, pageSize
     } = req.query;
 
     let getNotificationMessageResult = await messageService.getNotificationMessageByFlc({
-        flcId,
+        flcId, pageNumber, pageSize
     });
     res.status(getNotificationMessageResult.code).send(getNotificationMessageResult.listNotification);
 };
 
 let getMessageDetail = async (req, res) =>{
-    let {_id} = req.query;
-    let getMessageDetailResult = await messageService.getMessageDetail({_id});
+    let {_id, pageNumber, pageSize} = req.query;
+    let getMessageDetailResult = await messageService.getMessageDetail({_id, pageNumber, pageSize});
     res.status(getMessageDetailResult.code).send(getMessageDetailResult.messageDetail);
 }
 module.exports = {

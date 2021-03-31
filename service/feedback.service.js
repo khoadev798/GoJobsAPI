@@ -126,6 +126,10 @@ let getFeedbackByFlcId = async (feedback) =>{
       ]
     },
     "starRating",
+    {
+      skip: (feedback.pageNumber - 1) * feedback.pageSize,
+      limit: feedback.pageNumber * feedback.pageSize,
+  }
   ).populate("empId", "empName empLogo")
   .exec()
   .then(doc =>{
@@ -147,6 +151,10 @@ let getFeedbackByEmpId = async (feedback) =>{
       ]
     },
     "starRating",
+    {
+      skip: (feedback.pageNumber - 1) * feedback.pageSize,
+      limit: feedback.pageNumber * feedback.pageSize,
+  }
   ).populate("flcId", "flcName flcAvatar")
   .exec()
   .then(doc =>{

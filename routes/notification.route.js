@@ -9,4 +9,10 @@ route.get(
     notificationController.getNotification,
 )
 
+route.get(
+    "/getNotificationForEmp",
+    dbConn.conn,
+    notificationController.getNotificationForEmp
+)
+
 module.exports = route;

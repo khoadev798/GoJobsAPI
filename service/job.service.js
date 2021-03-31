@@ -65,6 +65,7 @@ let createNewJob = async (job) => {
       flcId: endFlcIds,
       empId: job.empId,
       jobId: jobInstance._id,
+      content: "Vừa tạo một công việc mới",
       createdBy: "Employer",
       createdAt: new Date(),
     };
@@ -316,16 +317,16 @@ let jobPaginationForWebAdmin = async (pagination) => {
 };
 
 let getJobDetail = async (job)=>{
-  let jobDetail = await JobModel.findOne(
+  let jobDetail = await JobModel.find(
     {
     _id: job._id
   },
   {},
-  (err, doc)=>{
-    if(err) handleError(err);
-    return doc;
-  }
-  );
+  ).populate("empId", "empName")
+  .exec()
+  .then(doc =>{
+    return doc
+  });
   if(jobDetail != null){
     return {code: GLOBAL.SUCCESS_CODE, jobDetail}
   }else{

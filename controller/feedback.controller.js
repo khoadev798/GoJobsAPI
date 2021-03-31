@@ -27,14 +27,14 @@ let createFlcFeedback = async (req, res) =>{
 }
 
 let getFeedbackByFlcId = async (req, res)=>{
-  let {flcId} = req.query;
-  let getFeedbackByFlcIdResult = await feedbackService.getFeedbackByFlcId({flcId});
+  let {flcId, pageNumber, pageSize} = req.query;
+  let getFeedbackByFlcIdResult = await feedbackService.getFeedbackByFlcId({flcId, pageNumber, pageSize});
   res.status(getFeedbackByFlcIdResult.code).send(getFeedbackByFlcIdResult.feedbacks);
 }
 
 let getFeedbackByEmpId = async(req, res) =>{
-  let {empId} = req.query;
-  let getFeedbackByEmpIdResult = await feedbackService.getFeedbackByEmpId({empId});
+  let {empId, pageNumber, pageSize} = req.query;
+  let getFeedbackByEmpIdResult = await feedbackService.getFeedbackByEmpId({empId, pageNumber, pageSize});
   res.status(getFeedbackByEmpIdResult.code).send(getFeedbackByEmpIdResult.feedbacks);
 }
 

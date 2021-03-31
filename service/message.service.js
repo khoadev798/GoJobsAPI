@@ -164,7 +164,11 @@ let getNotificationMessageByFlc = async (message) => {
         await MessageModel.find({
             flcId: message.flcId
         },
-        "empId"
+        "content",
+        {
+            skip: (message.pageNumber - 1) * message.pageSize,
+            limit: message.pageNumber * message.pageSize,
+        }
         ).populate("empId", "empName")
         .exec()
         .then(doc =>{
@@ -185,7 +189,11 @@ let getNotificationMessageByEmp = async (message) => {
          await MessageModel.find({
              empId: message.empId
          },
-         "content"
+         "content",
+         {
+            skip: (message.pageNumber - 1) * message.pageSize,
+            limit: message.pageNumber * message.pageSize,
+        }
          ).populate("flcId", "flcName")
          .exec()
          .then(doc =>{
@@ -204,7 +212,11 @@ let getNotificationMessageByEmp = async (message) => {
  let getMessageDetail = async (message) =>{
      let messageDetail = await MessageModel.findOne(
          {_id: message._id},
-         "content"
+         "content",
+         {
+            skip: (message.pageNumber - 1) * message.pageSize,
+            limit: message.pageNumber * message.pageSize,
+        }
      ).populate("empId flcId", "empName flcName")
      .exec()
      .then(doc =>{

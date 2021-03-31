@@ -30,18 +30,18 @@ let createFlcFollowJob = async(req, res) =>{
 }
 
 let getFlcByEmpFollow = async (req, res )=>{
-    let { empId} = req.query;
+    let { empId, pageNumber, pageSize} = req.query;
     let getFlcByEmpFollowResult = await followService.getFlcByEmpFollow({
 
-        empId
+        empId, pageNumber, pageSize
     });
     res.status(getFlcByEmpFollowResult.code).send(getFlcByEmpFollowResult.freelancers);
 }
 
 let getJobByFlcFollow = async (req, res) =>{
-    let {flcId} = req.query;
+    let {flcId, pageNumber, pageSize} = req.query;
     let getJobByFlcFollowResult = await followService.getJobByFlcFollow({
-        flcId,
+        flcId, pageNumber, pageSize
 
     })
     res.status(getJobByFlcFollowResult.code).send(getJobByFlcFollowResult.jobs)
