@@ -154,7 +154,27 @@ let systemMonthlyIncome = async (condition) => {
   let systemReceipts = await ReceiptModel.aggregate([project, match, group]);
   return { code: 200, systemReceipts };
 };
+
+let getReceiptHistory = async(receipt) =>{
+ 
+  let receipts = await ReceiptModel.find(
+      {
+        createdBy: receipt._id
+      },
+  "updatedValue createdAt",
+  {
+    skip: (receipt.pageNumber - 1) * receipt.pageSize,
+    limit: receipt.pageNumber * receipt.pageSize
+  }
+  ).exec();
+  if(receipts) {
+    return{code: GLOBAL.SUCCESS_CODE, history: receipts}
+  }else{
+    return{code: GLOBAL.NOT_FOUND_CODE, history: "Missing!"}
+  }
+}
 module.exports = {
+  getReceiptHistory,
   receiptPaginationForWebAdmin,
   receiptInfoForWebAdmin,
   systemMonthlyIncome,

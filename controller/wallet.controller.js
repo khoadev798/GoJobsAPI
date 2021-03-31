@@ -35,7 +35,16 @@ let payForAcceptedContracts = async (req, res) => {
 //   });
 // };
 
+let getWallByEndUserId = async (req, res) =>{
+  let {_id} = req.query;
+  let wallet = await walletService.getWallByEndUserId({
+    _id
+  });
+  res.status(wallet.code).send(wallet.wallet);
+}
+
 module.exports = {
   getWalletInfoOfEndUser,
   payForAcceptedContracts,
+  getWallByEndUserId
 };

@@ -246,8 +246,22 @@ let updateWalletBalanceByIdOnWebAdmin = async (wallet) => {
   }
 };
 
+let getWallByEndUserId = async(endUser) =>{
+  let wallet = await WalletModel.findOne(
+    {createdBy: endUser._id},
+    "balance"
+  ).exec()
+  console.log("wallet: ", wallet);
+  if(wallet){
+    return {code: GLOBAL.SUCCESS_CODE, wallet: wallet}
+  }else{
+    return {code: GLOBAL.NOT_FOUND_CODE, wallet: "missing!"}
+  }
+}
+
 module.exports = {
   createWallet,
+  getWallByEndUserId,
   getWalletOfEndUserByCreatedBy,
   payForAcceptedContractsProcedure,
   updateWalletBalanceByIdOnWebAdmin,

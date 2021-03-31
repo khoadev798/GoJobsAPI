@@ -11,4 +11,10 @@ route.put(
   walletController.payForAcceptedContracts
 );
 
+route.get(
+  "/getWalletByEndUserId",
+  dbConn.conn,
+  walletController.getWallByEndUserId
+)
+
 module.exports = route;
