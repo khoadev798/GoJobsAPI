@@ -1,6 +1,10 @@
 const infoValidation = require("../middleware/infoValidation.middle");
 const Employer = require("../model/employer");
 const employerService = require("../service/employer.service");
+const path = require('path');
+const formidable = require('formidable');
+const fs = require('fs');
+
 
 let register = async (req, res, next) => {
   let {
@@ -56,7 +60,7 @@ let login = async (req, res, next) => {
 };
 
 let updatedInfo = async (req, res, next) => {
-  console.log("Employer updates info");
+  let empLogo = req.empLogo;
   let {
     _id,
     empName,
@@ -64,10 +68,11 @@ let updatedInfo = async (req, res, next) => {
     empType,
     empAddress,
     empDescription,
-    empLogo,
     empTaxCode,
-
   } = req.body;
+
+
+  console.log(req.body);
   let updatedInfoResult = await employerService.updateEmployerInfo({
     _id,
     empLogo,

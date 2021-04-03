@@ -4,7 +4,8 @@ const employerController = require("../controller/employer.controller");
 const dbConn = require("../middleware/dbConn.middle");
 const infoValidator = require("../middleware/infoValidation.middle");
 // const authMiddleware = require("../middleware/authMiddleware");
-
+const multer = require("multer");
+const uploadFileMiddleWare= require("../middleware/uploadFile.middleWare")
 route.post(
   "/register",
   infoValidator.empEmailValidate,
@@ -18,7 +19,33 @@ route.post("/empNewFeedback", dbConn.conn, (req, res) => {
 
 route.post("/login", dbConn.conn, employerController.login);
 
-route.post("/updatedEmployerInfo", dbConn.conn, employerController.updatedInfo);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, './public/uploads');
+  },
+  filename: function (req, file, cb) {
+      cb(null, file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+      cb(null, true);
+  } else {
+      cb(null, false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+      fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
+
+route.post("/updatedEmployerInfo", dbConn.conn, uploadFileMiddleWare.uploadFile , employerController.updatedInfo);
 
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 

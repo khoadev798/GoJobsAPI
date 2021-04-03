@@ -57,7 +57,7 @@ let getNotificationForEmp = async (notification) => {
             { createdBy: "Freelancer" }
         ]
     },
-        "jobId flcId",
+        "jobId",
         {
             skip: (notification.pageNumber - 1) * notification.pageSize,
             limit: notification.pageNumber * notification.pageSize,

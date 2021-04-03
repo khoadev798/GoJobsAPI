@@ -63,4 +63,10 @@ route.get(
   freelancerController.flcPaginationWithAddress
 )
 
+route.get(
+  "/flcProfile",
+  dbConn.conn,
+  freelancerController.findFreelancerById
+)
+
 module.exports = route;

@@ -339,6 +339,7 @@ module.exports = {
   flcPaginationAll,
   updateTokenWithFlcId,
   updatePassword,
+  findFreelancerById,
   flcPaginationForAdminWeb,
   flcPaginationWithAddress,
 };
