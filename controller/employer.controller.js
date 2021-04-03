@@ -1,10 +1,9 @@
 const infoValidation = require("../middleware/infoValidation.middle");
 const Employer = require("../model/employer");
 const employerService = require("../service/employer.service");
-const path = require('path');
-const formidable = require('formidable');
-const fs = require('fs');
-
+const path = require("path");
+const formidable = require("formidable");
+const fs = require("fs");
 
 let register = async (req, res, next) => {
   let {
@@ -32,7 +31,7 @@ let register = async (req, res, next) => {
     empLogo,
     empDescription,
     empTerm,
-    empTokenDevice
+    empTokenDevice,
   });
   // console.log("Employer info:", empInfo);
 
@@ -48,15 +47,15 @@ let login = async (req, res, next) => {
   const loginResult = await employerService.login({
     empEmail,
     empPassword,
-    empTokenDevice
+    empTokenDevice,
   });
 
-    res.status(loginResult.code).send({
-      message: loginResult.message,
-      _id: loginResult._id,
-      empEmail: loginResult.empEmail,
-      accessTokenDb: loginResult.accessTokenDb,
-    });
+  res.status(loginResult.code).send({
+    message: loginResult.message,
+    _id: loginResult._id,
+    empEmail: loginResult.empEmail,
+    accessTokenDb: loginResult.accessTokenDb,
+  });
 };
 
 let updatedInfo = async (req, res, next) => {
@@ -69,10 +68,9 @@ let updatedInfo = async (req, res, next) => {
     empAddress,
     empDescription,
     empTaxCode,
-  } = req.body;
+  } = req.fields;
 
-
-  console.log(req.body);
+  console.log(empLogo, req.fields);
   let updatedInfoResult = await employerService.updateEmployerInfo({
     _id,
     empLogo,
@@ -89,7 +87,7 @@ let updatedInfo = async (req, res, next) => {
 let updatePassword = async (req, res, next) => {
   console.log("Employer updates password");
   let { empEmail, empPassword, empNewPassword } = req.body;
-  
+
   let newPasswordResult = await employerService.updatePassword({
     empEmail,
     empPassword,
@@ -114,14 +112,16 @@ let empPagination = async (req, res) => {
   res.status(empPaginationResult.code).send(empPaginationResult);
 };
 
-let updateTokenWithEmpId = async (req, res) =>{
-  let {_id, empTokenDevice} = req.query;
+let updateTokenWithEmpId = async (req, res) => {
+  let { _id, empTokenDevice } = req.query;
   let updateTokenWithEmpIdResult = await employerService.updateTokenWithEmpId({
     _id,
     empTokenDevice,
   });
-  res.status(updateTokenWithEmpIdResult.code).send(updateTokenWithEmpIdResult.message);
-}
+  res
+    .status(updateTokenWithEmpIdResult.code)
+    .send(updateTokenWithEmpIdResult.message);
+};
 
 module.exports = {
   register,
@@ -129,5 +129,5 @@ module.exports = {
   updatePassword,
   updatedInfo,
   empPagination,
-  updateTokenWithEmpId
+  updateTokenWithEmpId,
 };

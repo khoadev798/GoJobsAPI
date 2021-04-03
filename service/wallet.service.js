@@ -186,10 +186,22 @@ let payForAcceptedContractsProcedure = async (
     let jobFilter = {
       _id: jobId,
     };
+    let involvedJob = await JobModel.findById(jobFilter);
+    let newPaidContractCount =
+      involvedJob.jobPaidContractCount + updateContractsResult.n;
 
-    let jobUpdate = {
-      $inc: { jobPaidContractCount: updateContractsResult.n },
-    };
+    let jobUpdate;
+    if (newPaidContractCount >= involvedJob.jobHeadCountTarget) {
+      jobUpdate = {
+        jobSatus: "Full",
+        $inc: { jobPaidContractCount: updateContractsResult.n },
+      };
+    } else {
+      jobUpdate = {
+        $inc: { jobPaidContractCount: updateContractsResult.n },
+      };
+    }
+
     let updatedJob = await JobModel.findOneAndUpdate(jobFilter, jobUpdate, {
       new: true,
     });
@@ -246,18 +258,18 @@ let updateWalletBalanceByIdOnWebAdmin = async (wallet) => {
   }
 };
 
-let getWallByEndUserId = async(endUser) =>{
+let getWallByEndUserId = async (endUser) => {
   let wallet = await WalletModel.findOne(
-    {createdBy: endUser._id},
+    { createdBy: endUser._id },
     "balance"
-  ).exec()
+  ).exec();
   console.log("wallet: ", wallet);
-  if(wallet){
-    return {code: GLOBAL.SUCCESS_CODE, wallet: wallet}
-  }else{
-    return {code: GLOBAL.NOT_FOUND_CODE, wallet: "missing!"}
+  if (wallet) {
+    return { code: GLOBAL.SUCCESS_CODE, wallet: wallet };
+  } else {
+    return { code: GLOBAL.NOT_FOUND_CODE, wallet: "missing!" };
   }
-}
+};
 
 module.exports = {
   createWallet,

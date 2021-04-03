@@ -30,36 +30,35 @@ let createNewJob = async (job) => {
   await jobInstance.save({ session: session });
   let isFollowExistedResult = await isFollowExisted(job);
   if (isFollowExistedResult.code == 200) {
-   
     let tokenlists = isFollowExistedResult.follow;
     let Tokens = [];
     let flcIds = [];
 
     tokenlists.forEach((token) => {
-     
       flcIds = flcIds.concat(token.flcId);
     });
-    
+
     let endFlcIds = await Promise.all(flcIds).then((values) => {
       return values;
     });
 
-    let findTokenDevice = await FreelancerModel.find({
-      _id: {$in: endFlcIds}
-    },
+    let findTokenDevice = await FreelancerModel.find(
+      {
+        _id: { $in: endFlcIds },
+      },
       "flcTokenDevice",
-      (err, docs) =>{
-        if(err) handleError(err);
+      (err, docs) => {
+        if (err) handleError(err);
         return docs;
       }
     );
-      findTokenDevice.forEach((token) =>{
-        Tokens = Tokens.concat(token.flcTokenDevice);
-      })
-      let endTokens = await Promise.all(Tokens).then((values) => {
-        return values;
-      });
-      console.log("endTokens: ", endTokens);
+    findTokenDevice.forEach((token) => {
+      Tokens = Tokens.concat(token.flcTokenDevice);
+    });
+    let endTokens = await Promise.all(Tokens).then((values) => {
+      return values;
+    });
+    console.log("endTokens: ", endTokens);
 
     let notification = {
       flcId: endFlcIds,
@@ -76,22 +75,21 @@ let createNewJob = async (job) => {
     });
     var message = {
       data: {
-        score: '850',
-        time: '2:45'
+        score: "850",
+        time: "2:45",
       },
-      notification:{
-        title : 'Navish',
-        body : 'Test message by navish'
-      }
+      notification: {
+        title: "Navish",
+        body: "Test message by navish",
+      },
     };
-    FCM.sendToMultipleToken(message, endTokens, function(err, response) {
-        if(err){
-            console.log('err--', err);
-        }else {
-            console.log('response-----', response);
-        }
-
-    })
+    FCM.sendToMultipleToken(message, endTokens, function (err, response) {
+      if (err) {
+        console.log("err--", err);
+      } else {
+        console.log("response-----", response);
+      }
+    });
   }
 
   console.log("new jobs: ", jobInstance);
@@ -123,7 +121,6 @@ let isFollowExisted = async (job) => {
     };
   }
 };
-
 
 let getAllJobs = async () => {
   let jobs = [];
@@ -191,6 +188,7 @@ let jobPagination = async (pagination) => {
           { jobDescription: { $regex: searchRegex } },
         ],
         jobField: { $in: pagination.filter },
+        jobStatus: "Open",
       },
     ],
   };
@@ -211,7 +209,7 @@ let jobPagination = async (pagination) => {
 
 let jobPaginationWithTime = async (pagination) => {
   let jobsWithConditions = await JobModel.find(
-    {},
+    { jobStatus: "Open" },
     "_id empId jobTitle jobSalaryAfterDone jobField jobStart jobEnd jobStatus jobHeadCountTarget",
     {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
@@ -316,23 +314,24 @@ let jobPaginationForWebAdmin = async (pagination) => {
   return { code: 200, jobs: jobsAndEmpWithCondition, pageCount };
 };
 
-let getJobDetail = async (job)=>{
+let getJobDetail = async (job) => {
   let jobDetail = await JobModel.find(
     {
-    _id: job._id
-  },
-  {},
-  ).populate("empId", "empName")
-  .exec()
-  .then(doc =>{
-    return doc
-  });
-  if(jobDetail != null){
-    return {code: GLOBAL.SUCCESS_CODE, jobDetail}
-  }else{
-    return{code: GLOBAL.NOT_FOUND_CODE, jobDetail: "Missing!"}
+      _id: job._id,
+    },
+    {}
+  )
+    .populate("empId", "empName")
+    .exec()
+    .then((doc) => {
+      return doc;
+    });
+  if (jobDetail != null) {
+    return { code: GLOBAL.SUCCESS_CODE, jobDetail };
+  } else {
+    return { code: GLOBAL.NOT_FOUND_CODE, jobDetail: "Missing!" };
   }
-}
+};
 
 module.exports = {
   createNewJob,
