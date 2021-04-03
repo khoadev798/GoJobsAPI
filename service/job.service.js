@@ -202,9 +202,10 @@ let jobPagination = async (pagination) => {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
     }
-  ).sort({
+  ).populate("empId")
+  .sort({
     jobTitle: pagination.sort,
-  });
+  }).exec();
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
 };
@@ -217,9 +218,10 @@ let jobPaginationWithTime = async (pagination) => {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
     }
-  ).sort({
+  ).populate("empId")
+  .sort({
     jobPublishDate: pagination.sort,
-  });
+  }).exec();
   console.log(jobsWithConditions);
   return { code: 200, job: jobsWithConditions };
 };

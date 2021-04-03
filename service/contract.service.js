@@ -20,51 +20,12 @@ const jobService = require("../service/job.service");
 // Không dùng function này nữa
 let getContractsByCondition = async (condition) => {
   let contracts = await ContractModel.find(
-    {
-      $and: [
-        {
-          contractStatus: condition.contractStatus,
-        },
-        {
-          empId: condition.empId,
-        },
-        {
-          flcId: condition.flcId,
-        },
-        {
-          jobId: condition.jobId,
-        },
-      ],
-    },
-    "_id empId flcId jobId contractStatus createdAt"
-  );
-  let jobStatusList = [];
-  contracts.forEach((contract) => {
-    if (contract.jobId) {
-      let query = JobModel.findOne(
-        { _id: contract.jobId },
-        "_id jobStatus"
-      ).exec();
-      jobStatusList.push(query);
-    }
-  });
-  let jobStatusOfContracts = await Promise.all(jobStatusList).then((values) => {
-    return values;
-  });
-  if (contracts.length > 0) {
-    contracts.map((contract) => {
-      jobStatusOfContracts.map((job) => {
-        if (contract.jobId === job._id) {
-          contract.jobStatus = job.jobStatus;
-        }
-        return contract;
-      });
-    });
-    return { code: 200, contracts };
-  } else {
-    return { code: 200, contracts: "Chưa có phát sinh trong mục này" };
-  }
-};
+    {jobId: condition.jobId},
+    "flcId jobTotalSalaryPerHeadCount"
+  ).populate("flcId", "flcName flcAvatar")
+  .exec();
+    return {code: GLOBAL.SUCCESS_CODE, contracts};
+}
 
 let getOneContractWithSpecifiedInfo = async (contract) => {
   console.log("Contract at check", contract);
@@ -113,7 +74,7 @@ let createNewContractAtSituation = async (contract) => {
       flcId: contract.flcId,
       empId: contract.empId,
       jobId: contract.jobId,
-      content: "vừa ứng tuyển vào công việc",
+      content: "Đã có người ứng tuyển vào công việc",
       createdBy: "Freelancer",
       createdAt: new Date(),
     };

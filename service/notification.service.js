@@ -46,10 +46,9 @@ let getNotificationForEmp = async (notification) => {
     // let isFollowExisted = await findFlcFollowEmp(notification);
     const session = await mongoose.startSession();
     session.startTransaction();
-    let notifi;
-    // console.log(isFollowExisted.follow);
-    // if (isFollowExisted.code == 200) {
-    await NotificationModel.find({
+    let notifi = [];
+    
+     await NotificationModel.find({
         $and: [
             {
                 empId: notification.empId
@@ -57,22 +56,26 @@ let getNotificationForEmp = async (notification) => {
             { createdBy: "Freelancer" }
         ]
     },
-        "jobId",
+        " content",
         {
             skip: (notification.pageNumber - 1) * notification.pageSize,
             limit: notification.pageNumber * notification.pageSize,
         }
-    ).populate("jobId")
-        .exec()
-        .then(doc => {
+    ).exec()
+        .then(doc =>{
             notifi = [...doc]
-            console.log(doc);
-        });
+            console.log(notifi);
+        })
+        
     await session.commitTransaction();
     session.endSession();
 
-    // }
-    return { code: GLOBAL.SUCCESS_CODE, message: "get notification success!", notifi }
+    if(notifi.length !=0){
+        return { code: GLOBAL.SUCCESS_CODE, notifi }
+    }else{
+        return {code: GLOBAL.NOT_FOUND_CODE, notifi: "missing!"}
+    }
+    
 }
 
 module.exports = {
