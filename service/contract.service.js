@@ -107,7 +107,7 @@ let createNewContractAtSituation = async (contract) => {
     });
     let listTokens = await findTokenDeviceEmp(contract);
     let Tokens = [];
-    Tokens = listTokens.listTokens.empTokenDevice
+    Tokens = listTokens.listTokens.empTokenDevice;
 
     let notification = {
       flcId: contract.flcId,
@@ -124,22 +124,25 @@ let createNewContractAtSituation = async (contract) => {
     });
     var message = {
       data: {
-        score: '850',
-        time: '2:45'
+        score: "850",
+        time: "2:45",
       },
       notification: {
-        title: 'GoJobs',
-        body: 'Đã có người ứng tuyển vào công việc của bạn'
-      }
+        title: "GoJobs",
+        body: "Đã có người ứng tuyển vào công việc của bạn",
+      },
     };
-    jobService.FCM.sendToMultipleToken(message, Tokens, function (err, response) {
-      if (err) {
-        console.log('err--', err);
-      } else {
-        console.log('response-----', response);
+    jobService.FCM.sendToMultipleToken(
+      message,
+      Tokens,
+      function (err, response) {
+        if (err) {
+          console.log("err--", err);
+        } else {
+          console.log("response-----", response);
+        }
       }
-
-    });
+    );
 
     await session.commitTransaction();
     session.endSession();
@@ -159,9 +162,9 @@ let findTokenDeviceEmp = async (contract) => {
     }
   );
   if (found == undefined) {
-    return { code: GLOBAL.NOT_FOUND_CODE, message: "Employer khong ton tai" }
+    return { code: GLOBAL.NOT_FOUND_CODE, message: "Employer khong ton tai" };
   } else {
-    return { code: GLOBAL.SUCCESS_CODE, listTokens: found }
+    return { code: GLOBAL.SUCCESS_CODE, listTokens: found };
   }
 };
 
@@ -343,17 +346,18 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
     // notification khi job được employer đổi stt COMPLETED
     let listTokens = await ContractModel.find(
       { flcId: { $in: endFlcId } },
-      "flcId",
-    ).populate("flcId", "flcTokenDevice")
+      "flcId"
+    )
+      .populate("flcId", "flcTokenDevice")
       .exec()
-      .then(doc => {
+      .then((doc) => {
         return doc;
       });
     let Tokens = [];
     console.log(listTokens);
     listTokens.forEach((token) => {
       Tokens = Tokens.concat(token.flcId.flcTokenDevice);
-    })
+    });
     console.log("Tokens:", Tokens);
 
     let notification = {
@@ -371,22 +375,25 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
     });
     var message = {
       data: {
-        score: '850',
-        time: '2:45'
+        score: "850",
+        time: "2:45",
       },
       notification: {
-        title: 'GoJobs',
-        body: 'Công việc của bạn đã hoàn thành. Mời bạn đánh giá !'
-      }
+        title: "GoJobs",
+        body: "Công việc của bạn đã hoàn thành. Mời bạn đánh giá !",
+      },
     };
-    jobService.FCM.sendToMultipleToken(message, Tokens, function (err, response) {
-      if (err) {
-        console.log('err--', err);
-      } else {
-        console.log('response-----', response);
+    jobService.FCM.sendToMultipleToken(
+      message,
+      Tokens,
+      function (err, response) {
+        if (err) {
+          console.log("err--", err);
+        } else {
+          console.log("response-----", response);
+        }
       }
-
-    });
+    );
     console.log("flcWalletList", flcWalletList);
     let updateWalletList = [];
     let updateContractList = [];
@@ -419,7 +426,7 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
         receiverId: "SYSTEM",
         senderId: "emp#" + contract.empId,
         createdAt: new Date(),
-        createdBy: "emp#" + contract.emp1Id,
+        createdBy: "emp#" + contract.empId,
       };
 
       let flcReceiptInstance = new ReceiptModel(receiptInfoForFlc);
@@ -536,13 +543,13 @@ let markOneContractCancelled = async (_idContract) => {
     // notification khi job được employer đổi stt COMPLETED
     let listTokens = await FreelancerModel.find(
       { _id: involvedContract.flcId },
-      "flcTokenDevice",
+      "flcTokenDevice"
     ).exec();
     let Tokens = [];
 
     listTokens.forEach((token) => {
       Tokens = Tokens.concat(token.flcTokenDevice);
-    })
+    });
 
     let notification = {
       flcId: involvedContract.flcId,
@@ -559,21 +566,25 @@ let markOneContractCancelled = async (_idContract) => {
     });
     var message = {
       data: {
-        score: '850',
-        time: '2:45'
+        score: "850",
+        time: "2:45",
       },
       notification: {
-        title: 'GoJobs',
-        body: 'Công việc của bạn đã bị hủy !'
-      }
+        title: "GoJobs",
+        body: "Công việc của bạn đã bị hủy !",
+      },
     };
-    jobService.FCM.sendToMultipleToken(message, Tokens, function (err, response) {
-      if (err) {
-        console.log('err--', err);
-      } else {
-        console.log('response-----', response);
+    jobService.FCM.sendToMultipleToken(
+      message,
+      Tokens,
+      function (err, response) {
+        if (err) {
+          console.log("err--", err);
+        } else {
+          console.log("response-----", response);
+        }
       }
-    });
+    );
     let updatedFlcWallet = await WalletModel.findOneAndUpdate(
       flcWalletFilter,
       flcWalletUpdate,
@@ -737,11 +748,11 @@ let getJobByContractStatus = async (contract) => {
       $match: {
         $and: [
           { empId: mongoose.Types.ObjectId(contract.empId) },
-          { contractStatus: contract.contractStatus }
-        ]
-      }
+          { contractStatus: contract.contractStatus },
+        ],
+      },
     },
-    { "$group": { _id: { jobId: "$jobId", contractStatus: "$contractStatus" } } },
+    { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" } } },
     // {
     //   $lookup: {
     //     from: "jobs",
@@ -750,11 +761,10 @@ let getJobByContractStatus = async (contract) => {
     //     as: "job",
     //   }
     // },
-
   ]);
   let jobIds = [];
   job.forEach((detail) => {
-    jobIds.push(detail._id.jobId)
+    jobIds.push(detail._id.jobId);
   });
 
   //console.log(jobIds);
@@ -763,19 +773,20 @@ let getJobByContractStatus = async (contract) => {
     "jobId",
     {
       skip: (contract.pageNumber - 1) * contract.pageSize,
-      limit: contract.pageNumber * contract.pageSize
+      limit: contract.pageNumber * contract.pageSize,
     }
-  ).populate("jobId")
+  )
+    .populate("jobId")
     .exec();
   console.log("jobDetail", jobDetail);
   await session.commitTransaction();
   session.endSession();
   if (job == undefined) {
-    return { code: GLOBAL.NOT_FOUND_CODE, jobs: "missing!" }
+    return { code: GLOBAL.NOT_FOUND_CODE, jobs: "missing!" };
   } else {
-    return { code: GLOBAL.SUCCESS_CODE, jobs: job }
+    return { code: GLOBAL.SUCCESS_CODE, jobs: job };
   }
-}
+};
 
 module.exports = {
   getContractsByCondition,
