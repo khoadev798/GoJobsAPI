@@ -75,9 +75,11 @@ let employerManagementPage = async (req, res) => {
 
 let freelancerManagementPage = async (req, res) => {
   let { search, sort, filter, pageNumber, pageSize } = req.query;
+
   if (!pageNumber) {
     pageNumber = 1;
   }
+
   if (!pageSize) {
     pageSize = 5;
   }
@@ -159,6 +161,7 @@ let contractManagementPage = async (req, res) => {
       pageSize,
     }
   );
+
   let contractList = contractPaginationForWebAdmin.contracts;
   let pageCount = contractPaginationForWebAdmin.pageCount;
 
@@ -173,22 +176,22 @@ let contractManagementPage = async (req, res) => {
         ["CANCELLED", 0],
       ],
     };
-
+    // console.log(contractList);
     contractList.forEach((contract) => {
       if (contract.contractStatus == "APPROVED") {
         statusArray.array[1][1] = statusArray.array[1][1] + 1;
       }
       if (contract.contractStatus == "ACCPETED") {
-        statusArray.array[2][2] = statusArray.array[2][2] + 1;
+        statusArray.array[2][1] = statusArray.array[2][1] + 1;
       }
       if (contract.contractStatus == "REJECTED") {
-        statusArray.array[3][3] = statusArray.array[3][3] + 1;
+        statusArray.array[3][1] = statusArray.array[3][1] + 1;
       }
       if (contract.contractStatus == "COMPLETED") {
-        statusArray.array[4][4] = statusArray.array[4][4] + 1;
+        statusArray.array[4][1] = statusArray.array[4][1] + 1;
       }
       if (contract.contractStatus == "CANCELLED") {
-        statusArray.array[5][5] = statusArray.array[5][5] + 1;
+        statusArray.array[5][1] = statusArray.array[5][1] + 1;
       }
     });
 
@@ -223,12 +226,14 @@ let receiptManagementPage = async (req, res) => {
   if (!pageSize) {
     pageSize = 5;
   }
+
   if (!from) {
     from = new Date("2000-01=01");
   }
   if (!to) {
     to = new Date("2100-01-01");
   }
+
   let receiptPaginationForWebAdmin = await receiptService.receiptPaginationForWebAdmin(
     {
       search,
@@ -236,7 +241,7 @@ let receiptManagementPage = async (req, res) => {
       to,
       sort,
       pageNumber,
-      pageSize,
+      pageSize: 5,
     }
   );
   let receiptList = receiptPaginationForWebAdmin.receipts;
@@ -362,10 +367,6 @@ let statisticPage = async (req, res) => {
         steps: receipt.income,
       });
     }
-    chartInfoList.info.push({
-      name: "OK",
-      steps: 20000,
-    });
   });
   res.render("statistic/statistic", {
     layout: "layout",
