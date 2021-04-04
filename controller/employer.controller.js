@@ -38,7 +38,7 @@ let register = async (req, res, next) => {
   res.status(registerResult.code).send({
     message: registerResult.message,
   });
-  console.log(registerResult);
+  // console.log(registerResult);
 };
 
 let login = async (req, res, next) => {
@@ -61,15 +61,16 @@ let updatedInfo = async (req, res, next) => {
   let {imageUrl} = req.fields
   let {
     _id,
-    //imageUrl,
+    imageUrl,
     empName,
     empPhone,
     empType,
     empAddress,
     empDescription,
     empTaxCode,
-  } = req.query;
-  console.log(_id);
+
+  } = req.body;
+
   let updatedInfoResult = await employerService.updateEmployerInfo({
     _id,
     empLogo: imageUrl,

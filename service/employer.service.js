@@ -59,8 +59,8 @@ let login = async (employer) => {
         $and: [
           { _id: _id },
           { empTokenDevice: { $ne: employer.empTokenDevice } },
-        ]
-      }
+        ],
+      };
       await EmployerModel.findOneAndUpdate(
         filter,
         { $push: { empTokenDevice: employer.empTokenDevice } },
@@ -68,7 +68,7 @@ let login = async (employer) => {
           if (err) handleError(err);
           console.log("add flcTokenDevice", docs);
         }
-      )
+      );
       await session.commitTransaction();
       session.endSession();
       return {
@@ -191,7 +191,7 @@ let employerPagination = async (pagination) => {
   let employersAndWalletWithConditions;
   if (pagination.sort) {
     sort = {
-      $sort: { empName: pagination.sort == "asc" ? 1 : -1 },
+      $sort: { empEmail: pagination.sort == "asc" ? 1 : -1 },
     };
     employersAndWalletWithConditions = await EmployerModel.aggregate([
       match,
@@ -228,17 +228,18 @@ let updateTokenWithEmpId = async (employer) => {
     $and: [
       { _id: employer._id },
       { empTokenDevice: { $eq: employer.empTokenDevice } },
-    ]
-  }
+    ],
+  };
   await EmployerModel.findOneAndUpdate(
     filter,
     { $pull: { empTokenDevice: employer.empTokenDevice } },
     (err, docs) => {
       if (err) return handlerError(err);
       console.log("updated: ", docs);
-    });
+    }
+  );
   return { code: GLOBAL.SUCCESS_CODE, message: "updated success!" };
-}
+};
 
 let updatePassword = async (employer) => {
   let checkInfo = await login(employer);
@@ -253,7 +254,9 @@ let updatePassword = async (employer) => {
       empPassword: updatingEmp.empPassword,
       salt: updatingEmp.salt,
     };
-    let doc = await EmployerModel.findOneAndUpdate(filter, update, { new: true });
+    let doc = await EmployerModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
     if (doc) {
       return { code: GLOBAL.SUCCESS_CODE, message: `User's password updated!` };
     }
