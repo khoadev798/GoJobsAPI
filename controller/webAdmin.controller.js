@@ -7,6 +7,7 @@ const contractService = require("../service/contract.service");
 const receiptService = require("../service/receipt.service");
 const jwtHelper = require("../helpers/jwt.helper");
 let alert = require("alert");
+const Handlebars = require("handlebars");
 
 let loginPage = (req, res, next) => {
   res.render("login", { layout: false, title: "Login" });
@@ -40,36 +41,43 @@ let adminLogin = async (req, res) => {
   }
 };
 
+let existingSort;
+let existingSearch;
 let employerManagementPage = async (req, res) => {
-  let { search, sort, filter, pageNumber, pageSize } = req.query;
+  let { search, sort, pageNumber, pageSize } = req.query;
   if (!pageNumber) {
     pageNumber = 1;
   }
   if (!pageSize) {
     pageSize = 5;
   }
+  if (search == undefined && sort == undefined) {
+  } else {
+    if (search) {
+      existingSearch = search;
+    }
+    if (sort) {
+      existingSort = sort;
+    }
+  }
+
   let employerPagination = await employerService.employerPagination({
-    search,
-    sort,
-    filter,
     pageNumber,
     pageSize,
+    search,
+    sort,
   });
   let employerList = employerPagination.employers;
   let pageCount = employerPagination.pageCount;
+
   res.render("employer/tableEmployer", {
     layout: "layout",
     title: "Employer",
     admin: req.admin,
+    search: existingSearch,
+    sort: existingSort,
     employerList,
     pageCount,
-    helpers: {
-      forInRange: function (from, to, incr, block) {
-        var accum = "";
-        for (var i = from; i <= to; i += incr) accum += block.fn(i);
-        return accum;
-      },
-    },
   });
 };
 
@@ -98,13 +106,6 @@ let freelancerManagementPage = async (req, res) => {
     admin: req.admin,
     freelancerList,
     pageCount,
-    helpers: {
-      forInRange: function (from, to, incr, block) {
-        var accum = "";
-        for (var i = from; i <= to; i += incr) accum += block.fn(i);
-        return accum;
-      },
-    },
   });
 };
 
@@ -132,13 +133,6 @@ let jobManagementPage = async (req, res) => {
     admin: req.admin,
     jobList,
     pageCount,
-    helpers: {
-      forInRange: function (from, to, incr, block) {
-        var accum = "";
-        for (var i = from; i <= to; i += incr) accum += block.fn(i);
-        return accum;
-      },
-    },
   });
 };
 
@@ -174,6 +168,7 @@ let contractManagementPage = async (req, res) => {
         ["REJECTED", 0],
         ["COMPLETED", 0],
         ["CANCELLED", 0],
+        ["APPLIED", 0],
       ],
     };
     // console.log(contractList);
@@ -193,6 +188,9 @@ let contractManagementPage = async (req, res) => {
       if (contract.contractStatus == "CANCELLED") {
         statusArray.array[5][1] = statusArray.array[5][1] + 1;
       }
+      if (contract.contractStatus == "APPLIED") {
+        statusArray.array[6][1] = statusArray.array[6][1] + 1;
+      }
     });
 
     res.render("contract/tableContract", {
@@ -204,13 +202,6 @@ let contractManagementPage = async (req, res) => {
       pageCount,
       encodedJson: encodeURIComponent(JSON.stringify(statusArray)),
       // array: statusArray.array,
-      helpers: {
-        forInRange: function (from, to, incr, block) {
-          var accum = "";
-          for (var i = from; i <= to; i += incr) accum += block.fn(i);
-          return accum;
-        },
-      },
     });
   } else {
     alert("This job has no contract");
@@ -253,13 +244,6 @@ let receiptManagementPage = async (req, res) => {
     admin: req.admin,
     receiptList,
     pageCount,
-    helpers: {
-      forInRange: function (from, to, incr, block) {
-        var accum = "";
-        for (var i = from; i <= to; i += incr) accum += block.fn(i);
-        return accum;
-      },
-    },
   });
 };
 

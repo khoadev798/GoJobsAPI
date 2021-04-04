@@ -1,6 +1,6 @@
 const util = require("util");
 const gc = require("../config/");
-const bucket = gc.bucket("gojobs_images");
+const bucket = gc.bucket("gojobs_master_images");
 
 /**
  *
@@ -12,9 +12,9 @@ const bucket = gc.bucket("gojobs_images");
  */
 const uploadImage = (file) =>
   new Promise((resolve, reject) => {
-    const { name, buffer } = file;
+    const { originalname, buffer } = file;
 
-    const blob = bucket.file(name.replace(/ /g, "_"));
+    const blob = bucket.file(originalname.replace(/ /g, "_"));
     const blobStream = blob.createWriteStream({
       resumable: false,
     });

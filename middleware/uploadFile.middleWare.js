@@ -1,21 +1,15 @@
-const path = require("path");
+const { response } = require("express");
 const uploadImageHelper = require("../util/cloudHelper");
-const multer = require("multer");
-const formidable = require("formidable");
-let uploadFile = async (req, res, next) => {
-  const form = new formidable.IncomingForm();
-  form.parse(req, async (err, field, file) => {
-    try {
-      const myFile = file.empLogo;
-      // console.log(file.empLogo);
 
-      const imageUrl = await uploadImageHelper.uploadImage(file.empLogo);
-      req.fields = { ...field, imageUrl };
-      next();
-    } catch (error) {
-      res.send(error);
-    }
-  });
+let uploadFile = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    const imageUrl = await uploadImageHelper.uploadImage(req.file);
+    req.body["imageUrl"] = imageUrl;
+    next();
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
 
 module.exports = { uploadFile };

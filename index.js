@@ -3,8 +3,6 @@ const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const path = require("path");
-const Handlebars = require("handlebars");
-const exphbs = require("express-handlebars");
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -40,6 +38,8 @@ const http = require("http").Server(app);
 
 const io = require("socket.io")(http);
 
+const multer = require("multer");
+
 // app.use(bodyParser.urlencoded({ limit: "15360mb", type: "application/json", extended: true }));
 
 app.use(
@@ -51,6 +51,15 @@ app.use(
   })
 );
 
+const multerMid = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+});
+
+app.use(multerMid.single("file"));
+app.disable("x-powered-by");
 /** Cookies setup here */
 app.use(express.json());
 app.use(
@@ -129,6 +138,9 @@ http.listen(process.env.PORT || PORT, () => {
   console.log(`App is running ${PORT}`);
 });
 
+const Handlebars = require("handlebars");
+const exphbs = require("express-handlebars");
+
 /**BEGIN OF ADMIN WEBSITE */
 app.set("views", path.join(__dirname, "/views"));
 app.set("view engine", "hbs");
@@ -139,7 +151,7 @@ app.engine(
     extname: "hbs",
     layoutsDir: __dirname + "/views/layouts/",
     defaultLayout: "layout",
-
+    helpers: require("./util/hbsHelper"),
     handlebars: allowInsecurePrototypeAccess(Handlebars),
   })
 );
