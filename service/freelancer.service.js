@@ -68,8 +68,8 @@ let login = async (freelancer) => {
         $and: [
           { _id: _id },
           { flcTokenDevice: { $ne: freelancer.flcTokenDevice } },
-        ]
-      }
+        ],
+      };
       await FreelancerModel.findOneAndUpdate(
         filter,
         { $push: { flcTokenDevice: freelancer.flcTokenDevice } },
@@ -77,7 +77,7 @@ let login = async (freelancer) => {
           if (err) handleError(err);
           console.log("add flcTokenDevice", docs);
         }
-      )
+      );
       await session.commitTransaction();
       session.endSession();
       return {
@@ -87,7 +87,6 @@ let login = async (freelancer) => {
         flcEmail: isFreelancerExisted.freelancer.flcEmail,
         accessTokenDb: accessToken,
         accessToken: accessToken,
-
       };
     } else {
       console.log("Incorrect");
@@ -106,12 +105,12 @@ let flcUpdateInfo = async (freelancer) => {
 
   if (isFlcExisted.code == 200) {
     freelancer["updatedInfoAt"] = new Date();
-    const filter = { _id: isFlcExisted.freelancer._id};
+    const filter = { _id: isFlcExisted.freelancer._id };
     const update = freelancer;
     let doc = await FreelancerModel.findOneAndUpdate(filter, update, {
       new: true,
     });
-  console.log(doc);
+    console.log(doc);
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Cap nhat info thanh cong!",
@@ -158,13 +157,13 @@ let flcPaginationAll = async (pagination) => {
     flcRating: pagination.sort,
   });
   return { code: GLOBAL.SUCCESS_CODE, freelancers: flcPaginationAllInstance };
-}
+};
 
 let flcPaginationWithAddress = async (pagination) => {
   let searchRegex = new RegExp(pagination.search, "i");
   let query = {
     flcAddress: { $regex: searchRegex },
-  }
+  };
   let flcsWithConditions = await FreelancerModel.find(
     query,
     "_id flcName flcAddress flcEmail flcPhone flcBirthday flcAvatar flcSex flcEdu flcMajor flcJobTitle flcRating",
@@ -175,8 +174,8 @@ let flcPaginationWithAddress = async (pagination) => {
   ).sort({
     flcRating: pagination.sort,
   });
-  return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions }
-}
+  return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions };
+};
 
 let findFreelancerByEmail = async (freelancer) => {
   let found = await FreelancerModel.findOne(
@@ -208,34 +207,35 @@ let findFreelancerById = async (freelancer) => {
       return doc;
     }
   );
-  if(found == undefined){
+  if (found == undefined) {
     return {
       code: GLOBAL.NOT_FOUND_CODE,
       message: "Freelancer not found!",
     };
-  }else{
+  } else {
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Freelancer Existed!",
       freelancer: found,
-    }
+    };
   }
-}
+};
 
 let updateTokenWithFlcId = async (freelancer) => {
   let filter = {
     $and: [
       { _id: freelancer._id },
       { flcTokenDevice: { $eq: freelancer.flcTokenDevice } },
-    ]
-  }
+    ],
+  };
   await FreelancerModel.findOneAndUpdate(
     filter,
     { $pull: { flcTokenDevice: freelancer.flcTokenDevice } },
     (err, docs) => {
       if (err) return handlerError(err);
       console.log("updated: ", docs);
-    });
+    }
+  );
   return { code: GLOBAL.SUCCESS_CODE, message: "updated success!" };
 };
 
@@ -244,7 +244,7 @@ let updatePassword = async (freelancer) => {
   if (checkInfo.code == 200) {
     const updatingFlc = util.flcHashPassword({
       flcEmail: freelancer.flcEmail,
-      flcPassword: freelancer.flcNewPassword
+      flcPassword: freelancer.flcNewPassword,
     });
     let filter = { flcEmail: updatingFlc.flcEmail };
     let update = {
@@ -252,18 +252,18 @@ let updatePassword = async (freelancer) => {
       salt: updatingFlc.salt,
     };
     let doc = await FreelancerModel.findOneAndUpdate(filter, update, {
-      new: true
+      new: true,
     });
     if (doc) {
-      return { code: GLOBAL.SUCCESS_CODE, message: "Update success!" }
+      return { code: GLOBAL.SUCCESS_CODE, message: "Update success!" };
     }
   } else {
     return {
       code: GLOBAL.BAD_REQUEST_CODE,
-      message: "Provided info's incorrect!"
-    }
+      message: "Provided info's incorrect!",
+    };
   }
-}
+};
 
 let flcPaginationForAdminWeb = async (pagination) => {
   const session = await mongoose.startSession();
@@ -298,7 +298,7 @@ let flcPaginationForAdminWeb = async (pagination) => {
   let flcAndWalletsWithConditions;
   if (pagination.sort) {
     sort = {
-      $sort: { flcName: pagination.sort == "asc" ? 1 : -1 },
+      $sort: { flcEmail: pagination.sort == "asc" ? 1 : -1 },
     };
     flcAndWalletsWithConditions = await FreelancerModel.aggregate([
       match,
@@ -328,7 +328,6 @@ let flcPaginationForAdminWeb = async (pagination) => {
   let pageCount = Math.ceil(flcCount / 5);
   return { code: 200, freelancers: flcAndWalletsWithConditions, pageCount };
 };
-
 
 module.exports = {
   getAllFreelancer,

@@ -30,7 +30,7 @@
                             <tr>
                                 <th>_id</th>
                                 <th>Name</th>
-                                <th>Email</th>
+                                <th><a href="/web/freelancer?sort=asc">Email</a></th>
                                 <th>Phone No</th>
                                 <th>Wallet _id</th>
                                 <th>Wallet balance</th>
@@ -58,25 +58,43 @@
                     </table>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination float-right">
-                            {{!-- <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li> --}}
-                            {{!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li> --}}
+
+                            {{#if sort }}
+                            {{#if search}}
                             {{#forInRange 1 pageCount 1}}
                             <li class="page-item"><a class="page-link"
-                                    href="/web/freelancer?pageNumber={{this}}">{{this}}</a></li>
+                                    href="/web/freelancer?pageNumber={{this}}&sort={{../sort}}&search={{../search}}">{{this}}</a>
+                            </li>
                             {{/forInRange}}
-                            {{!-- <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li> --}}
+                            {{else}}
+                            {{#forInRange 1 pageCount 1}}
+                            <li class="page-item"><a class="page-link"
+                                    href="/web/freelancer?pageNumber={{this}}&sort={{../sort}}&search={{../search}}">{{this}}</a>
+                            </li>
+                            {{/forInRange}}
+                            {{/if}}
+                            {{/if}}
+
+                            {{#if search }}
+                            {{#ifCond sort "==" undefined}}
+                            {{#forInRange 1 pageCount 1}}
+                            <li class="page-item"><a class="page-link"
+                                    href="/web/freelancer?pageNumber={{this}}&search={{../search}}">{{this}}</a>
+                            </li>
+                            {{/forInRange}}
+                            {{/ifCond}}
+                            {{/if}}
+
+                            {{#ifCond search "==" undefined }}
+                            {{#ifCond sort "==" undefined}}
+                            {{#forInRange 1 pageCount 1}}
+                            <li class="page-item"><a class="page-link"
+                                    href="/web/freelancer?pageNumber={{this}}">{{this}}</a>
+                            </li>
+                            {{/forInRange}}
+                            {{/ifCond}}
+                            {{/ifCond}}
+
                         </ul>
                     </nav>
                 </div>
