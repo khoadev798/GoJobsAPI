@@ -58,6 +58,7 @@ let login = async (req, res, next) => {
 };
 
 let updatedInfo = async (req, res, next) => {
+
   let {
     _id,
     imageUrl,
