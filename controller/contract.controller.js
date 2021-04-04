@@ -31,6 +31,7 @@ let getContractsByCondition = async (req, res) =>{
 
 let deleteContractById = async (req, res) => {
   let { _id } = req.query;
+  console.log(_id);
   let deleteResult = await contractService.deleteContractById({ _id });
   res.status(deleteResult.code).send(deleteResult.messsage);
 };

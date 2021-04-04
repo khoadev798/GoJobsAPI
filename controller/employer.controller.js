@@ -58,16 +58,18 @@ let login = async (req, res, next) => {
 };
 
 let updatedInfo = async (req, res, next) => {
+  let {imageUrl} = req.fields
   let {
     _id,
-    imageUrl,
+    //imageUrl,
     empName,
     empPhone,
     empType,
     empAddress,
     empDescription,
     empTaxCode,
-  } = req.fields;
+  } = req.query;
+  console.log(_id);
   let updatedInfoResult = await employerService.updateEmployerInfo({
     _id,
     empLogo: imageUrl,

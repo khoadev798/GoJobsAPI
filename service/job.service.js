@@ -64,7 +64,7 @@ let createNewJob = async (job) => {
       flcId: endFlcIds,
       empId: job.empId,
       jobId: jobInstance._id,
-      content: "Vừa tạo một công việc mới",
+      content: "Vừa có một công việc mới",
       createdBy: "Employer",
       createdAt: new Date(),
     };
@@ -167,15 +167,16 @@ let getAllJobsAndEmployerInfo = async () => {
 };
 
 let getJobsOfOneEmployerById = async (empId) => {
-  await JobModel.find(
+  let jobs = await JobModel.find(
     { empId: empId },
-    "_id empId jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    "_id jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
     (err, docs) => {
       if (err) handleError(err);
       console.log(docs);
-      return { code: 200, jobs: docs };
+      
     }
   );
+  return { code: 200, jobs: jobs };
 };
 
 let jobPagination = async (pagination) => {

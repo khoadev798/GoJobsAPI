@@ -24,6 +24,7 @@ let getContractsByCondition = async (condition) => {
     "flcId jobTotalSalaryPerHeadCount"
   ).populate("flcId", "flcName flcAvatar")
   .exec();
+    console.log(contracts);
     return {code: GLOBAL.SUCCESS_CODE, contracts};
 }
 
@@ -74,7 +75,7 @@ let createNewContractAtSituation = async (contract) => {
       flcId: contract.flcId,
       empId: contract.empId,
       jobId: contract.jobId,
-      content: "Đã có người ứng tuyển vào công việc",
+      content: "Đã có người ứng tuyển vào công việc của bạn",
       createdBy: "Freelancer",
       createdAt: new Date(),
     };
@@ -516,7 +517,7 @@ let markOneContractCancelled = async (_idContract) => {
       flcId: involvedContract.flcId,
       empId: involvedContract.empId,
       jobId: involvedContract.jobId,
-      content: "đã bị hủy",
+      content: "Có một công việc đã bị hủy",
       createdBy: "Employer",
       createdAt: new Date(),
     };
@@ -737,15 +738,15 @@ let getJobByContractStatus = async (contract) => {
       limit: contract.pageNumber * contract.pageSize,
     }
   )
-    .populate("jobId")
+    .populate("jobId", "jobTitle jobTotalSalaryPerHeadCount jobHeadCountTarget jobStart jobEnd jobPaymentType")
     .exec();
   console.log("jobDetail", jobDetail);
   await session.commitTransaction();
   session.endSession();
-  if (job == undefined) {
+  if (jobDetail == undefined) {
     return { code: GLOBAL.NOT_FOUND_CODE, jobs: "missing!" };
   } else {
-    return { code: GLOBAL.SUCCESS_CODE, jobs: job };
+    return { code: GLOBAL.SUCCESS_CODE, jobs: jobDetail };
   }
 };
 

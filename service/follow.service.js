@@ -75,9 +75,6 @@ let getFlcByEmpFollow = async (follow) => {
         }
     ).populate("flcId")
         .exec()
-        .then(doc => {
-            return doc;
-        });
     if (found == undefined) {
         return { code: GLOBAL.NOT_FOUND_CODE, freelancers: "Missing!" }
     } else {

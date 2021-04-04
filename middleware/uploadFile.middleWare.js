@@ -4,13 +4,14 @@ const multer = require("multer");
 const formidable = require("formidable");
 let uploadFile = async (req, res, next) => {
   const form = new formidable.IncomingForm();
+
   form.parse(req, async (err, field, file) => {
     try {
       const myFile = file.empLogo;
-      // console.log(file.empLogo);
+    //    console.log(file.empLogo, _id);
 
       const imageUrl = await uploadImageHelper.uploadImage(file.empLogo);
-      req.fields = { ...field, imageUrl };
+      req.fields = { ...field,imageUrl};
       next();
     } catch (error) {
       res.send(error);
