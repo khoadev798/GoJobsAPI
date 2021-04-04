@@ -29,7 +29,7 @@ route.put(
   contractController.updateContractStatusById
 );
 
-route.delete("/", dbConn.conn, contractController.deleteContractById);
+route.delete("/deteledContract", dbConn.conn, contractController.deleteContractById);
 
 // Khác biệt giữa 2 trường hợp COMPLETED và CANCELLED là
 // cho phép COMPLETED cùng lúc nhiều contracts

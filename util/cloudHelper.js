@@ -17,7 +17,14 @@ const uploadImage = (file) =>
     const blob = bucket.file(originalname.replace(/ /g, "_"));
     const blobStream = blob.createWriteStream({
       resumable: false,
+      metadata: {
+        contentType: "image/jpeg",
+        metadata: {
+          custom: "metadata",
+        }
+      }
     });
+
     blobStream
       .on("finish", () => {
         const publicUrl = util.format(
