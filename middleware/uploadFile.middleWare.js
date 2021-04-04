@@ -1,4 +1,3 @@
-const { response } = require("express");
 const uploadImageHelper = require("../util/cloudHelper");
 
 let uploadFile = async (req, res, next) => {

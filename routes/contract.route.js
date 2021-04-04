@@ -51,4 +51,10 @@ route.get(
   contractController.getJobByContractStatus
 )
 
+route.get(
+  "/getContractByJobId",
+  dbConn.conn,
+  contractController.getContractsByCondition
+)
+
 module.exports = route;

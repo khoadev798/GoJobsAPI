@@ -20,51 +20,13 @@ const jobService = require("../service/job.service");
 // Không dùng function này nữa
 let getContractsByCondition = async (condition) => {
   let contracts = await ContractModel.find(
-    {
-      $and: [
-        {
-          contractStatus: condition.contractStatus,
-        },
-        {
-          empId: condition.empId,
-        },
-        {
-          flcId: condition.flcId,
-        },
-        {
-          jobId: condition.jobId,
-        },
-      ],
-    },
-    "_id empId flcId jobId contractStatus createdAt"
-  );
-  let jobStatusList = [];
-  contracts.forEach((contract) => {
-    if (contract.jobId) {
-      let query = JobModel.findOne(
-        { _id: contract.jobId },
-        "_id jobStatus"
-      ).exec();
-      jobStatusList.push(query);
-    }
-  });
-  let jobStatusOfContracts = await Promise.all(jobStatusList).then((values) => {
-    return values;
-  });
-  if (contracts.length > 0) {
-    contracts.map((contract) => {
-      jobStatusOfContracts.map((job) => {
-        if (contract.jobId === job._id) {
-          contract.jobStatus = job.jobStatus;
-        }
-        return contract;
-      });
-    });
-    return { code: 200, contracts };
-  } else {
-    return { code: 200, contracts: "Chưa có phát sinh trong mục này" };
-  }
-};
+    {jobId: condition.jobId},
+    "flcId jobTotalSalaryPerHeadCount"
+  ).populate("flcId", "flcName flcAvatar")
+  .exec();
+    console.log(contracts);
+    return {code: GLOBAL.SUCCESS_CODE, contracts};
+}
 
 let getOneContractWithSpecifiedInfo = async (contract) => {
   console.log("Contract at check", contract);
@@ -113,7 +75,7 @@ let createNewContractAtSituation = async (contract) => {
       flcId: contract.flcId,
       empId: contract.empId,
       jobId: contract.jobId,
-      content: "vừa ứng tuyển vào công việc",
+      content: "Đã có người ứng tuyển vào công việc của bạn",
       createdBy: "Freelancer",
       createdAt: new Date(),
     };
@@ -555,7 +517,7 @@ let markOneContractCancelled = async (_idContract) => {
       flcId: involvedContract.flcId,
       empId: involvedContract.empId,
       jobId: involvedContract.jobId,
-      content: "đã bị hủy",
+      content: "Có một công việc đã bị hủy",
       createdBy: "Employer",
       createdAt: new Date(),
     };
@@ -776,15 +738,15 @@ let getJobByContractStatus = async (contract) => {
       limit: contract.pageNumber * contract.pageSize,
     }
   )
-    .populate("jobId")
+    .populate("jobId", "jobTitle jobTotalSalaryPerHeadCount jobHeadCountTarget jobStart jobEnd jobPaymentType")
     .exec();
   console.log("jobDetail", jobDetail);
   await session.commitTransaction();
   session.endSession();
-  if (job == undefined) {
+  if (jobDetail == undefined) {
     return { code: GLOBAL.NOT_FOUND_CODE, jobs: "missing!" };
   } else {
-    return { code: GLOBAL.SUCCESS_CODE, jobs: job };
+    return { code: GLOBAL.SUCCESS_CODE, jobs: jobDetail };
   }
 };
 

@@ -23,8 +23,15 @@ let addNewContract = async (req, res) => {
   res.status(createContractResult.code).send(createContractResult.message);
 };
 
+let getContractsByCondition = async (req, res) =>{
+  let {jobId} = req.query;
+  let getContractsByConditionResult = await contractService.getContractsByCondition({jobId});
+  res.status(getContractsByConditionResult.code).send(getContractsByConditionResult.contracts);
+}
+
 let deleteContractById = async (req, res) => {
   let { _id } = req.query;
+  console.log(_id);
   let deleteResult = await contractService.deleteContractById({ _id });
   res.status(deleteResult.code).send(deleteResult.messsage);
 };
@@ -103,5 +110,6 @@ module.exports = {
   updateContractStatusById,
   markContractsCompleted,
   markOneContractCancelled,
-  getJobByContractStatus
+  getJobByContractStatus,
+  getContractsByCondition
 };
