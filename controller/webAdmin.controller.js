@@ -41,8 +41,8 @@ let adminLogin = async (req, res) => {
   }
 };
 
-let existingSort;
-let existingSearch;
+let existingEmpSort;
+let existingEmpSearch;
 let employerManagementPage = async (req, res) => {
   let { search, sort, pageNumber, pageSize } = req.query;
   if (!pageNumber) {
@@ -52,12 +52,14 @@ let employerManagementPage = async (req, res) => {
     pageSize = 5;
   }
   if (search == undefined && sort == undefined) {
+    existingEmpSearch = undefined;
+    existingEmpSort = undefined;
   } else {
     if (search) {
-      existingSearch = search;
+      existingEmpSearch = search;
     }
     if (sort) {
-      existingSort = sort;
+      existingEmpSort = sort;
     }
   }
 
@@ -74,13 +76,15 @@ let employerManagementPage = async (req, res) => {
     layout: "layout",
     title: "Employer",
     admin: req.admin,
-    search: existingSearch,
-    sort: existingSort,
+    search: existingEmpSearch,
+    sort: existingEmpSort,
     employerList,
     pageCount,
   });
 };
 
+let existingFlcSort;
+let existingFlcSearch;
 let freelancerManagementPage = async (req, res) => {
   let { search, sort, filter, pageNumber, pageSize } = req.query;
 
@@ -90,6 +94,18 @@ let freelancerManagementPage = async (req, res) => {
 
   if (!pageSize) {
     pageSize = 5;
+  }
+
+  if (search == undefined && sort == undefined) {
+    existingFlcSort = undefined;
+    existingFlcSearch = undefined;
+  } else {
+    if (search) {
+      existingFlcSearch = search;
+    }
+    if (sort) {
+      existingFlcSort = sort;
+    }
   }
   let employerPagination = await freelancerService.flcPaginationForAdminWeb({
     search,
@@ -104,11 +120,14 @@ let freelancerManagementPage = async (req, res) => {
     layout: "layout",
     title: "Freelancer",
     admin: req.admin,
+    search: existingFlcSearch,
+    sort: existingEmpSort,
     freelancerList,
     pageCount,
   });
 };
-
+let existingJobSort;
+let existingJobSearch;
 let jobManagementPage = async (req, res) => {
   let { search, sort, filter, pageNumber, pageSize } = req.query;
   if (!pageNumber) {
@@ -116,6 +135,17 @@ let jobManagementPage = async (req, res) => {
   }
   if (!pageSize) {
     pageSize = 5;
+  }
+  if (search == undefined && sort == undefined) {
+    existingJobSort = undefined;
+    existingJobSearch = undefined;
+  } else {
+    if (search) {
+      existingJobSearch = search;
+    }
+    if (sort) {
+      existingJobSort = sort;
+    }
   }
   let jobPaginationForWebAdmin = await jobService.jobPaginationForWebAdmin({
     search,
@@ -131,6 +161,8 @@ let jobManagementPage = async (req, res) => {
     layout: "layout",
     title: "Job",
     admin: req.admin,
+    search: existingJobSearch,
+    sort: existingJobSort,
     jobList,
     pageCount,
   });
