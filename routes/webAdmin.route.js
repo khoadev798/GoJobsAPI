@@ -14,6 +14,18 @@ route.get(
   webAdminController.mainPage
 );
 
+route.get(
+  "/updatePassword",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  webAdminController.updatePasswordPage
+);
+route.post(
+  "/updatePassword",
+  authenMiddleware.isAuthOnWebAdminFromCookieToken,
+  dbConn.conn,
+  webAdminController.updateAdminPassword
+);
+
 route.post("/adminLogin", dbConn.conn, webAdminController.adminLogin);
 
 route.get(
@@ -98,5 +110,11 @@ route.post(
 route.get("/error", (req, res) => {
   res.render("error", { layout: false, title: "Error" });
 });
+
+route.post(
+  "/resetPassword",
+  dbConn.conn,
+  webAdminController.adminResetPassword
+);
 
 module.exports = route;
