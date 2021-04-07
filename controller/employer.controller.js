@@ -65,10 +65,9 @@ let findEmployerById = async (req, res) =>{
 }
 
 let updatedInfo = async (req, res, next) => {
-
   let {
     _id,
-    imageUrl,
+    empLogo,
     empName,
     empPhone,
     empType,
@@ -79,7 +78,7 @@ let updatedInfo = async (req, res, next) => {
 
   let updatedInfoResult = await employerService.updateEmployerInfo({
     _id,
-    empLogo: imageUrl,
+    empLogo,
     empTaxCode,
     empName,
     empPhone,

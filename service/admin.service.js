@@ -24,7 +24,6 @@ let adminRegister = async (admin) => {
 
 let login = async (admin) => {
   const isAdminExisted = await findOneByEmail(admin);
-  console.log("login here!" + isAdminExisted.code);
   if (isAdminExisted.code == 200) {
     if (bcrypt.compareSync(admin.password, isAdminExisted.admin.password)) {
       console.log("Correct");
@@ -94,8 +93,51 @@ let updatePassword = async (admin) => {
   }
 };
 
+let adminUpdatePasswordOnWeb = async (admin) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let currentAdmin = await AdminModel.findById({ _id: admin._id });
+  let currentPassword = currentAdmin.password;
+  if (currentAdmin) {
+    if (bcrypt.compareSync(admin.password, currentPassword)) {
+      console.log("Matched, generating new hash pass");
+      let update = util.hashPassword({
+        _id: admin._id,
+        password: admin.newPassword,
+      });
+
+      let updatedAdmin = await AdminModel.findByIdAndUpdate(
+        { _id: update._id },
+        {
+          password: update.password,
+          salt: update.salt,
+        },
+        {
+          new: true,
+        }
+      );
+      if (updatedAdmin) {
+        await session.commitTransaction();
+        session.endSession();
+        return { code: 200, message: "Cập nhật thành công!" };
+      }
+    } else {
+      console.log("Failed");
+      await session.commitTransaction();
+      session.endSession();
+      return { code: 402, message: "Sai mật khẩu!" };
+    }
+  } else {
+    console.log("Not found");
+    await session.commitTransaction();
+    session.endSession();
+    return { code: 404, message: "Không tìm thấy tài khoản" };
+  }
+};
+
 module.exports = {
   adminRegister,
   login,
   updatePassword,
+  adminUpdatePasswordOnWeb,
 };

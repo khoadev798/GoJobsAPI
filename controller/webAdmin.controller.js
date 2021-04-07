@@ -6,11 +6,41 @@ const jobService = require("../service/job.service");
 const contractService = require("../service/contract.service");
 const receiptService = require("../service/receipt.service");
 const jwtHelper = require("../helpers/jwt.helper");
+const emailService = require("../service/sendMail.service");
 let alert = require("alert");
-const Handlebars = require("handlebars");
 
 let loginPage = (req, res, next) => {
+  res.clearCookie("token");
   res.render("login", { layout: false, title: "Login" });
+};
+let updatePasswordPage = (req, res, next) => {
+  res.render("updatePassword", {
+    layout: "layout",
+    title: "Update password",
+    admin: req.admin,
+  });
+};
+
+let updateAdminPassword = async (req, res) => {
+  let { password, password1 } = req.body;
+  let admin = req.admin;
+  console.log("Current:", password, " New:", password1);
+  let updateResult = await adminService.adminUpdatePasswordOnWeb({
+    _id: admin._id,
+    password: password,
+    newPassword: password1,
+  });
+  if (updateResult.code == 200) {
+    res.clearCookie("token");
+    res.redirect("/web");
+  } else {
+    res.clearCookie("token");
+    res.render("error", {
+      layout: false,
+      code: updateResult.code,
+      message: updateResult.message,
+    });
+  }
 };
 
 let mainPage = (req, res, next) => {
@@ -37,7 +67,11 @@ let adminLogin = async (req, res) => {
       admin: adminLoginResult.admin,
     });
   } else {
-    res.render("login", { layout: false, title: "Login" });
+    res.render("error", {
+      layout: false,
+      code: 401,
+      message: "Đăng nhập thất bại!",
+    });
   }
 };
 
@@ -428,6 +462,12 @@ let updateEmpWalletById = async (req, res) => {
   );
   if (updateWalletResult.code == 200) {
     res.redirect(`/web/employer?search=${empEmail}`);
+  } else {
+    res.render("error", {
+      layout: false,
+      code: 400,
+      message: "Lỗi!",
+    });
   }
 };
 
@@ -443,10 +483,30 @@ let updateFlcWalletById = async (req, res) => {
       isCreatedByAdmin: true,
     }
   );
-  console.log(updateWalletResult);
-  // if (updateWalletResult.code == 200) {
-  res.redirect(`/web/freelancer?search=${flcEmail}`);
-  // }
+  // console.log(updateWalletResult);
+  if (updateWalletResult.code == 200) {
+    res.redirect(`/web/freelancer?search=${flcEmail}`);
+  } else {
+    res.render("error", {
+      layout: false,
+      code: 400,
+      message: "Lỗi!",
+    });
+  }
+};
+
+let adminResetPassword = async (req, res) => {
+  let { email } = req.body;
+  let sendEmailResult = await emailService.sendMailRePasswordAdmin({ email });
+  if (sendEmailResult.code == 200) {
+    res.redirect("/web");
+  } else {
+    res.render("error", {
+      layout: false,
+      code: 404,
+      message: "Không tìm thấy tài khoản!",
+    });
+  }
 };
 
 module.exports = {
@@ -464,4 +524,7 @@ module.exports = {
   receiptManagementPage,
   receiptInfoPage,
   statisticPage,
+  adminResetPassword,
+  updatePasswordPage,
+  updateAdminPassword,
 };
