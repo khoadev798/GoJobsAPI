@@ -4,8 +4,6 @@ const employerController = require("../controller/employer.controller");
 const dbConn = require("../middleware/dbConn.middle");
 const infoValidator = require("../middleware/infoValidation.middle");
 // const authMiddleware = require("../middleware/authMiddleware");
-
-const uploadFileMiddleWare = require("../middleware/uploadFile.middleWare");
 route.post(
   "/register",
   infoValidator.empEmailValidate,
@@ -17,7 +15,11 @@ route.post("/empNewFeedback", dbConn.conn, (req, res) => {
   res.send("New feedback");
 });
 
-route.get("/findEmployerById", dbConn.conn, employerController.findEmployerById)
+route.get(
+  "/findEmployerById",
+  dbConn.conn,
+  employerController.findEmployerById
+);
 
 route.post("/login", dbConn.conn, employerController.login);
 
