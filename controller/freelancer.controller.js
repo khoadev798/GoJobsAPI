@@ -31,6 +31,7 @@ let loginFreelancer = async (req, res, next) => {
     _id: flcLoginResult._id,
     flcEmail: flcLoginResult.flcEmail,
     accessToken: flcLoginResult.accessToken,
+    flcName: flcLoginResult.flcName,
   });
 };
 

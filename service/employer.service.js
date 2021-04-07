@@ -75,6 +75,7 @@ let login = async (employer) => {
         code: GLOBAL.SUCCESS_CODE,
         message: `Login succeeded!`,
         empEmail: isEmployerExisted.employer.empEmail,
+        empName: isEmployerExisted.employer.empName,
         _id: _id,
         accessTokenDb: accessToken,
       };
@@ -111,7 +112,7 @@ let findEmployerById = async (employer) => {
     {
       _id: employer._id,
     },
-    "_id empEmail empPassword empNationalId empPhone salt",
+    "_id empEmail empName empAddress empTaxCode empDescription empPhone",
     (err, doc) => {
       if (err) return handleError(err);
       return doc;
@@ -137,7 +138,7 @@ let findEmployerByEmail = async (employer) => {
     {
       empEmail: employer.empEmail,
     },
-    "_id empEmail empPassword empNationalId empPhone salt",
+    "_id empEmail empPassword empNationalId empPhone salt empName",
     (err, doc) => {
       if (err) return handleError(err);
       return doc;
@@ -275,4 +276,5 @@ module.exports = {
   employerPagination,
   updateTokenWithEmpId,
   updatePassword,
+  findEmployerById,
 };

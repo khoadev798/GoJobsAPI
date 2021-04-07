@@ -20,12 +20,12 @@ const jobService = require("../service/job.service");
 // Không dùng function này nữa
 let getContractsByCondition = async (condition) => {
   let contracts = await ContractModel.find(
-    {jobId: condition.jobId},
+    { jobId: condition.jobId },
     "flcId jobTotalSalaryPerHeadCount"
   ).populate("flcId", "flcName flcAvatar")
-  .exec();
-    console.log(contracts);
-    return {code: GLOBAL.SUCCESS_CODE, contracts};
+    .exec();
+  console.log(contracts);
+  return { code: GLOBAL.SUCCESS_CODE, contracts };
 }
 
 let getOneContractWithSpecifiedInfo = async (contract) => {
@@ -703,15 +703,27 @@ let contractPaginationForWebAdmin = async (pagination) => {
 };
 
 let getJobByContractStatus = async (contract) => {
+  console.log("Receieved",contract);
   const session = await mongoose.startSession();
   session.startTransaction();
   let job = await ContractModel.aggregate([
     {
       $match: {
-        $and: [
-          { empId: mongoose.Types.ObjectId(contract.empId) },
-          { contractStatus: contract.contractStatus },
-        ],
+        $or: [
+          {
+         
+               empId: mongoose.Types.ObjectId(contract.userId) ,
+               contractStatus: contract.contractStatus ,
+          
+          },
+          {
+            
+               flcId: mongoose.Types.ObjectId(contract.userId) ,
+               contractStatus: contract.contractStatus ,
+            
+          },
+        ]
+
       },
     },
     { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" } } },
@@ -721,17 +733,23 @@ let getJobByContractStatus = async (contract) => {
     //     localField: "jobId",
     //     foreignField: "_id",
     //     as: "job",
+        
     //   }
     // },
   ]);
+
   let jobIds = [];
   job.forEach((detail) => {
     jobIds.push(detail._id.jobId);
   });
 
-  //console.log(jobIds);
+ 
   let jobDetail = await ContractModel.find(
-    { jobId: { $in: jobIds } },
+   { $and: [
+      { jobId: { $in: jobIds } },
+      {contractStatus: contract.contractStatus}
+    ]},
+  
     "jobId",
     {
       skip: (contract.pageNumber - 1) * contract.pageSize,

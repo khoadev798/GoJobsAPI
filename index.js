@@ -75,24 +75,69 @@ app.use(cookieParser());
 
 // app.use(bodyParser.json({ type: "application/json" }));
 // app.use(bodyParser.urlencoded({ extended: true }));
+var room;
+// io.on("connection", function (socket) {
+  
+//   socket.on("join", function(room){
+//     socket.join(room);
+    
+//     socket.to(room).on("connect user", function (user) {
+//       console.log("Connected user", user);
+     
+//       io.to(room).emit("connect user", user);
+      
+//     });
+  
+//     socket.to(room).on("chat message", function (msg) {
+//       console.log("Message " + msg["message"]);
+//       console.log(room)
+//       io.to(room).emit("chat message", msg);
+      
+//     });
+//   });
+
+// });
 
 io.on("connection", function (socket) {
-  console.log("User Conncetion");
-
-  socket.on("connect user", function (user) {
-    console.log("Connected user ");
-    io.emit("connect user", user);
+  let roomName;
+  socket.on("join", function(room){
+    roomName = room["room"];
+    console.log(roomName);
+    socket.join(roomName);
+    
   });
-
-  socket.on("on typing", function (typing) {
-    console.log("Typing.... ");
-    io.emit("on typing", typing);
-  });
-
-  socket.on("chat message", function (msg) {
-    console.log("Message " + msg["message"]);
-    io.emit("chat message", msg);
-  });
+  // if(roomName == "room1212"){
+  //   socket.in("room1212").on("connect user", function (user) {
+    
+  //     // let roomName1 = room["room"];
+  //     io.to("room1212").emit("connect user", user);
+      
+  //   })
+  
+  //   socket.in("room1212").on("chat message", function (msg) {
+  //     console.log("Message " + msg["message"]);
+     
+  //     // let roomName = room["room"];
+  //     io.to("room1212").emit("chat message", msg);
+      
+  //   })
+  // }else{
+    socket.in(roomName).on("connect user", function (user) {
+    
+      // let roomName1 = room["room"];
+      io.to(roomName).emit("connect user", user);
+      
+    })
+  
+    socket.in(roomName).on("chat message", function (msg) {
+      console.log("Message " + msg["message"]);
+     
+      // let roomName = room["room"];
+      io.to(roomName).emit("chat message", msg);
+      
+    })
+  // }
+    
 });
 
 app.use(
@@ -140,6 +185,8 @@ http.listen(process.env.PORT || PORT, () => {
 
 const Handlebars = require("handlebars");
 const exphbs = require("express-handlebars");
+const { emit } = require("./model/employer");
+const { use } = require("./routes/admin.route");
 
 /**BEGIN OF ADMIN WEBSITE */
 app.set("views", path.join(__dirname, "/views"));

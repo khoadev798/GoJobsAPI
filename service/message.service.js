@@ -18,85 +18,90 @@ let newMessage = async (message) => {
         message["createdAt"] = new Date();
         let messageInstance = new MessageModel(message);
         await messageInstance.save();
-    } else if (isMessageExisted.code == 200) {
+    } else if (isMessageExisted.code == 200 && message.content != undefined && message.content != []) {
         let filter = {
             $and: [
                 { flcId: isMessageExisted.chat.flcId },
                 { empId: isMessageExisted.chat.empId }
             ]
         }
+        console.log("content service ",message.content);
         await MessageModel.findOneAndUpdate(
             filter,
-            { $push: { content: message.content } },
+            { $addToSet: { content: message.content } },
             (err, doc) => {
-                if (err) return handlerError(err);
                 console.log("updated: ", doc);
             }
         );
     }
-
-    if (message.empId == message.content[0].userId) {
-        let flcTokenDevices;
-        await MessageModel.findOne({
-            flcId: message.flcId
-        },
-            "flcId"
-        ).populate("flcId", "flcTokenDevice")
-            .exec()
-            .then(doc => {
-                flcTokenDevices = { ...doc };
-            });
-        var message = {
-            data: {
-                score: '850',
-                time: '2:45'
+    if(message.content == undefined){
+        console.log("No content!");
+    }else{
+        if (message.empId == message.content[0].userId) {
+            let flcTokenDevices;
+            await MessageModel.findOne({
+                flcId: message.flcId
             },
-            notification: {
-                title: 'GoJobs',
-                body: 'Test message by Cậu Huy'
-            }
-        };
-        jobService.FCM.sendToMultipleToken(message, flcTokenDevices._doc.flcId.flcTokenDevice, (err, response) => {
-            if (err) {
-                console.log("err--", err);
-            } else {
-                console.log("response------", response)
-            }
-        })
-    } else if ( message.flcId == message.content[0].userId) {
-        let empTokenDevices;
-        await MessageModel.findOne({
-            empId: message.empId
-        },
-            "empId"
-        ).populate("empId", "empTokenDevice")
-            .exec()
-            .then(doc => {
-                empTokenDevices = { ...doc };
-            });
-        var message = {
-            data: {
-                score: '850',
-                time: '2:45'
+                "flcId"
+            ).populate("flcId", "flcTokenDevice")
+                .exec()
+                .then(doc => {
+                    flcTokenDevices = { ...doc };
+                });
+            var message = {
+                data: {
+                    score: '850',
+                    time: '2:45'
+                },
+                notification: {
+                    title: 'GoJobs',
+                    body: 'Test message by Cậu Huy'
+                }
+            };
+            jobService.FCM.sendToMultipleToken(message, flcTokenDevices._doc.flcId.flcTokenDevice, (err, response) => {
+                if (err) {
+                    console.log("err--", err);
+                } else {
+                    console.log("response------", response)
+                }
+            })
+        } else if ( message.flcId == message.content[0].userId) {
+            let empTokenDevices;
+            await MessageModel.findOne({
+                empId: message.empId
             },
-            notification: {
-                title: 'GoJobs',
-                body: 'Test message by Cậu Huy'
-            }
-        };
-        jobService.FCM.sendToMultipleToken(message, empTokenDevices._doc.empId.empTokenDevice, (err, response) => {
-            if (err) {
-                console.log("err--", err);
-            } else {
-                console.log("response------", response)
-            }
-        })
-
+                "empId"
+            ).populate("empId", "empTokenDevice")
+                .exec()
+                .then(doc => {
+                    empTokenDevices = { ...doc };
+                });
+            var message = {
+                data: {
+                    score: '850',
+                    time: '2:45'
+                },
+                notification: {
+                    title: 'GoJobs',
+                    body: 'Test message by Cậu Huy'
+                }
+            };
+            jobService.FCM.sendToMultipleToken(message, empTokenDevices._doc.empId.empTokenDevice, (err, response) => {
+                if (err) {
+                    console.log("err--", err);
+                } else {
+                    console.log("response------", response)
+                }
+            })
+    
+        }
     }
+    
+    let findMessageResult = await findMessageByUserId(message);
     await session.commitTransaction();
     session.endSession();
 
-    return { code: GLOBAL.SUCCESS_CODE, message: "new message success!" };
+    return { code: GLOBAL.SUCCESS_CODE, message: "new message success!", messages: findMessageResult.chat };
 }
 
 
@@ -194,7 +199,7 @@ let getNotificationMessageByEmp = async (message) => {
             skip: (message.pageNumber - 1) * message.pageSize,
             limit: message.pageNumber * message.pageSize,
         }
-         ).populate("flcId", "flcName")
+         ).populate("flcId", "flcName flcAvatar")
          .exec()
          .then(doc =>{
              listNotification = [...doc]

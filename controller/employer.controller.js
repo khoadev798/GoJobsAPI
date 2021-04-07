@@ -54,8 +54,15 @@ let login = async (req, res, next) => {
     _id: loginResult._id,
     empEmail: loginResult.empEmail,
     accessTokenDb: loginResult.accessTokenDb,
+    empName: loginResult.empName
   });
 };
+
+let findEmployerById = async (req, res) =>{
+  let { _id} = req.query;
+  let findEmployerByIdResult = await employerService.findEmployerById({_id});
+  res.status(findEmployerByIdResult.code).send(findEmployerByIdResult.employer);
+}
 
 let updatedInfo = async (req, res, next) => {
 
@@ -129,4 +136,5 @@ module.exports = {
   updatedInfo,
   empPagination,
   updateTokenWithEmpId,
+  findEmployerById,
 };

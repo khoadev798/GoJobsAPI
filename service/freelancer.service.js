@@ -85,6 +85,7 @@ let login = async (freelancer) => {
         message: `Login succeeded!`,
         _id: _id,
         flcEmail: isFreelancerExisted.freelancer.flcEmail,
+        flcName: isFreelancerExisted.freelancer.flcName,
         accessTokenDb: accessToken,
         accessToken: accessToken,
       };

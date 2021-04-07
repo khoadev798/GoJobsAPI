@@ -225,6 +225,30 @@ let jobPaginationWithTime = async (pagination) => {
   return { code: 200, job: jobsWithConditions };
 };
 
+let jobPaginationWithAddress = async (pagination) => {
+  let searchRegex = new RegExp(pagination.search, "i");
+  let query = {
+    $and: [
+    
+      { jobAddress: { $regex: searchRegex } },
+        {jobStatus: "Open"}
+      
+    ],
+  };
+
+  let jobsWithConditions = await JobModel.find(
+    query,
+    "_id empId jobAddress jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    {
+      skip: (pagination.pageNumber - 1) * pagination.pageSize,
+      limit: pagination.pageNumber * pagination.pageSize,
+    }
+  ).populate("empId", "empName")
+  .exec();
+  console.log(jobsWithConditions);
+  return { code: 200, jobs: jobsWithConditions };
+};
+
 let jobPaginationForWebAdmin = async (pagination) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -345,6 +369,7 @@ module.exports = {
   jobPaginationWithTime,
   FCM,
   jobPaginationForWebAdmin,
+  jobPaginationWithAddress,
   getJobDetail,
   isFollowExisted,
 };

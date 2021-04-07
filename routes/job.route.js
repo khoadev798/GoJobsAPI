@@ -26,6 +26,11 @@ route.delete("/", (req, res) => {
   res.send("Delete job");
 });
 
+route.get(
+  "/jobPaginationWithAddress",
+  dbConn.conn,
+  jobController.jobPaginationWithAddress
+)
 
 route.get(
   "/jobDetail",

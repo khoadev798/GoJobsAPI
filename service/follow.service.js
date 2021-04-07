@@ -5,7 +5,7 @@ const FollowModel = mongoose.model("Follow", Follow);
 
 let createFlcFollowEmp = async (follow) => {
     follow["createdAt"] = new Date();
-    follow["createdBy"] = "freelancer";
+    follow["createdBy"] = follow.flcId;
     let followInstance = new FollowModel(follow);
     await followInstance.save((err, doc) => {
         if (err) return console.log(err);
@@ -113,7 +113,7 @@ let delFollow = async (follow) => {
     }
 
     await FollowModel.findOneAndDelete(filter, (err) => {
-        if (err) return handlerError(err);
+        console.log(err);
 
     });
     return { code: GLOBAL.SUCCESS_CODE, message: "delete Follow success!" };

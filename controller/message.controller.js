@@ -5,21 +5,27 @@ let newMessage = async (req, res) =>{
     let {
         empId,
         flcId,
-        content
+        mess,
     } = req.body;
-  
+
+    let content;
+   if (mess != undefined){
+    content =  JSON.parse(mess);
+    
+   }
+   console.log(content);
     let createMessageResult = await messageService.newMessage({
         empId,
         flcId,
-        content,
+        content
     });
-    res.status(createMessageResult.code).send(createMessageResult.message);
+    res.status(createMessageResult.code).send(createMessageResult.messages);
 }
 
 let getNotificationMessageByEmp = async(req, res) =>{
     let {
         empId, pageNumber, pageSize
-    } = req.body;
+    } = req.query;
 
     let getNotificationMessageResult = await messageService.getNotificationMessageByEmp({
         empId, pageNumber, pageSize
