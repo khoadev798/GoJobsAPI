@@ -6,7 +6,11 @@ route.post("/createNewJob", dbConn.conn, jobController.createNewJob);
 
 route.get("/allJobs", dbConn.conn, jobController.getAllJobs);
 
-route.get("/allJobsByEmpId", dbConn.conn, jobController.getAllJobsOfEmployerById);
+route.get(
+  "/allJobsByEmpId",
+  dbConn.conn,
+  jobController.getAllJobsOfEmployerById
+);
 
 route.get("/jobPagination", dbConn.conn, jobController.jobPagination);
 
@@ -30,12 +34,8 @@ route.get(
   "/jobPaginationWithAddress",
   dbConn.conn,
   jobController.jobPaginationWithAddress
-)
+);
 
-route.get(
-  "/jobDetail",
-  dbConn.conn,
-  jobController.getJobDetail
-)
+route.get("/jobDetail", dbConn.conn, jobController.getJobDetail);
 
 module.exports = route;

@@ -28,10 +28,9 @@ let empFeedbackCreate = async (empFeedback) => {
     },
   };
 
-  let sumStarRating = await FeedbackModel.aggregate([
-    match,
-    aggregate,
-  ]).session(session);
+  let sumStarRating = await FeedbackModel.aggregate([match, aggregate]).session(
+    session
+  );
   console.log("sumStarRating: ", sumStarRating);
   const found = sumStarRating.find((rating) => rating.totalRating);
   const avg = sumStarRating.find((avg) => avg.count);
@@ -83,10 +82,9 @@ let flcFeedbackCreate = async (flcFeedback) => {
     },
   };
 
-  let sumStarRating = await FeedbackModel.aggregate([
-    match,
-    aggregate,
-  ]).session(session);
+  let sumStarRating = await FeedbackModel.aggregate([match, aggregate]).session(
+    session
+  );
   console.log("sumStarRating: ", sumStarRating);
   const found = sumStarRating.find((rating) => rating.totalRating);
   const avg = sumStarRating.find((avg) => avg.count);
@@ -117,59 +115,55 @@ let flcFeedbackCreate = async (flcFeedback) => {
   }
 };
 
-let getFeedbackByFlcId = async (feedback) =>{
+let getFeedbackByFlcId = async (feedback) => {
   let found = await FeedbackModel.find(
     {
-      $and: [
-        {flcId: feedback.flcId},
-        {createdBy: {$ne: feedback.flcId}}
-      ]
+      $and: [{ flcId: feedback.flcId }, { createdBy: { $ne: feedback.flcId } }],
     },
     "starRating",
     {
       skip: (feedback.pageNumber - 1) * feedback.pageSize,
       limit: feedback.pageNumber * feedback.pageSize,
+    }
+  )
+    .populate("empId", "empName empLogo")
+    .exec()
+    .then((doc) => {
+      return doc;
+    });
+  if (found == undefined) {
+    return { code: GLOBAL.NOT_FOUND_CODE, feedbacks: "missing!" };
+  } else {
+    return { code: GLOBAL.SUCCESS_CODE, feedbacks: found };
   }
-  ).populate("empId", "empName empLogo")
-  .exec()
-  .then(doc =>{
-    return doc
-  });
-  if(found == undefined){
-    return {code: GLOBAL.NOT_FOUND_CODE, feedbacks: "missing!"}
-  }else{
-    return {code: GLOBAL.SUCCESS_CODE, feedbacks: found}
-  }
-}
+};
 
-let getFeedbackByEmpId = async (feedback) =>{
+let getFeedbackByEmpId = async (feedback) => {
   let found = await FeedbackModel.find(
     {
-      $and: [
-        {empId: feedback.empId},
-        {createdBy: {$ne: feedback.empId}}
-      ]
+      $and: [{ empId: feedback.empId }, { createdBy: { $ne: feedback.empId } }],
     },
     "starRating",
     {
       skip: (feedback.pageNumber - 1) * feedback.pageSize,
       limit: feedback.pageNumber * feedback.pageSize,
+    }
+  )
+    .populate("flcId", "flcName flcAvatar")
+    .exec()
+    .then((doc) => {
+      return doc;
+    });
+  if (found == undefined) {
+    return { code: GLOBAL.NOT_FOUND_CODE, feedbacks: "missing!" };
+  } else {
+    return { code: GLOBAL.SUCCESS_CODE, feedbacks: found };
   }
-  ).populate("flcId", "flcName flcAvatar")
-  .exec()
-  .then(doc =>{
-    return doc
-  });
-  if(found == undefined){
-    return {code: GLOBAL.NOT_FOUND_CODE, feedbacks: "missing!"}
-  }else{
-    return {code: GLOBAL.SUCCESS_CODE, feedbacks: found}
-  }
-}
+};
 
 module.exports = {
   empFeedbackCreate,
   flcFeedbackCreate,
   getFeedbackByFlcId,
-  getFeedbackByEmpId
+  getFeedbackByEmpId,
 };

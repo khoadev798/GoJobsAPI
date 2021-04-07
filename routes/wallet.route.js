@@ -15,6 +15,6 @@ route.get(
   "/getWalletByEndUserId",
   dbConn.conn,
   walletController.getWallByEndUserId
-)
+);
 
 module.exports = route;

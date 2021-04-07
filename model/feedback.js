@@ -8,9 +8,9 @@ const Feedback = new Schema({
   jobId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
   empId: { type: Schema.Types.ObjectId, ref: "Employer", required: true },
   flcId: { type: Schema.Types.ObjectId, ref: "Freelancer", required: true },
-  starRating: { type: Number, default: 5},
-  comment: { type: String, default:"" },
-  createdBy: {type: String, required:true},
+  starRating: { type: Number, default: 5 },
+  comment: { type: String, default: "" },
+  createdBy: { type: String, required: true },
   createdAt: { type: Date },
 });
 

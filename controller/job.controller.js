@@ -69,15 +69,17 @@ const jobPagination = async (req, res) => {
   res.status(pagingResult.code).send(pagingResult.jobs);
 };
 
-const jobPaginationWithAddress = async (req, res) =>{
-  let { pageNumber, pageSize, search, } = req.query;
+const jobPaginationWithAddress = async (req, res) => {
+  let { pageNumber, pageSize, search } = req.query;
   let paginnationWithAddressResult = await jobService.jobPaginationWithAddress({
     search,
     pageNumber,
-    pageSize
+    pageSize,
   });
-  res.status(paginnationWithAddressResult.code).send(paginnationWithAddressResult.jobs);
-}
+  res
+    .status(paginnationWithAddressResult.code)
+    .send(paginnationWithAddressResult.jobs);
+};
 
 const jobPaginationWithTime = async (req, res) => {
   let { sort, pageNumber, pageSize } = req.query;
@@ -87,17 +89,17 @@ const jobPaginationWithTime = async (req, res) => {
     pageSize,
   });
   console.log(pagingResult.code);
-  
+
   res.status(pagingResult.code).send(pagingResult.job);
 };
 
-let getJobDetail = async (req, res) =>{
-  let {_id} = req.query;
+let getJobDetail = async (req, res) => {
+  let { _id } = req.query;
   let getJobDetailResult = await jobService.getJobDetail({
     _id,
   });
   res.status(getJobDetailResult.code).send(getJobDetailResult.jobDetail);
-}
+};
 
 module.exports = {
   createNewJob,

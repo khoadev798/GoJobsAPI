@@ -12,11 +12,7 @@ route.post(
   freelancerController.createFreelancer
 );
 
-route.post(
-  "/flcLogin",
-  dbConn.conn,
-  freelancerController.loginFreelancer,
-);
+route.post("/flcLogin", dbConn.conn, freelancerController.loginFreelancer);
 
 route.get(
   "/getAllFreelancer",
@@ -33,40 +29,32 @@ route.put(
   freelancerController.updatePassword
 );
 
-route.get(
-  "/flcPaginations",
-  dbConn.conn,
-  freelancerController.flcPagination
-) 
+route.get("/flcPaginations", dbConn.conn, freelancerController.flcPagination);
 
 route.post(
   "/flcUpdatedInfo",
   dbConn.conn,
-  freelancerController.updateFreelancerInfo,
-)
+  freelancerController.updateFreelancerInfo
+);
 
 route.put(
   "/flcUpdateToken",
   dbConn.conn,
   freelancerController.updateTokenWithFlcId
-)
+);
 
 route.get(
   "/flcPaginationAll",
   dbConn.conn,
-  freelancerController.flcPaginationAll,
-)
+  freelancerController.flcPaginationAll
+);
 
 route.get(
   "/flcPaginationWithAddress",
   dbConn.conn,
   freelancerController.flcPaginationWithAddress
-)
+);
 
-route.get(
-  "/flcProfile",
-  dbConn.conn,
-  freelancerController.findFreelancerById
-)
+route.get("/flcProfile", dbConn.conn, freelancerController.findFreelancerById);
 
 module.exports = route;

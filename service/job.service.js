@@ -173,7 +173,6 @@ let getJobsOfOneEmployerById = async (empId) => {
     (err, docs) => {
       if (err) handleError(err);
       console.log(docs);
-      
     }
   );
   return { code: 200, jobs: jobs };
@@ -201,10 +200,12 @@ let jobPagination = async (pagination) => {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
     }
-  ).populate("empId")
-  .sort({
-    jobTitle: pagination.sort,
-  }).exec();
+  )
+    .populate("empId")
+    .sort({
+      jobTitle: pagination.sort,
+    })
+    .exec();
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
 };
@@ -217,10 +218,12 @@ let jobPaginationWithTime = async (pagination) => {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
     }
-  ).populate("empId")
-  .sort({
-    jobPublishDate: pagination.sort,
-  }).exec();
+  )
+    .populate("empId")
+    .sort({
+      jobPublishDate: pagination.sort,
+    })
+    .exec();
   console.log(jobsWithConditions);
   return { code: 200, job: jobsWithConditions };
 };
@@ -228,12 +231,7 @@ let jobPaginationWithTime = async (pagination) => {
 let jobPaginationWithAddress = async (pagination) => {
   let searchRegex = new RegExp(pagination.search, "i");
   let query = {
-    $and: [
-    
-      { jobAddress: { $regex: searchRegex } },
-        {jobStatus: "Open"}
-      
-    ],
+    $and: [{ jobAddress: { $regex: searchRegex } }, { jobStatus: "Open" }],
   };
 
   let jobsWithConditions = await JobModel.find(
@@ -243,8 +241,9 @@ let jobPaginationWithAddress = async (pagination) => {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
     }
-  ).populate("empId", "empName")
-  .exec();
+  )
+    .populate("empId", "empName")
+    .exec();
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
 };
@@ -325,7 +324,7 @@ let jobPaginationForWebAdmin = async (pagination) => {
       },
     ]);
   }
-  // console.log(jobsAndEmpWithCondition);
+
   let jobCount = await JobModel.countDocuments({
     $or: [
       { jobTitle: { $regex: searchRegex } },

@@ -4,15 +4,15 @@ const notificationController = require("../controller/notification.controller");
 const dbConn = require("../middleware/dbConn.middle");
 
 route.get(
-    "/getNotification",
-    dbConn.conn,
-    notificationController.getNotification,
-)
+  "/getNotification",
+  dbConn.conn,
+  notificationController.getNotification
+);
 
 route.get(
-    "/getNotificationForEmp",
-    dbConn.conn,
-    notificationController.getNotificationForEmp
-)
+  "/getNotificationForEmp",
+  dbConn.conn,
+  notificationController.getNotificationForEmp
+);
 
 module.exports = route;

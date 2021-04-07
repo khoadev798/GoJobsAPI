@@ -11,7 +11,7 @@ const GLOBAL = {
   CONFLICT_CODE: 409,
   SERVER_ERROR_CODE: 500,
   ACCESS_TOKEN_SECRET: "Secret",
-  ACCESS_TOKEN_LIFE: '1h',
+  ACCESS_TOKEN_LIFE: "1h",
   REGISTERATION_MESSAGE_PREFIX: "Registeration",
   UPDATE_MESSAGE_PREFIX: "Update",
   DELTE_MESSAGE_PREFIX: "Delete",
@@ -26,8 +26,9 @@ const GLOBAL = {
   SERVICE_ID: "VA9fb49002f0c6108d585bf37148e754f6",
   ACCOUNTS_ID: "AC0ce24f1befd3b080315fdf2342babbac",
   AUTH_TOKEN: "8996186c7d3cb2a6b82b0c5957f912a9",
-  API_KEY_MAIL: "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",
-  EMAIL_ADMIN: "cauhuyso000@gmail.com"
+  API_KEY_MAIL:
+    "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",
+  EMAIL_ADMIN: "cauhuyso000@gmail.com",
 };
 
 module.exports = GLOBAL;

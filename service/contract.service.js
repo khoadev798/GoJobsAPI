@@ -22,11 +22,12 @@ let getContractsByCondition = async (condition) => {
   let contracts = await ContractModel.find(
     { jobId: condition.jobId },
     "flcId jobTotalSalaryPerHeadCount"
-  ).populate("flcId", "flcName flcAvatar")
+  )
+    .populate("flcId", "flcName flcAvatar")
     .exec();
   console.log(contracts);
   return { code: GLOBAL.SUCCESS_CODE, contracts };
-}
+};
 
 let getOneContractWithSpecifiedInfo = async (contract) => {
   console.log("Contract at check", contract);
@@ -251,35 +252,11 @@ let updateStatusOfContractById = async (contract) => {
       if (err) return handleError(err);
     }
   );
-  // let walletFilter = {};
-  // if (updatedResult.contractStatus == "ACCEPTED") {
-  //   flcWalletFilter = {
-  //     createdBy: { $eq: updatedResult.flcId },
-  //   };
-  //   let currentFlcWallet = await WalletModel.findOne(flcWalletFilter);
-  //   let flcWalletUpdate = {
-  //     $set: {
-  //       balance:
-  //         currentFlcWallet.balance +
-  //         (updatedResult.jobTotalSalaryPerHeadCount * 25) / 100,
-  //       updatedBy: contract.empId,
-  //       updatedAt: new Date(),
-  //     },
-  //   };
-  //   let updatedWalletOfFlc = await WalletModel.findOneAndUpdate(
-  //     flcWalletFilter,
-  //     flcWalletUpdate,
-  //     {
-  //       new: true,
-  //     }
-  //   );
-  // }
+
   await session.commitTransaction();
   session.endSession();
   return { code: 200, message: "Cap nhat thanh cong!" };
 };
-
-//  mongoose.Types.ObjectId
 
 let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
   const session = await mongoose.startSession();
@@ -703,7 +680,7 @@ let contractPaginationForWebAdmin = async (pagination) => {
 };
 
 let getJobByContractStatus = async (contract) => {
-  console.log("Receieved",contract);
+  console.log("Receieved", contract);
   const session = await mongoose.startSession();
   session.startTransaction();
   let job = await ContractModel.aggregate([
@@ -711,19 +688,14 @@ let getJobByContractStatus = async (contract) => {
       $match: {
         $or: [
           {
-         
-               empId: mongoose.Types.ObjectId(contract.userId) ,
-               contractStatus: contract.contractStatus ,
-          
+            empId: mongoose.Types.ObjectId(contract.userId),
+            contractStatus: contract.contractStatus,
           },
           {
-            
-               flcId: mongoose.Types.ObjectId(contract.userId) ,
-               contractStatus: contract.contractStatus ,
-            
+            flcId: mongoose.Types.ObjectId(contract.userId),
+            contractStatus: contract.contractStatus,
           },
-        ]
-
+        ],
       },
     },
     { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" } } },
@@ -733,7 +705,7 @@ let getJobByContractStatus = async (contract) => {
     //     localField: "jobId",
     //     foreignField: "_id",
     //     as: "job",
-        
+
     //   }
     // },
   ]);
@@ -743,20 +715,24 @@ let getJobByContractStatus = async (contract) => {
     jobIds.push(detail._id.jobId);
   });
 
- 
   let jobDetail = await ContractModel.find(
-   { $and: [
-      { jobId: { $in: jobIds } },
-      {contractStatus: contract.contractStatus}
-    ]},
-  
+    {
+      $and: [
+        { jobId: { $in: jobIds } },
+        { contractStatus: contract.contractStatus },
+      ],
+    },
+
     "jobId",
     {
       skip: (contract.pageNumber - 1) * contract.pageSize,
       limit: contract.pageNumber * contract.pageSize,
     }
   )
-    .populate("jobId", "jobTitle jobTotalSalaryPerHeadCount jobHeadCountTarget jobStart jobEnd jobPaymentType")
+    .populate(
+      "jobId",
+      "jobTitle jobTotalSalaryPerHeadCount jobHeadCountTarget jobStart jobEnd jobPaymentType"
+    )
     .exec();
   console.log("jobDetail", jobDetail);
   await session.commitTransaction();

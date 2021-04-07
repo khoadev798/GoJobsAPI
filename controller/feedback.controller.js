@@ -7,36 +7,50 @@ let createEmpFeedback = async (req, res) => {
     jobId,
     flcId,
     comment,
-    starRating
+    starRating,
   });
   res
     .status(empFeedbackCreateResult.code)
     .send(empFeedbackCreateResult.message);
 };
 
-let createFlcFeedback = async (req, res) =>{
-  let { empId, jobId, flcId, comment, starRating} = req.query;
+let createFlcFeedback = async (req, res) => {
+  let { empId, jobId, flcId, comment, starRating } = req.query;
   let flcFeedbackCreateResult = await feedbackService.flcFeedbackCreate({
     empId,
     jobId,
     flcId,
     comment,
-    starRating
+    starRating,
   });
-  res.status(flcFeedbackCreateResult.code).send(flcFeedbackCreateResult.message);
-}
+  res
+    .status(flcFeedbackCreateResult.code)
+    .send(flcFeedbackCreateResult.message);
+};
 
-let getFeedbackByFlcId = async (req, res)=>{
-  let {flcId, pageNumber, pageSize} = req.query;
-  let getFeedbackByFlcIdResult = await feedbackService.getFeedbackByFlcId({flcId, pageNumber, pageSize});
-  res.status(getFeedbackByFlcIdResult.code).send(getFeedbackByFlcIdResult.feedbacks);
-}
+let getFeedbackByFlcId = async (req, res) => {
+  let { flcId, pageNumber, pageSize } = req.query;
+  let getFeedbackByFlcIdResult = await feedbackService.getFeedbackByFlcId({
+    flcId,
+    pageNumber,
+    pageSize,
+  });
+  res
+    .status(getFeedbackByFlcIdResult.code)
+    .send(getFeedbackByFlcIdResult.feedbacks);
+};
 
-let getFeedbackByEmpId = async(req, res) =>{
-  let {empId, pageNumber, pageSize} = req.query;
-  let getFeedbackByEmpIdResult = await feedbackService.getFeedbackByEmpId({empId, pageNumber, pageSize});
-  res.status(getFeedbackByEmpIdResult.code).send(getFeedbackByEmpIdResult.feedbacks);
-}
+let getFeedbackByEmpId = async (req, res) => {
+  let { empId, pageNumber, pageSize } = req.query;
+  let getFeedbackByEmpIdResult = await feedbackService.getFeedbackByEmpId({
+    empId,
+    pageNumber,
+    pageSize,
+  });
+  res
+    .status(getFeedbackByEmpIdResult.code)
+    .send(getFeedbackByEmpIdResult.feedbacks);
+};
 
 module.exports = {
   createEmpFeedback,

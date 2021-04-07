@@ -23,11 +23,15 @@ let addNewContract = async (req, res) => {
   res.status(createContractResult.code).send(createContractResult.message);
 };
 
-let getContractsByCondition = async (req, res) =>{
-  let {jobId} = req.query;
-  let getContractsByConditionResult = await contractService.getContractsByCondition({jobId});
-  res.status(getContractsByConditionResult.code).send(getContractsByConditionResult.contracts);
-}
+let getContractsByCondition = async (req, res) => {
+  let { jobId } = req.query;
+  let getContractsByConditionResult = await contractService.getContractsByCondition(
+    { jobId }
+  );
+  res
+    .status(getContractsByConditionResult.code)
+    .send(getContractsByConditionResult.contracts);
+};
 
 let deleteContractById = async (req, res) => {
   let { _id } = req.query;
@@ -90,16 +94,20 @@ let markOneContractCancelled = async (req, res) => {
   res.status(cancelResult.code).send(cancelResult.result);
 };
 
-let getJobByContractStatus = async (req, res) =>{
-  let {contractStatus, userId, pageNumber, pageSize} = req.query;
-  let getJobByContractStatusResult = await contractService.getJobByContractStatus({
-    contractStatus,
-    userId,
-    pageNumber,
-    pageSize
-  });
-  res.status(getJobByContractStatusResult.code).send(getJobByContractStatusResult.jobs);
-}
+let getJobByContractStatus = async (req, res) => {
+  let { contractStatus, userId, pageNumber, pageSize } = req.query;
+  let getJobByContractStatusResult = await contractService.getJobByContractStatus(
+    {
+      contractStatus,
+      userId,
+      pageNumber,
+      pageSize,
+    }
+  );
+  res
+    .status(getJobByContractStatusResult.code)
+    .send(getJobByContractStatusResult.jobs);
+};
 
 module.exports = {
   getContractsByStatusOfFlc,
@@ -111,5 +119,5 @@ module.exports = {
   markContractsCompleted,
   markOneContractCancelled,
   getJobByContractStatus,
-  getContractsByCondition
+  getContractsByCondition,
 };

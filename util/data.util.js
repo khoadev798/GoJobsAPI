@@ -18,7 +18,7 @@ let empHashPassword = (emp) => {
   return emp;
 };
 
-let flcHashPassword = (flc) =>{
+let flcHashPassword = (flc) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(flc.flcPassword, salt);
   flc["flcPassword"] = hash;

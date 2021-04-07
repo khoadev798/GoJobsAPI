@@ -14,19 +14,19 @@ route.post(
 route.post(
   "/createFlcFeedback",
   dbConn.conn,
-  flcFeedbackController.createFlcFeedback,
-)
+  flcFeedbackController.createFlcFeedback
+);
 
 route.get(
   "/getFeedbackByFlc",
   dbConn.conn,
   flcFeedbackController.getFeedbackByFlcId
-)
+);
 
 route.get(
   "/getFeedbackByEmp",
   dbConn.conn,
   flcFeedbackController.getFeedbackByEmpId
-)
+);
 
 module.exports = route;

@@ -2,23 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
-// empTypeId;
-// empName;
-// empEmail;
-// empPassword;
-// empPhone;
-// empAddress;
-// empTaxcode;
-// empDescription;
-// empLogo;
-// createdAt;
-// updatedPasswordAt;
-// updatedInfoAt;
-// confirmedBy;
-// confirmedAt;
-
 const Employer = new Schema({
-  empTokenDevice: {type: [String], default: [], required: true},
+  empTokenDevice: { type: [String], default: [], required: true },
   empName: { type: String, default: null },
   empType: { type: String, default: null },
   empEmail: { type: String, required: true },
@@ -30,7 +15,7 @@ const Employer = new Schema({
   empLogo: { type: String, default: null },
   empDescription: { type: String, default: null },
   empTerm: { type: Boolean, required: true },
-  empRating:{type: Number, default: 5},
+  empRating: { type: Number, default: 5 },
   empStatus: { type: String, required: true, default: "Registered" },
   createdAt: { type: Date },
   // confirmedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },

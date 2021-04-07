@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const Image = Schema({
-    image: {type: String}
+  image: { type: String },
 });
 
-module.exports = Image
+module.exports = Image;

@@ -343,8 +343,10 @@ let statisticPage = async (req, res) => {
   let chartInfoList = {
     info: [],
   };
-  // res.send(queryResult);
+
+  let sum = 0;
   receipts.forEach((receipt) => {
+    sum = sum + receipt.income;
     if (receipt._id == 1) {
       chartInfoList.info.push({
         name: "Jan",
@@ -418,10 +420,12 @@ let statisticPage = async (req, res) => {
       });
     }
   });
+
   res.render("statistic/statistic", {
     layout: "layout",
     title: "Statistic",
     admin: req.admin,
+    sum,
     encodedJson: encodeURIComponent(JSON.stringify(chartInfoList)),
   });
 };

@@ -3,7 +3,11 @@ const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
 const contractController = require("../controller/contract.controller");
 
-route.post("/createNewContract", dbConn.conn, contractController.addNewContract);
+route.post(
+  "/createNewContract",
+  dbConn.conn,
+  contractController.addNewContract
+);
 
 route.get(
   "/contractsByStatusOfFlc",
@@ -29,7 +33,11 @@ route.put(
   contractController.updateContractStatusById
 );
 
-route.delete("/deteledContract", dbConn.conn, contractController.deleteContractById);
+route.delete(
+  "/deteledContract",
+  dbConn.conn,
+  contractController.deleteContractById
+);
 
 // Khác biệt giữa 2 trường hợp COMPLETED và CANCELLED là
 // cho phép COMPLETED cùng lúc nhiều contracts
@@ -49,12 +57,12 @@ route.get(
   "/getJobByContractStatus",
   dbConn.conn,
   contractController.getJobByContractStatus
-)
+);
 
 route.get(
   "/getContractByJobId",
   dbConn.conn,
   contractController.getContractsByCondition
-)
+);
 
 module.exports = route;

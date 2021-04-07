@@ -6,7 +6,7 @@ const dbConn = require("../middleware/dbConn.middle");
 const OTPController = require("../controller/otp.controller");
 
 route.post("/getOTP", OTPController.getOTP);
-    
+
 route.post("/verifyOTP", OTPController.verifyOTP);
 
 module.exports = route;
