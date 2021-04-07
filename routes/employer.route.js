@@ -19,12 +19,7 @@ route.post("/empNewFeedback", dbConn.conn, (req, res) => {
 
 route.post("/login", dbConn.conn, employerController.login);
 
-route.post(
-  "/updatedEmployerInfo",
-  dbConn.conn,
-  uploadFileMiddleWare.uploadFile,
-  employerController.updatedInfo
-);
+route.post("/updatedEmployerInfo", dbConn.conn, employerController.updatedInfo);
 
 route.put("/updatePassword", dbConn.conn, employerController.updatePassword);
 
