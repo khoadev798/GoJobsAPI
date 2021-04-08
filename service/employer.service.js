@@ -100,7 +100,7 @@ let updateEmployerInfo = async (employer) => {
     let doc = await EmployerModel.findOneAndUpdate(filter, update, {
       new: true,
     });
-    console.log("Cap nhat info thanh cong: ", doc);
+   
     return { code: 200, message: "Cap nhat info thanh cong", doc };
   } else {
     return { code: 404, message: "Tai khoan khong ton tai" };

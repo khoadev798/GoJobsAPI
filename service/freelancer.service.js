@@ -111,7 +111,6 @@ let flcUpdateInfo = async (freelancer) => {
     let doc = await FreelancerModel.findOneAndUpdate(filter, update, {
       new: true,
     });
-    console.log(doc);
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Cap nhat info thanh cong!",
