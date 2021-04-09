@@ -12,61 +12,52 @@ route.post(
   freelancerController.createFreelancer
 );
 
-route.post(
-  "/flcLogin",
-  dbConn.conn,
-  freelancerController.loginFreelancer,
-);
+route.post("/flcLogin", dbConn.conn, freelancerController.loginFreelancer);
 
 route.get(
   "/getAllFreelancer",
   authMiddleware.isAuth,
   dbConn.conn,
-  authMiddleware.isAuth,
   freelancerController.getAllFreelancer
 );
 
 route.put(
   "/updatePassword",
-  dbConn.conn,
   authMiddleware.isAuth,
+  dbConn.conn,
   freelancerController.updatePassword
 );
 
-route.get(
-  "/flcPaginations",
-  dbConn.conn,
-  freelancerController.flcPagination
-) 
+route.get("/flcPaginations",authMiddleware.isAuth, dbConn.conn, freelancerController.flcPagination);
 
 route.post(
   "/flcUpdatedInfo",
+  authMiddleware.isAuth,
   dbConn.conn,
-  freelancerController.updateFreelancerInfo,
-)
+  freelancerController.updateFreelancerInfo
+);
 
 route.put(
   "/flcUpdateToken",
+  authMiddleware.isAuth,
   dbConn.conn,
   freelancerController.updateTokenWithFlcId
-)
+);
 
 route.get(
   "/flcPaginationAll",
+  authMiddleware.isAuth,
   dbConn.conn,
-  freelancerController.flcPaginationAll,
-)
+  freelancerController.flcPaginationAll
+);
 
 route.get(
   "/flcPaginationWithAddress",
+  authMiddleware.isAuth,
   dbConn.conn,
   freelancerController.flcPaginationWithAddress
-)
+);
 
-route.get(
-  "/flcProfile",
-  dbConn.conn,
-  freelancerController.findFreelancerById
-)
+route.get("/flcProfile", authMiddleware.isAuth,dbConn.conn, freelancerController.findFreelancerById);
 
 module.exports = route;

@@ -75,7 +75,7 @@ let login = async (freelancer) => {
         { $push: { flcTokenDevice: freelancer.flcTokenDevice } },
         (err, docs) => {
           if (err) handleError(err);
-          console.log("add flcTokenDevice", docs);
+      
         }
       );
       await session.commitTransaction();
@@ -87,7 +87,6 @@ let login = async (freelancer) => {
         flcEmail: isFreelancerExisted.freelancer.flcEmail,
         flcName: isFreelancerExisted.freelancer.flcName,
         accessTokenDb: accessToken,
-        accessToken: accessToken,
       };
     } else {
       console.log("Incorrect");
@@ -141,7 +140,7 @@ let flcPagination = async (pagination) => {
   ).sort({
     flcRating: pagination.sort,
   });
-  console.log(flcsWithConditions);
+  console.log(flcsWithConditions);  
   return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions };
 };
 

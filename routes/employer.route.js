@@ -5,7 +5,8 @@ const dbConn = require("../middleware/dbConn.middle");
 const infoValidator = require("../middleware/infoValidation.middle");
 const authMiddleware = require("../middleware/authMiddleware");
 
-const uploadFileMiddleWare = require("../middleware/uploadFile.middleWare");
+//const uploadFileMiddleWare = require("../middleware/uploadFile.middleWare");
+// const authMiddleware = require("../middleware/authMiddleware");
 route.post(
   "/register",
   infoValidator.empEmailValidate,
@@ -16,18 +17,27 @@ route.post(
 route.post("/empNewFeedback", dbConn.conn, (req, res) => {
   res.send("New feedback");
 });
-
-route.get("/findEmployerById", dbConn.conn, authMiddleware.isAuth,employerController.findEmployerById)
+// route.get("/findEmployerById", dbConn.conn, authMiddleware.isAuth,employerController.findEmployerById)
 
 route.post("/login", dbConn.conn, employerController.login);
 
-route.post(
-  "/updatedEmployerInfo",
+// route.post(
+//   "/updatedEmployerInfo",
+//   dbConn.conn,
+//   authMiddleware.isAuth,
+// //  uploadFileMiddleWare.uploadFile,
+//   employerController.updatedInfo
+// );
+route.get(
+  "/findEmployerById",
   dbConn.conn,
   authMiddleware.isAuth,
-  uploadFileMiddleWare.uploadFile,
-  employerController.updatedInfo
+  employerController.findEmployerById
 );
+
+route.post("/login", dbConn.conn, employerController.login);
+
+route.post("/updatedEmployerInfo", dbConn.conn, authMiddleware.isAuth, employerController.updatedInfo);
 
 route.put("/updatePassword", dbConn.conn, authMiddleware.isAuth,employerController.updatePassword);
 
@@ -35,6 +45,7 @@ route.get("/empPagination", dbConn.conn, authMiddleware.isAuth,employerControlle
 
 route.put(
   "/empUpdateToken",
+  authMiddleware.isAuth,
   dbConn.conn,
   employerController.updateTokenWithEmpId
 );

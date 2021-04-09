@@ -6,7 +6,7 @@ const debug = console.log.bind(console);
 
 let isAuth = async (req, res, next) => {
   const tokenFromClient =
-    req.body.token || req.query || req.headers["x-accsess-token"];
+    req.body.accessTokenDb || req.query.accessTokenDb || req.headers["x-accsess-token"];
   if (tokenFromClient) {
     try {
       const decoded = await jwtHelper.verifyToken(
@@ -36,7 +36,11 @@ let isAuthOnWebAdminFromCookieToken = async (req, res, next) => {
   try {
     if (!token) {
       // return res.status(401).json("You need to Login");
-      res.redirect("/web");
+      res.render("error", {
+        layout: false,
+        code: 402,
+        message: "Session đã hết hạn!",
+      });
     }
     const decode = await jwt.verify(token, GLOBAL.ACCESS_TOKEN_SECRET);
     req.admin = {
@@ -45,7 +49,11 @@ let isAuthOnWebAdminFromCookieToken = async (req, res, next) => {
     };
     next();
   } catch (error) {
-    return res.status(500).json(error.toString());
+    res.render("error", {
+      layout: false,
+      code: 400,
+      message: "Lỗi",
+    });
   }
 };
 

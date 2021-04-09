@@ -2,18 +2,26 @@ const express = require("express");
 const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
 const jobController = require("../controller/job.controller");
-route.post("/createNewJob", dbConn.conn, jobController.createNewJob);
+const authMiddleware = require("../middleware/authMiddleware");
 
-route.get("/allJobs", dbConn.conn, jobController.getAllJobs);
+route.get("/allJobs",authMiddleware.isAuth, dbConn.conn, jobController.getAllJobs);
 
-route.get("/allJobsByEmpId", dbConn.conn, jobController.getAllJobsOfEmployerById);
+route.post("/createNewJob",authMiddleware.isAuth, dbConn.conn, jobController.createNewJob);
 
-route.get("/jobPagination", dbConn.conn, jobController.jobPagination);
+route.get(
+  "/allJobsByEmpId",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  jobController.getAllJobsOfEmployerById
+);
+
+route.get("/jobPagination",authMiddleware.isAuth, dbConn.conn, jobController.jobPagination);
 
 route.get("/oneJobFullDetail", (req, res) => {});
 
 route.get(
   "/jobPaginationWithTime",
+  authMiddleware.isAuth,
   dbConn.conn,
   jobController.jobPaginationWithTime
 );
@@ -28,14 +36,11 @@ route.delete("/", (req, res) => {
 
 route.get(
   "/jobPaginationWithAddress",
+  authMiddleware.isAuth,
   dbConn.conn,
   jobController.jobPaginationWithAddress
-)
+);
 
-route.get(
-  "/jobDetail",
-  dbConn.conn,
-  jobController.getJobDetail
-)
+route.get("/jobDetail",authMiddleware.isAuth, dbConn.conn, jobController.getJobDetail);
 
 module.exports = route;

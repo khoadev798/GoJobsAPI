@@ -22,12 +22,12 @@ const Job = require("../model/job");
 // Sau khi được giải quyết thì update contractStatus thành CANCELLED
 
 const Contract = new Schema({
-  jobId: { type: Schema.Types.ObjectId, ref: "Job", default: null },
-  flcId: { type: Schema.Types.ObjectId, ref: "Freelancer", default: null },
-  empId: { type: Schema.Types.ObjectId, ref: "Employer", default: null },
+  jobId: { type: Schema.Types.ObjectId, ref: "Job", default: "" },
+  flcId: { type: Schema.Types.ObjectId, ref: "Freelancer", default: "" },
+  empId: { type: Schema.Types.ObjectId, ref: "Employer", default: "" },
   contractStatus: { type: String, required: true },
-  jobTotalSalaryPerHeadCount: { type: Number, default: null, min: 0 },
-  // moneyFromEmployer: { type: Number, default: 0 },
+  jobTotalSalaryPerHeadCount: { type: Number, default: 0, min: 0 },
+
   isPaymentFullyCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: null },
   createdBy: { type: String, default: null },

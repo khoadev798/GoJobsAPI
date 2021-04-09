@@ -66,7 +66,7 @@ let login = async (employer) => {
         { $push: { empTokenDevice: employer.empTokenDevice } },
         (err, docs) => {
           if (err) handleError(err);
-          console.log("add flcTokenDevice", docs);
+          console.log("add empTokenDevice", docs);
         }
       );
       await session.commitTransaction();

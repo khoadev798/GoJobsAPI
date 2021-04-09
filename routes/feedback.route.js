@@ -6,27 +6,30 @@ const dbConn = require("../middleware/dbConn.middle");
 
 route.post(
   "/createEmpFeedback",
-
+  authMiddleware.isAuth,
   dbConn.conn,
   flcFeedbackController.createEmpFeedback
 );
 
 route.post(
   "/createFlcFeedback",
+  authMiddleware.isAuth,
   dbConn.conn,
-  flcFeedbackController.createFlcFeedback,
-)
+  flcFeedbackController.createFlcFeedback
+);
 
 route.get(
   "/getFeedbackByFlc",
+  authMiddleware.isAuth,
   dbConn.conn,
   flcFeedbackController.getFeedbackByFlcId
-)
+);
 
 route.get(
   "/getFeedbackByEmp",
+  authMiddleware.isAuth,
   dbConn.conn,
   flcFeedbackController.getFeedbackByEmpId
-)
+);
 
 module.exports = route;

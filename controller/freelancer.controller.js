@@ -1,7 +1,6 @@
 const flcService = require("../service/freelancer.service");
 
 let createFreelancer = async (req, res) => {
-
   let { flcEmail, flcPassword, flcTerm } = req.body;
 
   console.log("new freelancer: ", flcEmail);
@@ -10,7 +9,6 @@ let createFreelancer = async (req, res) => {
     flcEmail,
     flcPassword,
     flcTerm,
-    
   });
   res.status(flcCreateResult.code).send(flcCreateResult.message);
 };
@@ -22,15 +20,14 @@ let loginFreelancer = async (req, res, next) => {
     flcEmail,
     flcPassword,
 
-    flcTokenDevice
-
+    flcTokenDevice,
   });
 
   res.status(flcLoginResult.code).send({
     message: flcLoginResult.message,
     _id: flcLoginResult._id,
     flcEmail: flcLoginResult.flcEmail,
-    accessToken: flcLoginResult.accessToken,
+    accessTokenDb: flcLoginResult.accessTokenDb,
     flcName: flcLoginResult.flcName,
   });
 };
@@ -81,60 +78,71 @@ let flcPagination = async (req, res) => {
     pageNumber,
     pageSize,
   });
-  
+
   res.status(pagingResult.code).send(pagingResult.freelancers);
 };
 
-let flcPaginationAll = async (req, res) =>{
-  let { sort, pageNumber, pageSize} = req.query;
+let flcPaginationAll = async (req, res) => {
+  let { sort, pageNumber, pageSize } = req.query;
   let flcPaginationAllResult = await flcService.flcPaginationAll({
     sort,
     pageNumber,
     pageSize,
   });
-  res.status(flcPaginationAllResult.code).send(flcPaginationAllResult.freelancers);
-}
+  res
+    .status(flcPaginationAllResult.code)
+    .send(flcPaginationAllResult.freelancers);
+};
 
-let flcPaginationWithAddress = async (req, res)=>{
-  let {sort, search, pageNumber, pageSize} = req.query;
-  let flcPaginationWithAddressResult = await flcService.flcPaginationWithAddress({
-    sort,
-    search,
-    pageNumber,
-    pageSize
-  });
-  res.status(flcPaginationWithAddressResult.code).send(flcPaginationWithAddressResult.freelancers);
-}
+let flcPaginationWithAddress = async (req, res) => {
+  let { sort, search, pageNumber, pageSize } = req.query;
+  let flcPaginationWithAddressResult = await flcService.flcPaginationWithAddress(
+    {
+      sort,
+      search,
+      pageNumber,
+      pageSize,
+    }
+  );
+  res
+    .status(flcPaginationWithAddressResult.code)
+    .send(flcPaginationWithAddressResult.freelancers);
+};
 
-let updateTokenWithFlcId = async (req, res) =>{
-  let {_id, flcTokenDevice} = req.query;
+let updateTokenWithFlcId = async (req, res) => {
+  let { _id, flcTokenDevice } = req.query;
   let updateTokenWithFlcIdResult = await flcService.updateTokenWithFlcId({
     _id,
     flcTokenDevice,
   });
-  res.status(updateTokenWithFlcIdResult.code).send(updateTokenWithFlcIdResult.message);
-}
+  res
+    .status(updateTokenWithFlcIdResult.code)
+    .send(updateTokenWithFlcIdResult.message);
+};
 
-let updatePassword = async (req, res)=>{
-  let {flcEmail, flcPassword, flcNewPassword} = req.body;
+let updatePassword = async (req, res) => {
+  let { flcEmail, flcPassword, flcNewPassword } = req.body;
   let updatedPasswordResult = await flcService.updatePassword({
     flcEmail,
     flcPassword,
-    flcNewPassword
+    flcNewPassword,
   });
-    res.status(updatedPasswordResult.code).send(updatedPasswordResult.message);
-  
-}
+  res.status(updatedPasswordResult.code).send(updatedPasswordResult.message);
+};
 
-let findFreelancerById = async(req, res) => {
-  let {_id} = req.query;
-  let findFreelancerByIdResult = await flcService.findFreelancerById({_id});
-  if(findFreelancerByIdResult){
-    res.status(findFreelancerByIdResult.code).send(findFreelancerByIdResult.freelancer);
-  } else{
-    res.status(findFreelancerByIdResult.code).send(findFreelancerByIdResult.message);
+let findFreelancerById = async (req, res) => {
+  let { _id } = req.query;
+  let findFreelancerByIdResult = await flcService.findFreelancerById({ _id });
+  if (findFreelancerByIdResult) {
+    res
+      .status(findFreelancerByIdResult.code)
+      .send(findFreelancerByIdResult.freelancer);
+  } else {
+    res
+      .status(findFreelancerByIdResult.code)
+      .send(findFreelancerByIdResult.message);
   }
-}
+};
 
 module.exports = {
   findFreelancerById,
@@ -146,5 +154,5 @@ module.exports = {
   updateTokenWithFlcId,
   updatePassword,
   flcPaginationAll,
-  flcPaginationWithAddress
+  flcPaginationWithAddress,
 };

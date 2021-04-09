@@ -2,28 +2,23 @@ const express = require("express");
 const route = express.Router();
 const dbConn = require("../middleware/dbConn.middle");
 const messageController = require("../controller/message.controller");
+const authMiddleware = require("../middleware/authMiddleware");
 
-route.post(
-    "/newMessage",
-    dbConn.conn,
-    messageController.newMessage,
-)
+route.post("/newMessage", authMiddleware.isAuth,dbConn.conn, messageController.newMessage);
 
 route.get(
-    "/getNotificationMessageByEmp",
-    dbConn.conn,
-    messageController.getNotificationMessageByEmp,
-)
+  "/getNotificationMessageByEmp",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  messageController.getNotificationMessageByEmp
+);
 
 route.get(
-    "/getNotificationMessageByFlc",
-    dbConn.conn,
-    messageController.getNotificationMessageByFlc
-)
+  "/getNotificationMessageByFlc",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  messageController.getNotificationMessageByFlc
+);
 
-route.get(
-    "/getMessageDetail",
-    dbConn.conn,
-    messageController.getMessageDetail
-)
+route.get("/getMessageDetail",authMiddleware.isAuth, dbConn.conn, messageController.getMessageDetail);
 module.exports = route;
