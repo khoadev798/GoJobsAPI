@@ -1,8 +1,8 @@
 # swagger: "2.0"
 openapi: 3.0.1
 info:
-  title: Swagger Petstore
-  description: User Management with Mock Project
+  title: GoJobs - Nền tảng việc làm cho mọi người
+  description: GoJobs API Docs
   termsOfService: http://swagger.io/terms/
   contact:
     email: trankhoa798@gmail.com
@@ -14,35 +14,379 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://gojobsvn.herokuapp.com
+  - url: http://localhost:80
 tags:
-  - name: users
-    description: Everything about Users
+  - name: WebAdminAPI
+    description: Everything about WebAdmin
     externalDocs:
       description: Find out more
-      url: http://swagger.io
-  - name: roles
-    description: Access to Petstore orders
+      url: https://gojobsvn.herokuapp.com/web
+  - name: employers
+    description: API for Employers
 paths:
-  /users/login:
+  /web:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Đi tới trang web quản lý
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/adminLogin:
     post:
       tags:
-        - users
-      summary: Logs user into the system
+        - WebAdminAPI
+      summary: Admin đăng nhập
       operationId: loginUser
+      produces:
+        - application/html
       requestBody:
-        description: Login info
+        description: Thông tin đăng nhập
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/loginUser'
       responses:
         "200":
-          description: "Login success."
-          content: object
-        "403":
-          description: "Incorrect login info."
-          content: objectcontent: object
+          description: Đăng nhập thành công
+        "401":
+          description: Sai thông tin
+  /web/forgotpassword:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Tới trang forgot password cho Admin
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"  
+  /web/resetPassword:
+    post:
+      tags:
+        - WebAdminAPI
+      summary: Gửi email password mới cho admin
+      requestBody:
+        description: Email của admin
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Email đã được gửi"
+        "404":
+          description: "Tài khoản không tồn tại"
+  /web/main:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Trang chính của Website quản lý
+      security:
+        - cookieAuth: []
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"  
+  /web/employer:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Danh sách thông tin về Employer
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin phân trang
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pagination'
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"     
+  /web/freelancer:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Danh sách thông tin về Freelancer
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin phân trang
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pagination'  
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/receipt:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Danh sách thông tin về Receipt
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin phân trang
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/paginationReceipt'
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/receiptInfo:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Thông tin cụ thể về 1 Receipt
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Email của admin
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                _id:
+                  type: string  
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/statistic:
+    get:      
+      tags:
+        - WebAdminAPI
+      summary: Thông tin thống kê thu nhập của hệ thống
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: year
+          description: Thời gian muốn kiểm tra
+          type: integer
+          default: 2021  
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"                                     
+  /web/job:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Danh sách thông tin về Job
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin phân trang
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pagination'
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/contract:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Danh sách thông tin về Contract
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin phân trang
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pagination'  
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/updateEmpWallet:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Trang cập nhật số dư Wallet cho Employer
+      security:
+        - cookieAuth: []
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "400":
+          description: "Lỗi!"
+  /web/updateEmpWalletWithId:
+    post:
+      tags:
+        - WebAdminAPI
+      summary: API cập nhật số dư Wallet của Employer
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin để cập nhật số dư của Employer
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                empId:
+                  type: string  
+                balance:
+                  type: number
+                walletId:
+                  type: string
+                adminId:
+                  type: string    
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/updateFlcWallet:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Trang cập nhật số dư Wallet cho Freelancer
+      security:
+        - cookieAuth: []
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/updateFlcWalletWithId:
+    post:
+      tags:
+        - WebAdminAPI
+      summary: API cập nhật số dư Wallet của Employer
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin để cập nhật số dư của Employer
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                flcId:
+                  type: string  
+                balance:
+                  type: number
+                walletId:
+                  type: string
+                adminId:
+                  type: string    
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "400":
+          description: "Lỗi!"
+  /web/updatePassword:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Trang tự cập nhật mật khẩu cho Admin
+      security:
+        - cookieAuth: []
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"
+  /web/updatePasswordAdmin:
+    post:
+      tags:
+        - WebAdminAPI
+      summary: Trang tự cập nhật mật khẩu cho Admin
+      security:
+        - cookieAuth: []
+      requestBody:
+        description: Thông tin để cập nhật số dư của Employer
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string  
+                password1:
+                  type: string      
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"                            
+  /web/error:
+    get:
+      tags:
+        - WebAdminAPI
+      summary: Trang thể hiện lỗi
+      produces:
+        - application/html
+      responses:
+        "200":
+          description: "Truy cập thành công"
+        "404":
+          description: "Trang không được tìm thấy"                        
   /users/createUser:
     post:
       security:
@@ -343,7 +687,39 @@ components:
         email:
           type: string
         password:
-          type: string      
+          type: string
+    pagination:
+      type: object
+      properties:
+        pageSize:
+          type: number
+          default: 5
+        pageNumber:
+          type: number  
+          default: 1
+        search:
+          type: string
+        sort:
+          type: string
+    paginationReceipt:
+      type: object
+      properties:
+        pageSize:
+          type: number
+          default: 5
+        pageNumber:
+          type: number  
+          default: 1
+        search:
+          type: string
+        sort:
+          type: string
+        from:
+          type: string
+          default: "2000-01-01"
+        to:
+          type: string        
+          default: "2100-01-01"                                 
     User:
       type: object
       properties:
@@ -393,3 +769,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token

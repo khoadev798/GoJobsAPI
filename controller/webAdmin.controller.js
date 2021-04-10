@@ -14,7 +14,7 @@ let loginPage = (req, res, next) => {
   res.render("login", { layout: false, title: "Login" });
 };
 let updatePasswordPage = (req, res, next) => {
-  res.render("updatePassword", {
+  res.status(200).render("updatePassword", {
     layout: "layout",
     title: "Update password",
     admin: req.admin,
@@ -44,7 +44,9 @@ let updateAdminPassword = async (req, res) => {
 };
 
 let mainPage = (req, res, next) => {
-  res.render("main", { layout: "layout", title: "Main", admin: req.admin });
+  res
+    .status(200)
+    .render("main", { layout: "layout", title: "Main", admin: req.admin });
 };
 
 let adminLogin = async (req, res) => {
@@ -61,13 +63,13 @@ let adminLogin = async (req, res) => {
       adminLoginResult.admin._id,
       adminLoginResult.admin.name
     );
-    res.render("main", {
+    res.status(200).render("main", {
       layout: "layout",
       title: "Admin",
       admin: adminLoginResult.admin,
     });
   } else {
-    res.render("error", {
+    res.status(401).render("error", {
       layout: false,
       code: 401,
       message: "Đăng nhập thất bại!",
@@ -106,7 +108,7 @@ let employerManagementPage = async (req, res) => {
   let employerList = employerPagination.employers;
   let pageCount = employerPagination.pageCount;
 
-  res.render("employer/tableEmployer", {
+  res.status(200).render("employer/tableEmployer", {
     layout: "layout",
     title: "Employer",
     admin: req.admin,
@@ -120,7 +122,7 @@ let employerManagementPage = async (req, res) => {
 let existingFlcSort;
 let existingFlcSearch;
 let freelancerManagementPage = async (req, res) => {
-  let { search, sort, filter, pageNumber, pageSize } = req.query;
+  let { search, sort, pageNumber, pageSize } = req.query;
 
   if (!pageNumber) {
     pageNumber = 1;
@@ -141,15 +143,15 @@ let freelancerManagementPage = async (req, res) => {
       existingFlcSort = sort;
     }
   }
-  let employerPagination = await freelancerService.flcPaginationForAdminWeb({
+  let freelancerPagination = await freelancerService.flcPaginationForAdminWeb({
     search,
     sort,
-    filter,
+
     pageNumber,
     pageSize,
   });
-  let freelancerList = employerPagination.freelancers;
-  let pageCount = employerPagination.pageCount;
+  let freelancerList = freelancerPagination.freelancers;
+  let pageCount = freelancerPagination.pageCount;
   res.render("freelancer/tableFreelancer", {
     layout: "layout",
     title: "Freelancer",
@@ -163,7 +165,7 @@ let freelancerManagementPage = async (req, res) => {
 let existingJobSort;
 let existingJobSearch;
 let jobManagementPage = async (req, res) => {
-  let { search, sort, filter, pageNumber, pageSize } = req.query;
+  let { search, sort, pageNumber, pageSize } = req.query;
   if (!pageNumber) {
     pageNumber = 1;
   }
@@ -184,7 +186,6 @@ let jobManagementPage = async (req, res) => {
   let jobPaginationForWebAdmin = await jobService.jobPaginationForWebAdmin({
     search,
     sort,
-    filter,
     pageNumber,
     pageSize,
   });
@@ -203,7 +204,7 @@ let jobManagementPage = async (req, res) => {
 };
 
 let contractManagementPage = async (req, res) => {
-  let { jobId, search, sort, filter, pageNumber, pageSize } = req.query;
+  let { jobId, search, sort, pageNumber, pageSize } = req.query;
   if (!pageNumber) {
     pageNumber = 1;
   }
@@ -216,7 +217,6 @@ let contractManagementPage = async (req, res) => {
       jobId,
       search,
       sort,
-      filter,
       pageNumber,
       pageSize,
     }
@@ -503,9 +503,9 @@ let adminResetPassword = async (req, res) => {
   let { email } = req.body;
   let sendEmailResult = await emailService.sendMailRePasswordAdmin({ email });
   if (sendEmailResult.code == 200) {
-    res.redirect("/web");
+    res.status(200).redirect("/web");
   } else {
-    res.render("error", {
+    res.status(404).render("error", {
       layout: false,
       code: 404,
       message: "Không tìm thấy tài khoản!",

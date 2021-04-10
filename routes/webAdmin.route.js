@@ -6,7 +6,7 @@ const dbConn = require("../middleware/dbConn.middle");
 //On master checking webAdmin
 route.use(express.static("public"));
 
-route.get("/", dbConn.conn, webAdminController.loginPage);
+route.get("/", webAdminController.loginPage);
 
 route.get(
   "/main",
@@ -20,7 +20,7 @@ route.get(
   webAdminController.updatePasswordPage
 );
 route.post(
-  "/updatePassword",
+  "/updatePasswordAdmin",
   authenMiddleware.isAuthOnWebAdminFromCookieToken,
   dbConn.conn,
   webAdminController.updateAdminPassword
@@ -78,7 +78,7 @@ route.get(
 );
 
 route.get("/forgotpassword", function (req, res) {
-  res.render("forgotpassword", { layout: false });
+  res.status(200).render("forgotpassword", { layout: false });
 });
 
 route.get(
