@@ -4,7 +4,7 @@ const followController = require("../controller/follow.controller");
 const dbConn = require("../middleware/dbConn.middle");
 const authMiddleware = require("../middleware/authMiddleware");
 
-route.post("/createFollow", dbConn.conn, followController.createFlcFollowEmp);
+route.post("/createFlcFollowEmp", dbConn.conn, followController.createFlcFollowEmp);
 
 route.post(
   "/createEmpFollowFlc",
@@ -33,6 +33,13 @@ route.get(
   dbConn.conn,
   followController.getFlcByEmpFollow
 );
+
+route.get(
+  "/getEmpByFlcFollow",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  followController.getEmpByFlcFollow,
+)
 
 route.delete("/delFollow", authMiddleware.isAuth,dbConn.conn, followController.delFollow);
 

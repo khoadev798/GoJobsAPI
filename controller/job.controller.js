@@ -101,6 +101,11 @@ let getJobDetail = async (req, res) => {
   res.status(getJobDetailResult.code).send(getJobDetailResult.jobDetail);
 };
 
+let filForSearch = async (req, res) =>{
+  let filForSearchResult = await jobService.filForSearch();
+  res.status(filForSearchResult.code).send(filForSearchResult.listField);
+}
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -109,4 +114,5 @@ module.exports = {
   jobPagination,
   jobPaginationWithTime,
   jobPaginationWithAddress,
+  filForSearch,
 };

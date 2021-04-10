@@ -78,6 +78,26 @@ let getFlcByEmpFollow = async (follow) => {
   }
 };
 
+let getEmpByFlcFollow = async (follow) => {
+  let found = await FollowModel.find(
+    {
+      $and: [{ flcId: follow.flcId }, { createdBy: { $eq: follow.flcId } }],
+    },
+    "empId",
+    {
+      skip: (follow.pageNumber - 1) * follow.pageSize,
+      limit: follow.pageNumber * follow.pageSize,
+    }
+  )
+    .populate("empId")
+    .exec();
+  if (found == undefined) {
+    return { code: GLOBAL.NOT_FOUND_CODE, employers: "Missing!" };
+  } else {
+    return { code: GLOBAL.SUCCESS_CODE, employers: found };
+  }
+};
+
 let delFollow = async (follow) => {
   let filter = {
     $or: [
@@ -117,4 +137,5 @@ module.exports = {
   createFlcFollowJob,
   getFlcByEmpFollow,
   getJobByFlcFollow,
+  getEmpByFlcFollow,
 };

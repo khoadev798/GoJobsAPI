@@ -144,6 +144,16 @@ let flcPagination = async (pagination) => {
   return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions };
 };
 
+let getFieldForSearchFlc = async ()=>{
+  let listField = await FreelancerModel.find({},
+    "flcMajor").exec();
+    let list = [];
+    listField.forEach((field) =>{
+      list.push(field.flcMajor);
+    });
+    return {code: GLOBAL.SUCCESS_CODE, result: list}
+}
+
 let flcPaginationAll = async (pagination) => {
   let flcPaginationAllInstance = await FreelancerModel.find(
     {},
@@ -340,4 +350,5 @@ module.exports = {
   findFreelancerById,
   flcPaginationForAdminWeb,
   flcPaginationWithAddress,
+  getFieldForSearchFlc,
 };

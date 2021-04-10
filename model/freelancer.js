@@ -14,7 +14,7 @@ const Freelancer = new Schema({
   flcAddress: { type: String, default: "" },
   flcEdu: { type: String, default: "" },
   flcMajor: { type: String, default: "" },
-  flcJobTitle: { type: String, default: "" },
+ // flcJobTitle: { type: String, default: "" },
   flcRating: { type: Number, default: 5 },
   flcLanguages: { type: String, default: "" },
   flcTerm: { type: Boolean, required: true },

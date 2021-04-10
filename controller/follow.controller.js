@@ -66,6 +66,12 @@ let delFollow = async (req, res) => {
   res.status(delFollowResult.code).send(delFollowResult.message);
 };
 
+let getEmpByFlcFollow = async (req, res) =>{
+  let {flcId} = req.query;
+  let getEmpByFlcFollowResult = await followService.getEmpByFlcFollow({flcId});
+  res.status(getEmpByFlcFollowResult.code).send(getEmpByFlcFollowResult.employers);
+}
+
 // let updateTokenWithFlcId = async (req, res) => {
 //     let {flcId, tokenDeviceWithFlc} = req.query;
 
@@ -83,5 +89,6 @@ module.exports = {
   createFlcFollowJob,
   getFlcByEmpFollow,
   getJobByFlcFollow,
+  getEmpByFlcFollow,
   //updateTokenWithFlcId,
 };

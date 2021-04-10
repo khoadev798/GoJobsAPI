@@ -25,7 +25,7 @@ let getContractsByCondition = async (condition) => {
       {contractStatus: condition.contractStatus}
     ]}
     ,
-    "flcId jobTotalSalaryPerHeadCount"
+    " jobTotalSalaryPerHeadCount contractStatus"
   )
     .populate("flcId", "flcName flcAvatar")
     .exec();
@@ -236,7 +236,7 @@ let updateStatusOfContractById = async (contract) => {
     contractStatus: { $ne: "CANCELLED" },
   };
   let currentContract = await ContractModel.findOne(filter);
-  const CHOICES = ["APPLIED", "APPROVED", "REJECTED"];
+  const CHOICES = ["APPROVED", "ACCEPTED"];
   // APPROVED, CANCELLED, COMPLETED need to be seperated
   let update = {
     contractStatus: CHOICES.includes(contract.contractStatus)
@@ -287,19 +287,14 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
       return values;
     });
     // notification khi job được employer đổi stt COMPLETED
-    let listTokens = await ContractModel.find(
-      { flcId: { $in: endFlcId } },
-      "flcId"
-    )
-      .populate("flcId", "flcTokenDevice")
-      .exec()
-      .then((doc) => {
-        return doc;
-      });
+    let listTokens = await FreelancerModel.find(
+      { _id: { $in: endFlcId } },
+      "flcTokenDevice"
+    ).exec()
     let Tokens = [];
     console.log(listTokens);
     listTokens.forEach((token) => {
-      Tokens = Tokens.concat(token.flcId.flcTokenDevice);
+      Tokens  = Tokens.concat(token.flcTokenDevice);
     });
     console.log("Tokens:", Tokens);
 
@@ -426,14 +421,14 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
     ).then((values) => {
       return values;
     });
-
+    
     console.log("DS Wallet da nhan tien", updatedFlcWalletList);
     console.log("DS Contract da COMPLETED", complatedContractList);
     console.log("DS Receipt cua FLC", createdReceiptsForFlc);
     console.log("DS Receipt cua System", createdReceiptsForSystem);
     await session.commitTransaction();
     session.endSession();
-    return { code: 200, result: "Thanh toán các Contract thành công!" };
+    return { code: 200, result: complatedContractList };
   } else {
     return { code: 404, result: "Không có contract phù hợp để thanh toán!" };
   }
@@ -702,7 +697,7 @@ let getJobByContractStatus = async (contract) => {
         ],
       },
     },
-    { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" } } },
+   { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" }} },
     // {
     //   $lookup: {
     //     from: "jobs",
@@ -713,31 +708,22 @@ let getJobByContractStatus = async (contract) => {
     //   }
     // },
   ]);
-
+  console.log(job);
   let jobIds = [];
   job.forEach((detail) => {
     jobIds.push(detail._id.jobId);
   });
-
-  let jobDetail = await ContractModel.find(
-    {
-      $and: [
-        { jobId: { $in: jobIds } },
-        { contractStatus: contract.contractStatus },
-      ],
-    },
-
-    "jobId",
+  console.log(jobIds);
+  let jobDetail = await JobModel.find(
+  
+        { _id: { $in: jobIds } },
+  
+    "jobId jobTitle jobPaymentType jobStart jobEnd jobStatus jobHeadCountTarget ",
     {
       skip: (contract.pageNumber - 1) * contract.pageSize,
       limit: contract.pageNumber * contract.pageSize,
     }
-  )
-    .populate(
-      "jobId",
-      "jobTitle jobTotalSalaryPerHeadCount jobHeadCountTarget jobStart jobEnd jobPaymentType"
-    )
-    .exec();
+  ).exec();
   console.log("jobDetail", jobDetail);
   await session.commitTransaction();
   session.endSession();

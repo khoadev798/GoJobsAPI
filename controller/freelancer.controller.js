@@ -94,6 +94,11 @@ let flcPaginationAll = async (req, res) => {
     .send(flcPaginationAllResult.freelancers);
 };
 
+let getFieldForSearchFlc = async (req, res) =>{
+  let getFieldForSearchFlcResult = await flcService.getFieldForSearchFlc();
+  res.status(getFieldForSearchFlcResult.code).send(getFieldForSearchFlcResult.result);
+}
+
 let flcPaginationWithAddress = async (req, res) => {
   let { sort, search, pageNumber, pageSize } = req.query;
   let flcPaginationWithAddressResult = await flcService.flcPaginationWithAddress(
@@ -155,4 +160,5 @@ module.exports = {
   updatePassword,
   flcPaginationAll,
   flcPaginationWithAddress,
+  getFieldForSearchFlc
 };

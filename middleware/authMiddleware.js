@@ -18,7 +18,7 @@ let isAuth = async (req, res, next) => {
       req.jwtDecode = decoded;
       next();
     } catch (error) {
-      debug("Error while verify token:", error);
+      console.log("Error while verify token:", error);
       return res.status(401).json({
         message: "Unauthorized.",
       });

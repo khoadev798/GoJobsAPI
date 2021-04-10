@@ -209,7 +209,20 @@ let jobPagination = async (pagination) => {
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
 };
+let filForSearch =async (pagination) =>{
+  let listField = await JobModel.find({
 
+  },
+   "jobDescription jobField jobTitle").exec();
+   let list = [];
+   listField.forEach((field) =>{
+     list.push(field.jobDescription)
+     list.push(field.jobField)
+     list.push(field.jobTitle)
+   });
+   console.log("list field ", list);
+   return {code: GLOBAL.SUCCESS_CODE, listField: list}
+}
 let jobPaginationWithTime = async (pagination) => {
   let jobsWithConditions = await JobModel.find(
     { jobStatus: "Open" },
@@ -371,4 +384,5 @@ module.exports = {
   jobPaginationWithAddress,
   getJobDetail,
   isFollowExisted,
+  filForSearch,
 };

@@ -2,6 +2,7 @@ const feedbackService = require("../service/feedback.service");
 
 let createEmpFeedback = async (req, res) => {
   let { empId, jobId, flcId, comment, starRating } = req.query;
+  console.log(starRating);
   let empFeedbackCreateResult = await feedbackService.empFeedbackCreate({
     empId,
     jobId,

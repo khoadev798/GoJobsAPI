@@ -43,4 +43,6 @@ route.get(
 
 route.get("/jobDetail",authMiddleware.isAuth, dbConn.conn, jobController.getJobDetail);
 
+route.get("/fieldForSearch", authMiddleware.isAuth, dbConn.conn, jobController.filForSearch);
+
 module.exports = route;
