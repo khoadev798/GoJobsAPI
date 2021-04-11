@@ -64,7 +64,7 @@ app.disable("x-powered-by");
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:80"],
+    origin: ["http://localhost:80", "https://gojobsvn.herokuapp.com"],
     credentials: true,
   })
 );

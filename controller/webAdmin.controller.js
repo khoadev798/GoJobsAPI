@@ -285,7 +285,7 @@ let receiptManagementPage = async (req, res) => {
   }
 
   if (!from) {
-    from = new Date("2000-01=01");
+    from = new Date("2000-01-01");
   }
   if (!to) {
     to = new Date("2100-01-01");
