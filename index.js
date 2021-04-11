@@ -62,12 +62,7 @@ app.use(multerMid.single("file"));
 app.disable("x-powered-by");
 /** Cookies setup here */
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:80", "https://gojobsvn.herokuapp.com"],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

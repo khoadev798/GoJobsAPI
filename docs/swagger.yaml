@@ -14,7 +14,8 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://gojobsvn.herokuapp.com
+  # - url: http://localhost:80/
+  - url: https://gojobsvn.herokuapp.com/
 tags:
   - name: WebAdminAPI
     description: Everything about WebAdmin
@@ -386,7 +387,29 @@ paths:
         "200":
           description: "Truy cập thành công"
         "404":
-          description: "Trang không được tìm thấy"                        
+          description: "Trang không được tìm thấy"
+  /employer/register:
+    post:
+      tags:
+        - employers
+      summary: Employer đăng ký tài khoản mới
+      description: Thực hiện đăng ký từ ứng dụng
+      requestBody:
+        description: Created user object
+        content:
+          'application/json':
+            schema: 
+              $ref: '#/components/schemas/Employer'
+      responses:
+        "200":
+          description: "Đăng ký thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                                                            
   /users/createUser:
     post:
       security:
@@ -626,7 +649,6 @@ paths:
       responses:
         200:
           description: Password reset.
-          content: object
   /roles/rolePagination:
     get:
       security:
@@ -719,7 +741,17 @@ components:
           default: "2000-01-01"
         to:
           type: string        
-          default: "2100-01-01"                                 
+          default: "2100-01-01"
+    Employer:
+      type: object
+      properties:
+        empEmail:
+          type: string
+        empPassword:
+          type: string  
+        empTerm:
+          type: boolean
+          default: true                                    
     User:
       type: object
       properties:
