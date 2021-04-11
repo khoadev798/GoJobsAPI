@@ -397,7 +397,7 @@ paths:
       requestBody:
         description: Created user object
         content:
-          'application/json':
+          application/json:
             schema: 
               $ref: '#/components/schemas/Employer'
       responses:
@@ -409,9 +409,328 @@ paths:
                 type: object
                 properties:
                   message:
-                    type: string                                                            
-  /users/createUser:
+                    type: string 
+        "409":
+          description: "Tài khoản đã tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                
+  /employer/login:
     post:
+      tags:
+      - employers
+      summary: Employer đăng nhập ứng dụng
+      description: Thực hiện đăng nhập từ ứng dụng
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                empEmail:
+                  type: string
+                  required: true
+                empPassword:
+                  type: string
+                  required: true
+      responses:
+        "200":
+          description: "Đăng nhập thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: "Đăng nhập thất bại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string              
+        "404":
+          description: "Tài khoản không tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /employer/findEmployerById:
+    get:
+      tags:
+        - employers
+      summary: Tìm thông tin Employer theo _id
+      security: 
+        - bearerAuth: []
+      operationId: findEmployerById
+      parameters:
+        - name: _id
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Tìm được người dùng"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                           
+        "404":
+          description: "Tài khoản không tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /employer/updatedEmployerInfo:
+    post:
+      tags: 
+        - employers
+      summary: Employer cập nhật thông tin cá nhân
+      description: Thao tác thực hiện từ ứng dụng
+      security: 
+        - bearerAuth: []
+      operationId: updatedEmployerInfo
+      requestBody:
+          description: Thông tin cần cập nhật có liên quan
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    required: true
+                  empLogo:
+                    type: string
+                  empName:
+                    type: string
+                  empPhone:
+                    type: string
+                  empType:
+                    type: string
+                  empAddress:
+                    type: string
+                  empDescription:
+                    type: string
+                  empTaxCode:
+                    type: string
+      responses:
+          "200":
+            description: "Cập nhật thành công"
+            content: 
+              application/json:
+                schema:
+                  type: object
+          "401":
+            description: "Không có quyền truy cập"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+          "403":
+            description: "Không có JSON Web Token"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string                           
+          "404":
+            description: "Tài khoản không tồn tại"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+  /employer/updatePassword:
+    put:
+      tags:
+        - employers
+      summary: Employer tự cập nhật mật khẩu
+      description: Thao tác thực hiện ở ứng dụng
+      security:
+        - bearerAuth: []
+      operationId: empUpdatePassword
+      requestBody:
+          description: Thông tin mật khẩu mới
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  empEmail:
+                    type: string
+                    required: true
+                  empPassword:
+                    type: string
+                    required: true
+                  empNewPassword:
+                    type: string
+                    required: true
+      responses:
+          "200":
+            description: "Cập nhật thành công"
+            content: 
+              application/json:
+                schema:
+                  type: string
+          "401":
+            description: "Không có quyền truy cập"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+          "403":
+            description: "Không có JSON Web Token"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string                           
+          "400":
+            description: "Sai thông tin"
+            content: 
+              application/json:
+                schema:
+                  type: string
+  /employer/pagination:
+    get:
+      tags:
+        - employers
+      summary: Phân trang Employer
+      description: Thao tác thực hiện ở ứng dụng
+      security:
+        - bearerAuth: []
+      operationId: empAppPagination
+      requestBody:
+        description: Thông tin cập phân trang
+        content:
+          application/json:
+            type: object
+            schema:
+              $ref: '#/components/schemas/pagination'
+      responses:
+          "200":
+            description: "Cập nhật thành công"
+            content: 
+              application/json:
+                schema:
+                  type: object
+          "401":
+            description: "Không có quyền truy cập"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+          "403":
+            description: "Không có JSON Web Token"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string        
+  /employer/updateToken:
+    put:
+      tags:
+        - employers
+      summary: Cập nhật thông tin thiết bị sử dụng
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: _id và token từ thiết bị
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  required: true
+                empTokenDevice:
+                  type: string
+                  required: true
+      responses:
+          "200":
+            description: "Cập nhật thành công"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+          "401":
+            description: "Không có quyền truy cập"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+          "403":
+            description: "Không có JSON Web Token"
+            content: 
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string                                                                                                                                                                    
+  /users/createUser:
+    post:      
       security:
         - bearerAuth: []
       tags:

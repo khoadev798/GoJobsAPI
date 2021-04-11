@@ -62,21 +62,26 @@ app.use(multerMid.single("file"));
 app.disable("x-powered-by");
 /** Cookies setup here */
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:80", "https://gojobsvn.herokuapp.com"],
+    credentials: true,
+  })
+);
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, PUT, POST");
-  if ("OPTIONS" === req.method) {
-    res.status(204).send();
-  } else {
-    next();
-  }
-});
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With"
+//   );
+//   res.header("Access-Control-Allow-Methods", "GET, PUT, POST");
+//   if ("OPTIONS" === req.method) {
+//     res.status(204).send();
+//   } else {
+//     next();
+//   }
+// });
 
 app.use(cookieParser());
 

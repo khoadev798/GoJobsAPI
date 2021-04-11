@@ -6,7 +6,6 @@ const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 const Employer = require("../model/employer");
 const Receipt = require("../model/receipt");
 const EmployerModel = mongoose.model("Employer", Employer);
-const ReceiptModel = mongoose.model("Receipt", Receipt);
 const walletService = require("./wallet.service");
 const util = require("../util/data.util");
 
@@ -30,7 +29,7 @@ let employerCreate = async (employer) => {
       createdWallet
     );
     session.endSession();
-    return { code: 200, message: "Tao tai khoa thanh cong!" };
+    return { code: 200, message: "Tao tai khoan thanh cong!" };
   } else {
     return { code: 409, message: "Thong tin tai khoan da ton tai!" };
   }
@@ -100,7 +99,7 @@ let updateEmployerInfo = async (employer) => {
     let doc = await EmployerModel.findOneAndUpdate(filter, update, {
       new: true,
     });
-   
+
     return { code: 200, message: "Cap nhat info thanh cong", doc };
   } else {
     return { code: 404, message: "Tai khoan khong ton tai" };

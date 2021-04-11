@@ -37,16 +37,31 @@ route.get(
 
 route.post("/login", dbConn.conn, employerController.login);
 
-route.post("/updatedEmployerInfo", dbConn.conn, authMiddleware.isAuth, employerController.updatedInfo);
+route.post(
+  "/updatedEmployerInfo",
+  dbConn.conn,
+  authMiddleware.isAuth,
+  employerController.updatedInfo
+);
 
-route.put("/updatePassword", dbConn.conn, authMiddleware.isAuth,employerController.updatePassword);
+route.put(
+  "/updatePassword",
+  dbConn.conn,
+  authMiddleware.isAuth,
+  employerController.updatePassword
+);
 
-route.get("/empPagination", dbConn.conn, authMiddleware.isAuth,employerController.empPagination);
+route.get(
+  "/empPagination",
+  dbConn.conn,
+  authMiddleware.isAuth,
+  employerController.empPagination
+);
 
 route.put(
   "/empUpdateToken",
-  authMiddleware.isAuth,
   dbConn.conn,
+  authMiddleware.isAuth,
   employerController.updateTokenWithEmpId
 );
 
