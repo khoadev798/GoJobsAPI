@@ -471,8 +471,6 @@ paths:
       tags:
         - employers
       summary: Tìm thông tin Employer theo _id
-      security: 
-        - bearerAuth: []
       operationId: findEmployerById
       parameters:
         - name: _id
@@ -480,6 +478,11 @@ paths:
           description: '_id của Employer'
           schema:
             type: string
+        - name: accessTokenDb
+          in: query
+          description: 'Token hiện tại'
+          schema:
+            type: string    
       responses:
         "200":
           description: "Tìm được người dùng"
@@ -523,8 +526,6 @@ paths:
         - employers
       summary: Employer cập nhật thông tin cá nhân
       description: Thao tác thực hiện từ ứng dụng
-      security: 
-        - bearerAuth: []
       operationId: updatedEmployerInfo
       requestBody:
           description: Thông tin cần cập nhật có liên quan
@@ -533,6 +534,9 @@ paths:
               schema: 
                 type: object
                 properties:
+                  accessTokenDb:
+                    type: string
+                    required: true
                   _id:
                     type: string
                     required: true
@@ -590,8 +594,6 @@ paths:
         - employers
       summary: Employer tự cập nhật mật khẩu
       description: Thao tác thực hiện ở ứng dụng
-      security:
-        - bearerAuth: []
       operationId: empUpdatePassword
       requestBody:
           description: Thông tin mật khẩu mới
@@ -600,6 +602,9 @@ paths:
               schema: 
                 type: object
                 properties:
+                  accessTokenDb:
+                    type: string
+                    required: true
                   empEmail:
                     type: string
                     required: true
@@ -646,16 +651,35 @@ paths:
         - employers
       summary: Phân trang Employer
       description: Thao tác thực hiện ở ứng dụng
-      security:
-        - bearerAuth: []
       operationId: empAppPagination
-      requestBody:
-        description: Thông tin cập phân trang
-        content:
-          application/json:
-            type: object
-            schema:
-              $ref: '#/components/schemas/pagination'
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: 'Dò tìm theo tên / email'
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: 'Sắp xếp thứ tự email'
+          schema:
+            type: string 
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+            default: 1
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+            default: 5                 
       responses:
           "200":
             description: "Cập nhật thành công"
@@ -686,8 +710,6 @@ paths:
       tags:
         - employers
       summary: Cập nhật thông tin thiết bị sử dụng
-      security:
-        - bearerAuth: []
       requestBody:
         description: _id và token từ thiết bị
         content:
@@ -695,10 +717,16 @@ paths:
             schema:
               type: object
               properties:
+                accessTokenDb:
+                    type: string
+                    required: true
                 _id:
                   type: string
                   required: true
                 empTokenDevice:
+                  type: string
+                  required: true
+                accessTokenDb:
                   type: string
                   required: true
       responses:
