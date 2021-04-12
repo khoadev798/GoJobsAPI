@@ -756,7 +756,551 @@ paths:
                   type: object
                   properties:
                     message:
-                      type: string                                                                                                                                                                    
+                      type: string
+  /freelancer/flcRegister:
+    post:
+      tags:
+        - freelancers
+      summary: Freelancer đăng ký tài khoản mới
+      description: Thực hiện đăng ký từ ứng dụng
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Freelancer'
+      responses:
+        "200":
+          description: "Đăng ký thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string 
+        "409":
+          description: "Tài khoản đã tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcLogin:
+    post:
+      tags:
+      - freelancers
+      summary: Freelancer đăng nhập ứng dụng
+      description: Thực hiện đăng nhập từ ứng dụng
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                flcEmail:
+                  type: string
+                  required: true
+                flcPassword:
+                  type: string
+                  required: true
+      responses:
+        "200":
+          description: "Đăng nhập thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: "Đăng nhập thất bại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string              
+        "404":
+          description: "Tài khoản không tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/getAllFreelancer:
+    get:
+      tags:
+        - freelancers
+      summary: Lấy danh sách Freelancer đang có
+      description: Danh sách Freelancer
+      operationId: getAllFreelancer
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token hiện tại'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Lấy thông tin thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          "404":
+          description: "Freelancer đang trống"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                        
+  /freelancer/updatePassword:
+    put:
+      tags:
+        - freelancers
+      summary: Freelancer tự cập nhật passowrd từ ứng dụng
+      description: Thao tác từ ứng dụng
+      requestBody:
+        description: Token từ thiết bị
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessTokenDb:
+                  type: string
+                  required: true
+                flcEmail:
+                  type: string
+                  required: true
+                flcPassword:
+                  type: string
+                  required: true
+                flcNewPassowrd:
+                  type: string
+                  required: true
+      responses:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: "Thông tin cung cấp không đúng"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                        
+        "404":
+          description: "Tài khoản không tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcPaginations:
+    get:
+      tags:
+        - freelancers
+      summary: Phân trang danh sách Freelancer
+      description: Phân trang Freelancer
+      operationId: flcAppPagination
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: 'Dò tìm theo tên / email'
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: 'Sắp xếp thứ tự email'
+          schema:
+            type: string 
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+            default: 1
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+            default: 5  
+      responses:
+        "200":
+          description: "Truy suất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcUpdatedInfo:
+    post:
+      tags:
+        - freelancers
+      summary: Freelancer tự cập nhật thông tin cá nhân
+      description: Thao tác cập nhật từ ứng dụng
+      requestBody:
+        description: Các thông tin cần cập nhật
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessTokenDb:
+                    type: string
+                    required: true
+                _id:
+                  type: string
+                  required: true
+                flcName:
+                  type: string 
+                flcPhone:
+                  type: string
+                flcBirthday:
+                  type: string
+                flcAvatar:
+                  type: string
+                flcSex:
+                  type: string
+                flcAddress:
+                  type: string
+                flcEdu:
+                  type: string
+                flcMajor:
+                  type: string
+                flcJobTitle:
+                  type: string
+                flcLanguages:
+                  type: string
+      responses:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Tài khoản không tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcUpdateToken:
+    put:
+      tags:
+        - freelancers
+      summary: Cập nhật Token của thiết bị đang sử dụng
+      description: Thao tác từ úng dụng
+      operationId: flcUpdateToken
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'JWToken'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: string
+        - name: flcTokenDevice
+          in: query
+          description: 'Token từ thiết bị'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcPaginationAll:
+    get:
+      tags:
+        - freelancers
+      summary: Phân trang danh sách Freelancer
+      description: Phân trang Freelancer
+      operationId: flcAppPagination
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: 'Sắp xếp thứ tự email'
+          schema:
+            type: string 
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+            default: 1
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+            default: 5  
+      responses:
+        "200":
+          description: "Truy suất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcPaginationWithAddress:
+    get:
+      tags:
+        - freelancers
+      summary: Phân trang danh sách Freelancer
+      description: Phân trang Freelancer
+      operationId: flcAppPagination
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: 'Dò tìm theo địa chỉ'
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: 'Sắp xếp thứ tự email'
+          schema:
+            type: string 
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+            default: 1
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+            default: 5  
+      responses:
+        "200":
+          description: "Truy suất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /freelancer/flcProfile:
+    get:
+      tags:
+        - freelancers
+      summary: Lấy thông tin cá nhân 1 Freelancer
+      description: Thông tin 1 Freelancer
+      operationId: flcAppPagination
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy suất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Tài khoản không tồn tại"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                
   /users/createUser:
     post:      
       security:
@@ -1098,7 +1642,17 @@ components:
           type: string  
         empTerm:
           type: boolean
-          default: true                                    
+          default: true
+    Freelancer:
+      type: object
+      properties:
+        flcEmail:
+          type: string
+        flcPassword:
+          type: string  
+        flcTerm:
+          type: boolean
+          default: true                                              
     User:
       type: object
       properties:
