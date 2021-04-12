@@ -11,11 +11,14 @@ const util = require("../util/data.util");
 const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE } = require("../global/global");
 
 let getAllFreelancer = async () => {
-  await FreelancerModel.find({}, "_id flcEmail", (err, docs) => {
+  let flcList = await FreelancerModel.find({}, "_id flcEmail", (err, docs) => {
     if (err) return handleError(err);
-    console.log(docs);
-    return "OK";
   });
+  if (flcList) {
+    return { code: 200, flcList };
+  } else {
+    return { code: 404, message: "Freelancer đang trống!" };
+  }
 };
 
 let flcCreate = async (freelancer) => {
@@ -75,7 +78,6 @@ let login = async (freelancer) => {
         { $push: { flcTokenDevice: freelancer.flcTokenDevice } },
         (err, docs) => {
           if (err) handleError(err);
-      
         }
       );
       await session.commitTransaction();
@@ -140,19 +142,18 @@ let flcPagination = async (pagination) => {
   ).sort({
     flcRating: pagination.sort,
   });
-  console.log(flcsWithConditions);  
+  console.log(flcsWithConditions);
   return { code: GLOBAL.SUCCESS_CODE, freelancers: flcsWithConditions };
 };
 
-let getFieldForSearchFlc = async ()=>{
-  let listField = await FreelancerModel.find({},
-    "flcMajor").exec();
-    let list = [];
-    listField.forEach((field) =>{
-      list.push(field.flcMajor);
-    });
-    return {code: GLOBAL.SUCCESS_CODE, result: list}
-}
+let getFieldForSearchFlc = async () => {
+  let listField = await FreelancerModel.find({}, "flcMajor").exec();
+  let list = [];
+  listField.forEach((field) => {
+    list.push(field.flcMajor);
+  });
+  return { code: GLOBAL.SUCCESS_CODE, result: list };
+};
 
 let flcPaginationAll = async (pagination) => {
   let flcPaginationAllInstance = await FreelancerModel.find(
@@ -249,7 +250,9 @@ let updateTokenWithFlcId = async (freelancer) => {
 };
 
 let updatePassword = async (freelancer) => {
+  console.log(freelancer);
   let checkInfo = await login(freelancer);
+
   if (checkInfo.code == 200) {
     const updatingFlc = util.flcHashPassword({
       flcEmail: freelancer.flcEmail,
@@ -264,12 +267,12 @@ let updatePassword = async (freelancer) => {
       new: true,
     });
     if (doc) {
-      return { code: GLOBAL.SUCCESS_CODE, message: "Update success!" };
+      return { code: GLOBAL.SUCCESS_CODE, message: "Cập nhật thành công" };
     }
   } else {
     return {
       code: GLOBAL.BAD_REQUEST_CODE,
-      message: "Provided info's incorrect!",
+      message: "Thông tin cá nhân không đúng",
     };
   }
 };
