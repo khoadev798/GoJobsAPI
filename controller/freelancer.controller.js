@@ -33,8 +33,8 @@ let loginFreelancer = async (req, res, next) => {
 };
 
 let getAllFreelancer = async (req, res) => {
-  let flcList = await flcService.getAllFreelancer();
-  res.status(200).send(flcList);
+  let getAllResult = await flcService.getAllFreelancer();
+  res.status(getAllResult.code).send(getAllResult.flcList);
 };
 
 let updateFreelancerInfo = async (req, res) => {
@@ -94,10 +94,12 @@ let flcPaginationAll = async (req, res) => {
     .send(flcPaginationAllResult.freelancers);
 };
 
-let getFieldForSearchFlc = async (req, res) =>{
+let getFieldForSearchFlc = async (req, res) => {
   let getFieldForSearchFlcResult = await flcService.getFieldForSearchFlc();
-  res.status(getFieldForSearchFlcResult.code).send(getFieldForSearchFlcResult.result);
-}
+  res
+    .status(getFieldForSearchFlcResult.code)
+    .send(getFieldForSearchFlcResult.result);
+};
 
 let flcPaginationWithAddress = async (req, res) => {
   let { sort, search, pageNumber, pageSize } = req.query;
@@ -153,5 +155,5 @@ module.exports = {
   updatePassword,
   flcPaginationAll,
   flcPaginationWithAddress,
-  getFieldForSearchFlc
+  getFieldForSearchFlc,
 };
