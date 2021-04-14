@@ -149,10 +149,10 @@ let getAllJobsAndEmployerInfo = async () => {
     jobs.forEach((job, index) => {
       let query = EmployerModel.findOne(
         { _id: job._doc.empId },
-        "_id empName empEmail empStatus"
+        "_id empLogo"
       ).exec();
       queryList.push(query);
-      gi;
+    
     });
     let employers = await Promise.all(queryList).then((values) => {
       return values;
@@ -170,11 +170,7 @@ let getJobsOfOneEmployerById = async (empId) => {
   let jobs = await JobModel.find(
     { empId: empId },
     "_id jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
-    (err, docs) => {
-      if (err) handleError(err);
-      console.log(docs);
-    }
-  );
+  ).populate("empId", "empLogo").exec();
   return { code: 200, jobs: jobs };
 };
 
@@ -188,7 +184,7 @@ let jobPagination = async (pagination) => {
           { jobDescription: { $regex: searchRegex } },
         ],
         jobField: { $in: pagination.filter },
-        jobStatus: "Open",
+       jobStatus: "Open",
       },
     ],
   };
@@ -255,7 +251,7 @@ let jobPaginationWithAddress = async (pagination) => {
       limit: pagination.pageNumber * pagination.pageSize,
     }
   )
-    .populate("empId", "empName")
+    .populate("empId", "empName empLogo")
     .exec();
   console.log(jobsWithConditions);
   return { code: 200, jobs: jobsWithConditions };
@@ -360,7 +356,7 @@ let getJobDetail = async (job) => {
     },
     {}
   )
-    .populate("empId", "empName")
+    .populate("empId", "empName empLogo")
     .exec()
     .then((doc) => {
       return doc;

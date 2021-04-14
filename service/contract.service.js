@@ -723,7 +723,7 @@ let getJobByContractStatus = async (contract) => {
       skip: (contract.pageNumber - 1) * contract.pageSize,
       limit: contract.pageNumber * contract.pageSize,
     }
-  ).exec();
+  ).populate("empId", "empLogo").exec();
   console.log("jobDetail", jobDetail);
   await session.commitTransaction();
   session.endSession();

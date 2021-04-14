@@ -15,7 +15,7 @@ const Employer = new Schema({
   empLogo: { type: String, default: "" },
   empDescription: { type: String, default: "" },
   empTerm: { type: Boolean, required: "" },
-  empRating: { type: Number, default: "" },
+  empRating: { type: Number, default: 5 },
   empStatus: { type: String, required: true, default: "Registered" },
   createdAt: { type: Date },
   // confirmedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },

@@ -4,41 +4,67 @@ const Follow = require("../model/follow");
 const FollowModel = mongoose.model("Follow", Follow);
 
 let createFlcFollowEmp = async (follow) => {
-  follow["createdAt"] = new Date();
-  follow["createdBy"] = follow.flcId;
-  let followInstance = new FollowModel(follow);
-  await followInstance.save((err, doc) => {
-    if (err) return console.log(err);
-    console.log("follow: ", doc);
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let followJobExisted = await findFollow(follow);
+  console.log("code: " + followJobExisted.code)
+  if(followJobExisted.code == 200){
+   await delFollow(follow);
+  }else{
+    follow["createdAt"] = new Date();
+    let followJobInstance = new FollowModel(follow);
+    await followJobInstance.save((err) => {
+      if (err) return console.log(err);
+    });
+  }
+  await session.commitTransaction();
+  session.endSession();
 
   return { code: GLOBAL.SUCCESS_CODE, message: "created follow employer" };
 };
 
 let createFlcFollowJob = async (follow) => {
-  follow["createdAt"] = new Date();
-  follow["createdBy"] = follow.flcId;
-  let followJobInstance = new FollowModel(follow);
-  await followJobInstance.save((err) => {
-    if (err) return console.log(err);
-  });
-  return { code: GLOBAL.SUCCESS_CODE, message: "created flc follow job" };
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let followJobExisted = await findFollow(follow);
+  console.log("code: " + followJobExisted.code)
+  if(followJobExisted.code == 200){
+   await delFollow(follow);
+  }else{
+    follow["createdAt"] = new Date();
+    let followJobInstance = new FollowModel(follow);
+    await followJobInstance.save((err) => {
+      if (err) return console.log(err);
+    });
+  }
+  await session.commitTransaction();
+  session.endSession();
+  return { code: GLOBAL.SUCCESS_CODE, message: "success!" };
 };
 
 let createEmpFollowFlc = async (follow) => {
-  follow["createdAt"] = new Date();
-  follow["createdBy"] = follow.empId;
-  let followFlcInstance = new FollowModel(follow);
-  await followFlcInstance.save((err) => {
-    if (err) return console.log(err);
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  let followJobExisted = await findFollow(follow);
+  console.log("code: " + followJobExisted.code)
+  if(followJobExisted.code == 200){
+   await delFollow(follow);
+  }else{
+    follow["createdAt"] = new Date();
+    let followJobInstance = new FollowModel(follow);
+    await followJobInstance.save((err) => {
+      if (err) return console.log(err);
+    });
+  }
+  await session.commitTransaction();
+  session.endSession();
   return { code: GLOBAL.SUCCESS_CODE, message: "created emp follow flc" };
 };
 
 let getJobByFlcFollow = async (follow) => {
   let found = await FollowModel.find(
     {
-      $and: [{ flcId: follow.flcId }, { createdBy: { $eq: follow.flcId } }],
+      $and: [{ flcId: follow.flcId }, { createdBy: { $eq: follow.flcId } }, {empId: { $eq: null } }],
     },
     "jobId",
     {
@@ -46,7 +72,7 @@ let getJobByFlcFollow = async (follow) => {
       limit: follow.pageNumber * follow.pageSize,
     }
   )
-    .populate("jobId")
+    .populate("jobId", "jobTitle jobPaymentType jobSalary jobStart jobEnd jobStatus jobHeadCountTarget")
     .exec()
     .then((doc) => {
       return doc;
@@ -81,7 +107,7 @@ let getFlcByEmpFollow = async (follow) => {
 let getEmpByFlcFollow = async (follow) => {
   let found = await FollowModel.find(
     {
-      $and: [{ flcId: follow.flcId }, { createdBy: { $eq: follow.flcId } }],
+      $and: [{ flcId: follow.flcId }, { createdBy: { $eq: follow.flcId } }, {jobId: {$eq: null}}],
     },
     "empId",
     {
@@ -89,7 +115,7 @@ let getEmpByFlcFollow = async (follow) => {
       limit: follow.pageNumber * follow.pageSize,
     }
   )
-    .populate("empId")
+    .populate("empId", "empLogo empName empPhone empAddress empRating")
     .exec();
   if (found == undefined) {
     return { code: GLOBAL.NOT_FOUND_CODE, employers: "Missing!" };
@@ -97,6 +123,41 @@ let getEmpByFlcFollow = async (follow) => {
     return { code: GLOBAL.SUCCESS_CODE, employers: found };
   }
 };
+
+
+let findFollow = async (follow) =>{
+  let found = await FollowModel.findOne(
+    {$or: [
+      //case flc follow job
+      {
+        $and: [
+          {createdBy: {$eq: follow.flcId}},
+          {jobId: {$eq: follow.jobId}}
+        ]
+      },
+      //case flc follow emp
+      {
+        $and: [
+          {createdBy: {$eq: follow.flcId}},
+          {empId: {$eq: follow.empId}}
+        ]
+      },
+      //case emp follow flc
+      {
+        $and: [
+          {createdBy: {$eq: follow.empId}},
+          {flcId: {$eq: follow.flcId}}
+        ]
+      },
+    ]},
+    {}
+  ).exec();
+  if(found == undefined){
+    return {code: GLOBAL.NOT_FOUND_CODE, message: "follow not found!"}
+  }else{
+    return {code: GLOBAL.SUCCESS_CODE, message: "success!"}
+  }
+}
 
 let delFollow = async (follow) => {
   let filter = {

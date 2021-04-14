@@ -60,6 +60,6 @@ route.get(
 
 route.get("/flcProfile", authMiddleware.isAuth,dbConn.conn, freelancerController.findFreelancerById);
 
-route.get("getFieldForSearchFlc", dbConn.conn, freelancerController.getFieldForSearchFlc)
+route.get("/getFieldForSearchFlc",authMiddleware.isAuth, dbConn.conn, freelancerController.getFieldForSearchFlc)
 
 module.exports = route;

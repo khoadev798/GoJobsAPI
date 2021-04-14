@@ -138,15 +138,8 @@ let updatePassword = async (req, res) => {
 let findFreelancerById = async (req, res) => {
   let { _id } = req.query;
   let findFreelancerByIdResult = await flcService.findFreelancerById({ _id });
-  if (findFreelancerByIdResult) {
-    res
-      .status(findFreelancerByIdResult.code)
-      .send(findFreelancerByIdResult.freelancer);
-  } else {
-    res
-      .status(findFreelancerByIdResult.code)
-      .send(findFreelancerByIdResult.message);
-  }
+
+    res.status(findFreelancerByIdResult.code).send(findFreelancerByIdResult.freelancer);
 };
 
 module.exports = {

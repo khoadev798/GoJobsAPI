@@ -111,7 +111,7 @@ let findEmployerById = async (employer) => {
     {
       _id: employer._id,
     },
-    "_id empEmail empName empAddress empTaxCode empDescription empPhone",
+    "_id empLogo empEmail empName empAddress empTaxCode empDescription empPhone",
     (err, doc) => {
       if (err) return handleError(err);
       return doc;

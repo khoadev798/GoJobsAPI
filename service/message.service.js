@@ -185,7 +185,7 @@ let getNotificationMessageByFlc = async (message) => {
         limit: message.pageNumber * message.pageSize,
       }
     )
-      .populate("empId", "empName")
+      .populate("empId", "empName empLogo")
       .exec()
       .then((doc) => {
         listNotification = [...doc];

@@ -1,20 +1,22 @@
 const followService = require("../service/follow.service");
 
 let createFlcFollowEmp = async (req, res) => {
-  let { empId, flcId } = req.query;
+  let { empId, flcId, createdBy } = req.query;
 
   let createFollowResult = await followService.createFlcFollowEmp({
     flcId,
     empId,
+    createdBy
   });
   res.status(createFollowResult.code).send(createFollowResult.message);
 };
 
 let createEmpFollowFlc = async (req, res) => {
-  let { empId, flcId } = req.query;
+  let { empId, flcId, createdBy } = req.query;
   let createEmpFollowFlcResult = await followService.createEmpFollowFlc({
     flcId,
     empId,
+    createdBy
   });
   res
     .status(createEmpFollowFlcResult.code)
@@ -22,10 +24,11 @@ let createEmpFollowFlc = async (req, res) => {
 };
 
 let createFlcFollowJob = async (req, res) => {
-  let { flcId, jobId } = req.query;
+  let { flcId, jobId, createdBy } = req.query;
   let createFlcFollowJobResult = await followService.createFlcFollowJob({
     flcId,
     jobId,
+    createdBy
   });
   res
     .status(createFlcFollowJobResult.code)
