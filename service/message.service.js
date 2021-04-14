@@ -60,7 +60,7 @@ let newMessage = async (message) => {
         },
         notification: {
           title: "GoJobs",
-          body: "Test message by Cậu Huy",
+          body: "Bạn có 1 tin nhắn mới!",
         },
       };
       jobService.FCM.sendToMultipleToken(
@@ -94,7 +94,7 @@ let newMessage = async (message) => {
         },
         notification: {
           title: "GoJobs",
-          body: "Test message by Cậu Huy",
+          body: "Bạn có 1 tin nhắn mới!",
         },
       };
       jobService.FCM.sendToMultipleToken(

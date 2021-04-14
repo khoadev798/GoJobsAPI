@@ -79,8 +79,8 @@ let createNewJob = async (job) => {
         time: "2:45",
       },
       notification: {
-        title: "Navish",
-        body: "Test message by navish",
+        title: "GoJobs",
+        body: "Bạn có 1 thông báo mới!",
       },
     };
     FCM.sendToMultipleToken(message, endTokens, function (err, response) {
@@ -182,8 +182,9 @@ let jobPagination = async (pagination) => {
         $or: [
           { jobTitle: { $regex: searchRegex } },
           { jobDescription: { $regex: searchRegex } },
+          {jobField: { $in: pagination.filter }},
         ],
-        jobField: { $in: pagination.filter },
+        
        jobStatus: "Open",
       },
     ],

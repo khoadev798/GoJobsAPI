@@ -56,8 +56,6 @@ const getAllJobsOfEmployerById = async (req, res) => {
 
 const jobPagination = async (req, res) => {
   let { search, sort, filter, pageNumber, pageSize } = req.query;
-  console.log(filter);
-  console.log(filter);
   let pagingResult = await jobService.jobPagination({
     search,
     sort,

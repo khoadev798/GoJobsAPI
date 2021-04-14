@@ -4,7 +4,7 @@ const dbConn = require("../middleware/dbConn.middle");
 const messageController = require("../controller/message.controller");
 const authMiddleware = require("../middleware/authMiddleware");
 
-route.post("/newMessage", authMiddleware.isAuth,dbConn.conn, messageController.newMessage);
+route.post("/newMessage",dbConn.conn, messageController.newMessage);
 
 route.get(
   "/getNotificationMessageByEmp",
@@ -20,5 +20,5 @@ route.get(
   messageController.getNotificationMessageByFlc
 );
 
-route.get("/getMessageDetail",authMiddleware.isAuth, dbConn.conn, messageController.getMessageDetail);
+route.get("/getMessageDetail", dbConn.conn, messageController.getMessageDetail);
 module.exports = route;

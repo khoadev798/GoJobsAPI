@@ -7,8 +7,7 @@ const debug = console.log.bind(console);
 let isAuth = async (req, res, next) => {
   const tokenFromClient =
     req.body.accessTokenDb ||
-    req.query.accessTokenDb ||
-    req.headers["x-accsess-token"];
+    req.query.accessTokenDb;
   if (tokenFromClient) {
     try {
       const decoded = await jwtHelper.verifyToken(
