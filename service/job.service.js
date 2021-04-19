@@ -182,9 +182,10 @@ let jobPagination = async (pagination) => {
         $or: [
           { jobTitle: { $regex: searchRegex } },
           { jobDescription: { $regex: searchRegex } },
-          {jobField: { $in: pagination.filter }},
+          {jobField: { $regex: searchRegex}},
+          
         ],
-        
+        jobField: { $in: pagination.filter },
        jobStatus: "Open",
       },
     ],

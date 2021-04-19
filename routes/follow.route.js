@@ -41,6 +41,13 @@ route.get(
   followController.getEmpByFlcFollow,
 )
 
+route.get(
+  "/findFollow",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  followController.findFollow
+)
+
 //route.delete("/delFollow", authMiddleware.isAuth,dbConn.conn, followController.delFollow);
 
 // route.post(

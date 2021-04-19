@@ -75,6 +75,18 @@ let getEmpByFlcFollow = async (req, res) =>{
   res.status(getEmpByFlcFollowResult.code).send(getEmpByFlcFollowResult.employers);
 }
 
+let findFollow = async (req, res) =>{
+  let { jobId, empId, flcId} = req.query;
+  console.log(jobId + " " + empId +" " + flcId);
+  let findFollowResult = await followService.findFollow({
+    
+    jobId,
+    empId,
+    flcId
+  });
+  res.status(findFollowResult.code).send(findFollowResult.message);
+}
+
 // let updateTokenWithFlcId = async (req, res) => {
 //     let {flcId, tokenDeviceWithFlc} = req.query;
 
@@ -93,5 +105,6 @@ module.exports = {
   getFlcByEmpFollow,
   getJobByFlcFollow,
   getEmpByFlcFollow,
+  findFollow,
   //updateTokenWithFlcId,
 };

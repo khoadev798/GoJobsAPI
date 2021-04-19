@@ -19,7 +19,7 @@ let createFlcFollowEmp = async (follow) => {
   }
   await session.commitTransaction();
   session.endSession();
-
+  
   return { code: GLOBAL.SUCCESS_CODE, message: "created follow employer" };
 };
 
@@ -199,4 +199,5 @@ module.exports = {
   getFlcByEmpFollow,
   getJobByFlcFollow,
   getEmpByFlcFollow,
+  findFollow
 };
