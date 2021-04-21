@@ -8,7 +8,6 @@ route.post(
   "/createNewContract",
   authMiddleware.isAuth,
   dbConn.conn,
-
   contractController.addNewContract
 );
 
@@ -23,7 +22,7 @@ route.get(
   "/followsOfEmpForFlc",
   authMiddleware.isAuth,
   dbConn.conn,
-  
+
   contractController.getFollowOfEmpForFlc
 );
 
@@ -31,7 +30,7 @@ route.get(
   "/contractsByJobIdAndStatus",
   authMiddleware.isAuth,
   dbConn.conn,
- 
+
   contractController.getContractsByJobIdAndContractStatus
 );
 

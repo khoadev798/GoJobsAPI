@@ -1,4 +1,3 @@
-# swagger: "2.0"
 openapi: 3.0.1
 info:
   title: GoJobs - Nền tảng việc làm cho mọi người
@@ -6,16 +5,13 @@ info:
   termsOfService: http://swagger.io/terms/
   contact:
     email: trankhoa798@gmail.com
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  # - url: http://localhost:80/
-  - url: https://gojobsvn.herokuapp.com/
+  - url: http://localhost:80/
+  # - url: https://gojobsvn.herokuapp.com/
 tags:
   - name: WebAdminAPI
     description: Everything about WebAdmin
@@ -23,7 +19,13 @@ tags:
       description: Find out more
       url: https://gojobsvn.herokuapp.com/web
   - name: employers
-    description: API for Employers
+    description: API thao tác với Employers
+  - name: freelancers 
+    description: API thao tác với Freelancers
+  - name: jobs
+    description: API thao tác với Jobs 
+  - name: contracts
+    description: API thao tác với Contracts
 paths:
   /web:
     get:
@@ -1300,7 +1302,382 @@ paths:
                 type: object
                 properties:
                   message:
-                    type: string                
+                    type: string
+  /jobs/createNewJob:
+    post:
+      tags:
+        - jobs
+      summary: Employer tạo công việc mới
+      description: Thực hiện thao tác từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+        - name: jobField
+          in: query
+          description: 'Lĩnh vực'
+          schema:
+            type: string
+        - name: jobTitle
+          in: query
+          description: 'Tiêu đề công việc'
+          schema:
+            type: string
+        - name: jobDescription
+          in: query
+          description: 'Mô tả công việc'
+          schema:
+            type: string
+        - name: jobSalary
+          in: query
+          description: 'Mức lương'
+          schema:
+            type: string
+        - name: jobStart
+          in: query
+          description: 'Thời điểm bắt đầu'
+          schema:
+            type: string
+        - name: jobEnd
+          in: query
+          description: 'Thời điểm kết thúc'
+          schema:
+            type: string
+        - name: jobDuration
+          in: query
+          description: 'Tổng thời gian'
+          schema:
+            type: string
+        - name: experienceRequired
+          in: query
+          description: 'Yêu cầu kinh nghiệm'
+          schema:
+            type: boolean
+        - name: jobStatus
+          in: query
+          description: 'Trạng thái'
+          schema:
+            type: string
+        - name: jobTotalSalaryPerHeadCount
+          in: query
+          description: 'Tổng thu nhập cho từng người'
+          schema:
+            type: number
+        - name: jobHeadCountTarget
+          in: query
+          description: 'Tổng số người cần tuyển'
+          schema:
+            type: number
+        - name: jobAddress
+          in: query
+          description: 'Địa chỉ làm việc'
+          schema:
+            type: string                                            
+      responses:
+        "200":
+          description: "Tạo thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /jobs/alljobs:
+    get:
+      tags:
+        - jobs
+      summary: API kiểm tra truy xuất tất cả công việc
+      description: Chỉ sử dụng cho testing
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /jobs/allJobsByEmpId:
+    get:
+      tags:
+        - jobs
+      summary: Lấy tất cả công việc thuộc 1 Employer
+      description: Truy vấn từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /jobs:
+    delete:
+      tags:
+        - jobs
+      summary: Xoá Job
+      description: Huỷ 1 công việc
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của Job'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Xoá thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /job/jobPaginationWithTime:
+    get:
+      tags:
+        - jobs
+      summary: Sắp xếp công việc theo thời gian
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: 'Trình tự sắp xếp'
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+      responses:
+        "200":
+          description: "Xoá thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /job/jobPaginationWithAddress:
+    get:
+      tags:
+        - jobs
+      summary: Tìm kiếm công việc theo địa chỉ
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: 'Địa chỉ tìm kiếm'
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+      responses:
+        "200":
+          description: "Xoá thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /jobs/jobDetail:
+    get:
+      tags:
+        - jobs
+      summary: Thông tin cụ thể của 1 việc
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của Job'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Lấy thông tin thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                                                                                                                                                                             
   /users/createUser:
     post:      
       security:

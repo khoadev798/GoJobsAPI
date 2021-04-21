@@ -17,7 +17,7 @@ const createNewJob = async (req, res) => {
     jobPublishDate, // required
     jobStatus, // default "Opening"
     jobTotalSalaryPerHeadCount,
-    jobHeadCount, // default 1
+    jobHeadCountTarget, // default 1
     jobAddress,
   } = req.query;
 
@@ -35,7 +35,7 @@ const createNewJob = async (req, res) => {
     jobPublishDate, // required
     jobStatus, // default "Opening"
     jobTotalSalaryPerHeadCount,
-    jobHeadCount, // default 1
+    jobHeadCountTarget, // default 1
     jobAddress,
   });
   let createNewJobResult = await jobService.createNewJob(newJob);
@@ -101,10 +101,10 @@ let getJobDetail = async (req, res) => {
   res.status(getJobDetailResult.code).send(getJobDetailResult.jobDetail);
 };
 
-let filForSearch = async (req, res) =>{
+let filForSearch = async (req, res) => {
   let filForSearchResult = await jobService.filForSearch();
   res.status(filForSearchResult.code).send(filForSearchResult.listField);
-}
+};
 
 module.exports = {
   createNewJob,
