@@ -30,10 +30,6 @@ route.put("/", (req, res) => {
   res.send("Update job");
 });
 
-route.delete("/", (req, res) => {
-  res.send("Delete job");
-});
-
 route.get(
   "/jobPaginationWithAddress",
   authMiddleware.isAuth,
@@ -44,5 +40,7 @@ route.get(
 route.get("/jobDetail",authMiddleware.isAuth, dbConn.conn, jobController.getJobDetail);
 
 route.get("/fieldForSearch", authMiddleware.isAuth, dbConn.conn, jobController.filForSearch);
+
+route.delete("/deleteJob", authMiddleware.isAuth,dbConn.conn, jobController.deleteJobNotContract);
 
 module.exports = route;

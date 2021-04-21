@@ -78,4 +78,6 @@ route.get(
   contractController.getContractsByCondition
 );
 
+route.get("/checkFlcAppliedJob", authMiddleware.isAuth, dbConn.conn, contractController.checkFlcAppliedJob)
+
 module.exports = route;

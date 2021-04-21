@@ -10,6 +10,8 @@ const Freelancer = require("../model/freelancer");
 const FreelancerModel = mongoose.model("Freelancer", Freelancer);
 const Follow = require("../model/follow");
 const FollowModel = mongoose.model("Follow", Follow);
+const Contract = require("../model/contract");
+const ContractModel = mongoose.model("Contract", Contract);
 const util = require("../util/data.util");
 const admin = require("firebase-admin");
 const path = require("path");
@@ -370,6 +372,35 @@ let getJobDetail = async (job) => {
   }
 };
 
+let deleteJobNotContract = async (job)=>{
+  let found = await ContractModel.findOne(
+    {jobId: job.jobId},
+    {}
+  ).exec();
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  if(found == undefined){
+    await JobModel.deleteOne(
+      {_id: job.jobId},
+      (err) =>{
+        console.log("delete job failed ! " + err);
+      }    
+    );
+  
+    await FollowModel.deleteOne(
+      {jobId: job.jobId},
+      (err) =>{
+        console.log("delete follow job failed! " + err);
+      }
+    );
+    await session.commitTransaction();
+   session.endSession();
+    return {code: GLOBAL.SUCCESS_CODE, message: "Delete success!"}
+  }else {
+    return {code: GLOBAL.BAD_REQUEST_CODE, message: "Delete failed!"}
+  }
+}
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -383,4 +414,5 @@ module.exports = {
   getJobDetail,
   isFollowExisted,
   filForSearch,
+  deleteJobNotContract
 };

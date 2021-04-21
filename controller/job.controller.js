@@ -104,6 +104,15 @@ let filForSearch = async (req, res) => {
   res.status(filForSearchResult.code).send(filForSearchResult.listField);
 };
 
+let deleteJobNotContract = async (req, res) =>{
+  let {
+    jobId
+  } = req.query;
+
+  let result = await jobService.deleteJobNotContract({jobId});
+  res.status(result.code).send(result.message);
+}
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -113,4 +122,5 @@ module.exports = {
   jobPaginationWithTime,
   jobPaginationWithAddress,
   filForSearch,
+  deleteJobNotContract
 };

@@ -161,9 +161,24 @@ let getFeedbackByEmpId = async (feedback) => {
   }
 };
 
+let checkFlcCreatedFeedback = async (feedback)=>{
+  let found = await FeedbackModel.findOne(
+    {$and: [
+      {jobId: feedback.jobId},
+      {createdBy: feedback.flcId}
+    ]}
+  ).exec();
+  if(found == undefined){
+    return {code: GLOBAL.SUCCESS_CODE, message: "feedback not found!"}
+  }else{
+    return {code: GLOBAL.BAD_REQUEST_CODE, message: "feedback existed!"}
+  }
+}
+
 module.exports = {
   empFeedbackCreate,
   flcFeedbackCreate,
   getFeedbackByFlcId,
   getFeedbackByEmpId,
+  checkFlcCreatedFeedback
 };

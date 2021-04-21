@@ -734,6 +734,25 @@ let getJobByContractStatus = async (contract) => {
   }
 };
 
+let checkFlcAppliedJob = async (contract) =>{
+  let found = await ContractModel.findOne(
+    {$and: [
+      {jobId: contract.jobId},
+      {flcId: contract.flcId},
+      {contractStatus: "APPLIED"}
+    ]}
+  ).exec()
+  .then((doc)=>{
+    return doc;
+  })
+  console.log(found);
+  if(found == undefined){
+    return {code: GLOBAL.SUCCESS_CODE, message: "check not found!"}
+  }else{
+    return {code: GLOBAL.BAD_REQUEST_CODE, message: "check existed !"}
+  }
+}
+
 module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
@@ -746,4 +765,5 @@ module.exports = {
   markOneContractCancelled,
   contractPaginationForWebAdmin,
   getJobByContractStatus,
+  checkFlcAppliedJob,
 };

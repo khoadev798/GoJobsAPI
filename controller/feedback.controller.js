@@ -53,9 +53,19 @@ let getFeedbackByEmpId = async (req, res) => {
     .send(getFeedbackByEmpIdResult.feedbacks);
 };
 
+let checkFlcCreatedFeedback = async (req, res) =>{
+  let {jobId, flcId} = req.query;
+  let result = await feedbackService.checkFlcCreatedFeedback({
+    jobId,
+    flcId
+  });
+  res.status(result.code).send(result.message);
+}
+
 module.exports = {
   createEmpFeedback,
   createFlcFeedback,
   getFeedbackByFlcId,
   getFeedbackByEmpId,
+  checkFlcCreatedFeedback
 };

@@ -32,4 +32,11 @@ route.get(
   flcFeedbackController.getFeedbackByEmpId
 );
 
+route.get(
+  "/checkFeedbackExisted",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  flcFeedbackController.checkFlcCreatedFeedback
+)
+
 module.exports = route;
