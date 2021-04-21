@@ -113,6 +113,14 @@ let deleteJobNotContract = async (req, res) =>{
   res.status(result.code).send(result.message);
 }
 
+let checkContract = async (req, res) =>{
+  let {
+    jobId
+  } = req.query;
+  let result = await jobService.checkContract({jobId});
+  res.status(result.code).send(result.message);
+}
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -122,5 +130,6 @@ module.exports = {
   jobPaginationWithTime,
   jobPaginationWithAddress,
   filForSearch,
-  deleteJobNotContract
+  deleteJobNotContract,
+  checkContract
 };

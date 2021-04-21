@@ -373,13 +373,10 @@ let getJobDetail = async (job) => {
 };
 
 let deleteJobNotContract = async (job)=>{
-  let found = await ContractModel.findOne(
-    {jobId: job.jobId},
-    {}
-  ).exec();
+  let result = await checkContract(job);
   const session = await mongoose.startSession();
   session.startTransaction();
-  if(found == undefined){
+  if(result.code == 404){
     await JobModel.deleteOne(
       {_id: job.jobId},
       (err) =>{
@@ -401,6 +398,18 @@ let deleteJobNotContract = async (job)=>{
   }
 }
 
+let checkContract = async (job) =>{
+  let found = await ContractModel.findOne(
+    {jobId: job.jobId},
+    {}
+  ).exec();
+  if (found == undefined){
+    return {code: GLOBAL.NOT_FOUND_CODE, message: "not found!"}
+  }else{
+    return {code: GLOBAL.SUCCESS_CODE, message: "existed!"}
+  }
+}
+
 module.exports = {
   createNewJob,
   getAllJobs,
@@ -414,5 +423,6 @@ module.exports = {
   getJobDetail,
   isFollowExisted,
   filForSearch,
-  deleteJobNotContract
+  deleteJobNotContract,
+  checkContract
 };

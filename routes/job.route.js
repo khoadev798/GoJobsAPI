@@ -43,4 +43,6 @@ route.get("/fieldForSearch", authMiddleware.isAuth, dbConn.conn, jobController.f
 
 route.delete("/deleteJob", authMiddleware.isAuth,dbConn.conn, jobController.deleteJobNotContract);
 
+route.get("/checkContract", authMiddleware.isAuth, dbConn.conn, jobController.checkContract)
+
 module.exports = route;
