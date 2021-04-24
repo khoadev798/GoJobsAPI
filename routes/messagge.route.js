@@ -4,7 +4,7 @@ const dbConn = require("../middleware/dbConn.middle");
 const messageController = require("../controller/message.controller");
 const authMiddleware = require("../middleware/authMiddleware");
 
-route.post("/newMessage",dbConn.conn, messageController.newMessage);
+route.post("/newMessage", dbConn.conn, messageController.newMessage);
 
 route.get(
   "/getNotificationMessageByEmp",
