@@ -116,7 +116,7 @@ let checkFlcAppliedJob = async(req, res) =>{
     jobId,
     flcId
   });
-  res.status(result.code).send(result.message);
+  res.status(result.code).send(result.contract);
 }
 
 module.exports = {

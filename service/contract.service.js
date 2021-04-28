@@ -740,16 +740,17 @@ let checkFlcAppliedJob = async (contract) =>{
       {jobId: contract.jobId},
       {flcId: contract.flcId},
       {contractStatus: "APPLIED"}
-    ]}
+    ]},
+    "_id"
   ).exec()
   .then((doc)=>{
     return doc;
   })
   console.log(found);
   if(found == undefined){
-    return {code: GLOBAL.SUCCESS_CODE, message: "check not found!"}
+    return {code: GLOBAL.SUCCESS_CODE, contract: found}
   }else{
-    return {code: GLOBAL.BAD_REQUEST_CODE, message: "check existed !"}
+    return {code: GLOBAL.BAD_REQUEST_CODE, contract: found}
   }
 }
 

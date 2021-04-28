@@ -171,7 +171,7 @@ let getAllJobsAndEmployerInfo = async () => {
 let getJobsOfOneEmployerById = async (empId) => {
   let jobs = await JobModel.find(
     { empId: empId },
-    "_id jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    "_id jobTitle jobHeadCountTarget jobDescription jobPaymentType jobSalary experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus",
   ).populate("empId", "empLogo").exec();
   return { code: 200, jobs: jobs };
 };
