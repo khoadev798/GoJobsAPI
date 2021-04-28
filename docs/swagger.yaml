@@ -10,8 +10,8 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: http://localhost:80/
-  # - url: https://gojobsvn.herokuapp.com/
+  # - url: http://localhost:80/
+  - url: https://gojobsvn.herokuapp.com/
 tags:
   - name: WebAdminAPI
     description: Everything about WebAdmin
@@ -26,6 +26,20 @@ tags:
     description: API thao tác với Jobs 
   - name: contracts
     description: API thao tác với Contracts
+  - name: wallets
+    description: Ví của người dùng
+  - name: receipts
+    description: Thông tin về các Hoá đơn
+  - name: mails
+    description: Liên kết email
+  - name: follows
+    description: Thao tác theo dõi
+  - name: messages
+    description: Tin nhắn trao đổi của người dùng
+  - name: notifications
+    description: Quản lý thông báo
+  - name: feedbacks
+    description: Người dùng phản hồi cho nhau     
 paths:
   /web:
     get:
@@ -1303,7 +1317,7 @@ paths:
                 properties:
                   message:
                     type: string
-  /jobs/createNewJob:
+  /job/createNewJob:
     post:
       tags:
         - jobs
@@ -1408,7 +1422,7 @@ paths:
                 properties:
                   message:
                     type: string
-  /jobs/alljobs:
+  /job/alljobs:
     get:
       tags:
         - jobs
@@ -1487,7 +1501,7 @@ paths:
                 properties:
                   message:
                     type: string
-  /jobs:
+  /job:
     delete:
       tags:
         - jobs
@@ -1636,7 +1650,7 @@ paths:
                 properties:
                   message:
                     type: string
-  /jobs/jobDetail:
+  /job/jobDetail:
     get:
       tags:
         - jobs
@@ -1677,307 +1691,1540 @@ paths:
                 type: object
                 properties:
                   message:
-                    type: string                                                                                                                                                                             
-  /users/createUser:
-    post:      
-      security:
-        - bearerAuth: []
+                    type: string
+  /contract/createNewContract:
+    post:
       tags:
-        - users
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
-      requestBody:
-        description: Created user object
-        content:
-          'application/json':
-            schema: 
-              $ref: '#/components/schemas/User'
+        - contracts
+      summary: API tạo Contract
+      description: Thao tác được thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của Job liên quan'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của Freelancer liên quan'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của Employer liên quan'
+          schema:
+            type: string
+        - name: contractStatus
+          in: query
+          description: 'Trạng thái ban đầu'
+          schema:
+            type: string
+        - name: jobTotalSalaryPerHeadCount
+          in: query
+          description: 'Tổng lương cho từng cá nhân'
+          schema:
+            type: number        
       responses:
         "200":
-          description: "User is fully created!"
-        "400":
-          description: "Error occured during transactions!"
-        "409":
-          description: "Email existed!"
+          description: "Tạo thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         "401":
-          description: "Unauthorized!"
-  /users/createNewAccessToken/{refreshToken}:
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /contract/contractsByJobIdAndStatus:
     get:
       tags:
-        - users
-      summary: Refresh accessToken for user
-      operationId: getNewAccessToken
+        - contracts
+      summary: Lấy danh sách Contract theo Job và contractStatus
+      description: Thao tác thực hiện từ ứng dụng
       parameters:
-      - name: refreshToken
-        in: path
-        description: 'Must be a valid refresh token.'
-        required: true
-        schema:
-          type: string
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của Job liên quan'
+          schema:
+            type: string
+        - name: contractStatus
+          in: query
+          description: 'Trạng thái của Contract'
+          schema:
+            type: string
       responses:
-        200:
-          description: Got new accessToken
-          content: object
-        403:
-          description: Invaid Token / no token provided!
-            # application/json:
-  /users/readOneByOne/{id}:
-    get:
-      security:
-        - bearerAuth: []
-      tags:
-        - users  
-      summary: Get info of one user with provided id.
-      operationId: readOneByOne
-      parameters:
-      - name: id
-        in: path
-        description: 'userId'
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: Got new accessToken
-          content: object
-        403:
-          description: Invaid Token / no token provided!
-            # application/json:    
-  /users/readSelfOne:
-    get:
-      security:
-        - bearerAuth: []
-      tags:
-        - users  
-      summary: Get personal info.
-      operationId: readSelf
-      responses:
-        200:
-          description: Got new accessToken
-          content: object
-        403:
-          description: Invaid Token / no token provided!
-            # application/json: 
-  /users/deleteUser/{id}:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /contract/deteledContract:
     delete:
-      security:
-        - bearerAuth: []
       tags:
-        - users  
-      summary: Delete one user.
-      operationId: deleteOne
+        - contracts
+      summary: Xoá Contract
+      description: Thao tác thực hiện từ ứng dụng
       parameters:
-      - name: id
-        in: path
-        description: 'userId being deleted'
-        required: true
-        schema:
-          type: string     
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của Contract'
+          schema:
+            type: string
       responses:
-        200:
-          description: Got new accessToken
-          content: object
-        403:
-          description: Invaid Token / no token provided!
-  /users/updatePassword:
-    put:
-      security:
-        - bearerAuth: []
-      tags:
-        - users  
-      summary: Update personal pasword.
-      operationId: personalPasswordUpdate
-      requestBody:
-        required: true
-        description: Created user object
-        content:
-          'application/json':
+        "200":
+          description: "Xoá thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+        description: "Không tìm thấy _id"
+        content: 
+          application/json:
             schema:
               type: object
               properties:
-                email:
-                  type: string    
-                password:
+                message:
                   type: string
-                newPassword:
-                  type: string
-      responses:
-        200:
-          description: User deleted.
-          content: object
-        403:
-          description: Invaid Token / no token provided!
-  /users/forgot:
-    post:
-      tags:
-        - users
-      summary: Send forgot password email.
-      operationId: forgotPassword
-      requestBody:
-        required: true
-        description: Forget
-        content:
-          'application/json':
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-      responses:
-        200:
-          description: Email sent.
-          content: object
-        404:
-          description: User not found.
-          content: object
-  /users/reset:
+  /contract/markContractsCompleted:
     put:
       tags:
-        - users
-      summary: Reset password from email.
-      operationId: resetPassword
-      requestBody:
-        required: true
-        description: Forget
-        content:
-          'application/json':
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                token:
-                  type: string
-                password:
-                  type: string
+        - contracts
+      summary: Cập nhật trạng thái hoàn tất cho Contract
+      description: Cập nhật trạng thái, hoàn tất thanh toán, sinh hoá đơn
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _idContractList[]
+          in: query
+          description: 'Danh sách các _id của Contract muốn hoàn tất'
+          schema:
+            type: string
       responses:
-        200:
-          description: Password reset.
-          content: object
-  /users/pagination:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Không tìm thấy _id"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /contract/markOneContractCancelled:
+    put:
+      tags:
+        - contracts
+      summary: Đánh dấu Huỷ 1 Contract
+      description: Huỷ 1 Contract, hoàn tất thanh toán, tạo hoá đơn
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _idContract
+          in: query
+          description: '_id Contract muốn huỷ'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Không tìm thấy _id"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /contract/getJobByContractStatus:
     get:
-      security:
-        - bearerAuth: []
       tags:
-        - users
-      summary: Pagination.
-      operationId: userPagination
+        - contracts
+      summary: Lấy danh sách Job của 1 người dùng theo contractStatus
+      description: Thao tác thực hiện trên ứng dụng
       parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: contractStatus
+          in: query
+          description: 'Trạng thái của Contract'
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: '_id người dùng'
+          schema:
+            type: string
         - name: pageNumber
           in: query
-          description: 'Current page.'
+          description: 'Số thứ tự trang'
           schema:
             type: string
         - name: pageSize
           in: query
-          description: 'Size of a page.'
+          description: 'Độ dài trang'
           schema:
             type: string
-        - name: search
-          in: query
-          description: 'Search values.'
-          schema:
-            type: string    
-        - name: isSortedByFirsttName
-          in: query
-          description: 'Sorted by first name.'
-          schema:
-            type: boolean
-        - name: filter
-          in: query
-          description: 'Filter by status'
-          schema:
-            type: array
-            items:
-              type: string
-              default: Active
-              enum:
-              - Active 
-              - Inactive      
       responses:
-        200:
-          description: Show data.
-          content: object
-  /users/updateFullProfile:
-    put:
-      security:
-          - bearerAuth: []
-      tags:
-        - users
-      summary: Update specific info of one user.
-      operationId: updateFullProfile
-      requestBody:
-        required: true
-        description: New user info.
-        content:
-          'application/json':
-            schema: 
-              $ref: '#/components/schemas/UserWitdId'
-      responses:
-        200:
-          description: Password reset.
-  /roles/rolePagination:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /contract/getContractByJobId:
     get:
-      security:
-          - bearerAuth: []
       tags:
-        - roles
-      summary: Role Pagination.
-      operationId: rolePagination
+        - contracts
+      summary: Lấy thông tin tất cả Contract của Job
+      descriptiom: Thao tác thực hiện từ ứng dụng
       parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của Job'
+          schema:
+            type: string
+        - name: contractStatus
+          in: query
+          description: 'Trạng thái của Contract'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /wallet/getWallet:
+    get:
+      tags:
+        - wallets
+      summary: Lấy thông tin ví của 1 người dùng
+      description: Thao tác thực thi từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của người dùng'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /wallet/payForAcceptedContracts:
+    put:
+      tags:
+        - wallets
+      summary: Chấp nhận các Contract
+      descripion: Chấp nhận Contract, trả phí, tạo hoá đơn
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của Wallet'
+          schema:
+            type: string
+        - name: walletOwnerId
+          in: query
+          description: '_id của chủ ví'
+          schema:
+            type: string
+        - name: contractIds
+          in: query
+          description: 'Các Contract cần trả phí'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của Job'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /receipt/getReceiptHistory:
+    get:
+      tags:
+        - receipts
+      summary: Lấy thông tin lịch sử giao dịch
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: _id
+          in: query
+          description: '_id của của người tạo'
+          schema:
+            type: string
+    responses:
+        "200":
+          description: "Cập nhật thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /sendMail/sendEmailRePasswordFlc:
+    post:
+      tags:
+        - mails
+      summary: Gửi Email mật khẩu cho Freelancer
+      descripion: Hỗ trợ mật khẩu mới khi người dùng quên
+      parameters:
+        - name: flcEmail
+          in: query
+          description: 'Email của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Gửi email thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Không tìm thấy email"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /sendMail/sendEmailRePasswordEmp:
+    post:
+      tags:
+        - mails
+      summary: Gửi Email mật khẩu cho Employer
+      descripion: Hỗ trợ mật khẩu mới khi người dùng quên
+      parameters:
+        - name: empEmail
+          in: query
+          description: 'Email của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Gửi email thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Không tìm thấy email"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /follow/createFlcFollowEmp:
+    post:
+      tags:
+        - follows
+      summary: Tạo Follow giữa Freelancer và Employer
+      description: Freelancer theo dõi Employer
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của của Employer'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+        - name: createdBy
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Tạo Follow thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string           
+  /follow/createEmpFollowFlc:
+    post:
+      tags:
+        - follows
+      summary: Tạo Follow giữa Employer cho Freelancer
+      description: Employer theo dõi Freelancer
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của của Employer'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+        - name: createdBy
+          in: query
+          description: '_id của của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Tạo Follow thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string            
+  /follow/createFlcFollowJob:
+    post:
+      tags:
+        - follows
+      summary: Freelancer theo dõi Job
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của của Job'
+          schema:
+            type: string
+        - name: createdBy
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Tạo Follow thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string          
+  /follo/getEmpByFlcFollow:
+    get:
+      tags:
+        - follows
+      summary: Lấy thông tin các Employers mà Freelancer theo dõi
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object                
+          "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /follow/getFlcByEmpFollow:
+    get:
+      tags:
+        - follows
+      summary: Lấy thông tin các Freelancer Employer đã theo dõi  
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object                
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /follow/getJobByFlcFollow:
+    get:
+      tags:
+        - follows
+      summary: Lấy thông tin các Job Freelancer đã theo dõi 
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
         - name: pageNumber
           in: query
-          description: 'Current page.'
+          description: 'Số thứ tự trang'
           schema:
             type: string
         - name: pageSize
           in: query
-          description: 'Size of a page.'
+          description: 'Độ dài trang'
           schema:
             type: string
-        - name: search
-          in: query
-          description: 'Search values.'
-          schema:
-            type: string    
-        - name: isSortedByName
-          in: query
-          description: 'Sorted by first name.'
-          schema:
-            type: array
-            items:
-              type: string
-              default: asc
-              enum:
-              - asc 
-              - desc
-  /roles/createRoleWithPermissions:
-    post:
-      security:
-        - bearerAuth: []
+      responses:
+        "200":
+          description: "Tạo Follow thành công"
+          content: 
+            application/json:
+              schema:
+                type: object                
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /follow/findFollow:
+    get:
       tags:
-      - roles
-      summary: Create role with permissions.
-      operationId: createRoleWithPermissions
+        - follows
+      summary: Lấy thông tin 1 Follow cụ thể
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của của Freelancer'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của của Job'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object                
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string                                                                                                                                                                                                                                                                                                                    
+        "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /message/newMessage:
+    post:
+      tags:
+        - messages
+      summary: Tạo Message mới
+      descrition: Thao tác thực hiện từ ứng dụng
       requestBody:
-        description: Create role with permissions.
-        content:
-          'application/json':
-            schema:
-              type: object
-              properties:
-                roleName:
-                  type: string
+          description: Thông tin Message mới
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  accessTokenDb:
+                    type: string
+                    required: true
+                  empId:
+                    type: string
+                    required: true
+                  flcId:
+                    type: string
+                    required: true
+                  mess:
+                    type: string
+      responses:
+        "200":
+          description: "Tạo thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string         
+  /message/getNotificationMessageByEmp:
+    get:
+      tags:
+        - messages
+      summary: Lấy thông tin các Message
+      description: Thao tác thực thi từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string         
+        "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listNotification:
+                    type: string
+  /message/getNotificationMessageByFlc:
+    get:
+      tags:
+        - messages
+      summary: Lấy thông tin các Message
+      description: Thao tác thực thi từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+        - name: flcId
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string         
+        "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listNotification:
+                    type: string
+  /message/getMessageDetail:
+    get:
+      tags:
+        - messages
+      summary: Lấy thông tin các Message
+      description: Thao tác thực thi từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+        - name: _id
+          in: query
+          description: '_id của Message'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string         
+        "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messageDetail:
+                    type: string
+  /notification/getNotification:
+    get:
+      tags:
+        - notifications
+      summary: Lấy Notification cho Freelancer
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string         
+        "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifi:
+                      type: string
+  /notification/getNotificationForEmp:
+    get:
+      tags:
+        - notifications
+      summary: Lấy Notification cho Employer
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string         
+        "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifi:
+                    type: string
+  /feedback/createEmpFeedback:
+    post:
+      tags:
+        - feedbacks
+      summary: Tạo Feedback cho Employer
+      description: Thao thác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: string
+        - name: jobId
+          in: query
+          description: '_id của Job'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+        - name: comment
+          in: query
+          description: 'Lời bình luận'
+          schema:
+            type: string
+        - name: starRating
+          in: query
+          description: 'Đánh giá sao'
+          schema:
+            type: number
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string   
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string   
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /feedback/createFlcFeedback:
+    post:
+      tags:
+        - feedbacks
+      summary: Tạo Feedback cho Freelancer
+      description: Thao thác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: number
+        - name: jobId
+          in: query
+          description: '_id của Job'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: string
+        - name: comment
+          in: query
+          description: 'Lời đánh giá'
+          schema:
+            type: string
+        - name: starRating
+          in: query
+          description: 'Đánh giá sao'
+          schema:
+            type: number
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string   
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string   
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /feedback/getFeedbackByFlc:
+    get:
+      tags:
+        - feedbacks
+      summary: Lấy các Feedback về 1 Freelancer
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: flcId
+          in: query
+          description: '_id của Freelancer'
+          schema:
+            type: number
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string   
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object
+  /feedback/getFeedbackByFlc:
+    get:
+      tags:
+        - feedbacks
+      summary: Lấy các Feedback về 1 Employer
+      description: Thao tác thực hiện từ ứng dụng
+      parameters:
+        - name: accessTokenDb
+          in: query
+          description: 'Token'
+          schema:
+            type: string
+        - name: empId
+          in: query
+          description: '_id của Employer'
+          schema:
+            type: number
+        - name: pageNumber
+          in: query
+          description: 'Số thứ tự trang'
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: 'Độ dài trang'
+          schema:
+            type: number
+      responses:
+        "200":
+          description: "Truy xuất thành công"
+          content: 
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: "Không có quyền truy cập"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string   
+        "403":
+          description: "Không có JSON Web Token"
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          "404":
+          description: "Không tìm thấy thông tin"
+          content: 
+            application/json:
+              schema:
+                type: object                                                                                                          
 components:
   schemas:
-    loginUser:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
     pagination:
       type: object
       properties:
@@ -2020,6 +3267,8 @@ components:
         empTerm:
           type: boolean
           default: true
+      xml:
+        name: Employer     
     Freelancer:
       type: object
       properties:
@@ -2029,51 +3278,9 @@ components:
           type: string  
         flcTerm:
           type: boolean
-          default: true                                              
-    User:
-      type: object
-      properties:
-        email:
-            type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phoneNumber:
-          type: string
-        status:
-          type: string
-        avatar:
-          type: string
+          default: true 
       xml:
-        name: User
-    UserWitdId:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-            type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phoneNumber:
-          type: string
-        status:
-          type: string
-        avatar:
-          type: string
-      xml:
-        name: UserWithId    
+        name: Freelancer                                                 
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
       type: http
