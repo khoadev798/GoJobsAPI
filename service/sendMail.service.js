@@ -10,6 +10,7 @@ const AdminModel = mongoose.model("Admin", Admin);
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const randomString = require("randomstring");
+const nodemailer = require("nodemailer");
 sgMail.setApiKey(GLOBAL.API_KEY_MAIL);
 const util = require("../util/data.util");
 
@@ -17,20 +18,49 @@ let sendMailRePasswordAdmin = async (admin) => {
   let updateAdminEmailResult = await adminUpdatePassword(admin);
   console.log(updateAdminEmailResult);
   if (updateAdminEmailResult.code == 200) {
-    const msg = {
-      to: admin.email,
-      from: {
-        name: "Gojobs Việt Nam",
-        email: GLOBAL.EMAIL_ADMIN,
+    // const msg = {
+    //   to: admin.email,
+    //   from: {
+    //     name: "Gojobs Việt Nam",
+    //     email: GLOBAL.EMAIL_ADMIN,
+    //   },
+    //   subject: "Gojobs - Lấy lại mật khẩu",
+    //   text: "Mật khẩu mới của bạn là: " + updateAdminEmailResult.newPassword,
+    //   html: "Mật khẩu mới của bạn là: " + updateAdminEmailResult.newPassword,
+    // };
+    // sgMail
+    //   .send(msg)
+    //   .then(() => console.log("sent Mail!"))
+    //   .catch((error) => console.log("Error: " + error));
+    var smtpTransport = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: "gojobsvietnam@gmail.com",
+        pass: "admin123~A",
       },
-      subject: "Gojobs - Lấy lại mật khẩu",
-      text: "Mật khẩu mới của bạn là: " + updateAdminEmailResult.newPassword,
-      html: "Mật khẩu mới của bạn là: " + updateAdminEmailResult.newPassword,
+    });
+    let mailOptions = {
+      to: updateAdminEmailResult.email,
+      from: "gojobsvn@gmail.com",
+      subject: "Mật khẩu mới từ GoJobsVN",
+      text:
+        "Bạn nhận được email này chứa thông tin mật khẩu mới.\n\nVui lòng không chia sẻ với bất kỳ ai\n" +
+        "Mật khẩu mới của bạn là:\n" +
+        updateAdminEmailResult.newPassword +
+        "\n\nTrân trọng,\n\nGoJobsVN Team.",
     };
-    sgMail
-      .send(msg)
-      .then(() => console.log("sent Mail!"))
-      .catch((error) => console.log("Error: " + error));
+    await smtpTransport.sendMail(mailOptions, function (err) {
+      if (err) {
+        return {
+          code: 400,
+          message: "Lỗi gửi email! " + err,
+        };
+      } else {
+        console.log(
+          "Email for resetting password sent to " + updateAdminEmailResult.email
+        );
+      }
+    });
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Sent Mail!",
@@ -50,7 +80,7 @@ let adminUpdatePassword = async (admin) => {
     email: admin.email,
     password: newPassword,
   });
-  console.log(newAdmin);
+  // console.log(newAdmin);
 
   let doc = await AdminModel.findOneAndUpdate(
     { email: admin.email },
@@ -61,7 +91,7 @@ let adminUpdatePassword = async (admin) => {
   );
   console.log(doc);
   if (doc) {
-    return { code: GLOBAL.SUCCESS_CODE, newPassword };
+    return { code: GLOBAL.SUCCESS_CODE, newPassword, email: admin.email };
   } else {
     return {
       code: GLOBAL.NOT_FOUND_CODE,
