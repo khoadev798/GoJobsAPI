@@ -20,10 +20,12 @@ const jobService = require("../service/job.service");
 // Không dùng function này nữa
 let getContractsByCondition = async (condition) => {
   let contracts = await ContractModel.find(
-    {$and: [
-      { jobId: condition.jobId },
-      {contractStatus: condition.contractStatus}
-    ]}
+    {
+      $and: [
+        { jobId: condition.jobId },
+        { contractStatus: condition.contractStatus }
+      ]
+    }
     ,
     " jobTotalSalaryPerHeadCount contractStatus"
   )
@@ -294,7 +296,7 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
     let Tokens = [];
     console.log(listTokens);
     listTokens.forEach((token) => {
-      Tokens  = Tokens.concat(token.flcTokenDevice);
+      Tokens = Tokens.concat(token.flcTokenDevice);
     });
     console.log("Tokens:", Tokens);
 
@@ -421,7 +423,7 @@ let markContractsCompletedAndPayFreelancers = async (_idContractList) => {
     ).then((values) => {
       return values;
     });
-    
+
     console.log("DS Wallet da nhan tien", updatedFlcWalletList);
     console.log("DS Contract da COMPLETED", complatedContractList);
     console.log("DS Receipt cua FLC", createdReceiptsForFlc);
@@ -697,7 +699,7 @@ let getJobByContractStatus = async (contract) => {
         ],
       },
     },
-   { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" }} },
+    { $group: { _id: { jobId: "$jobId", contractStatus: "$contractStatus" } } },
     // {
     //   $lookup: {
     //     from: "jobs",
@@ -715,9 +717,9 @@ let getJobByContractStatus = async (contract) => {
   });
   console.log(jobIds);
   let jobDetail = await JobModel.find(
-  
-        { _id: { $in: jobIds } },
-  
+
+    { _id: { $in: jobIds } },
+
     "jobId jobTitle jobPaymentType jobStart jobEnd jobStatus jobHeadCountTarget ",
     {
       skip: (contract.pageNumber - 1) * contract.pageSize,
@@ -734,23 +736,43 @@ let getJobByContractStatus = async (contract) => {
   }
 };
 
-let checkFlcAppliedJob = async (contract) =>{
+let checkFlcAppliedJob = async (contract) => {
   let found = await ContractModel.findOne(
-    {$and: [
-      {jobId: contract.jobId},
-      {flcId: contract.flcId},
-      {contractStatus: "APPLIED"}
-    ]},
+    {
+      $and: [
+        { jobId: contract.jobId },
+        { flcId: contract.flcId },
+        { contractStatus: "APPLIED" }
+      ]
+    },
     "_id"
   ).exec()
-  .then((doc)=>{
-    return doc;
-  })
+    .then((doc) => {
+      return doc;
+    })
   console.log(found);
-  if(found == undefined){
-    return {code: GLOBAL.SUCCESS_CODE, contract: found}
+  if (found == undefined) {
+    return { code: GLOBAL.SUCCESS_CODE, contract: found }
+  } else {
+    return { code: GLOBAL.BAD_REQUEST_CODE, message: "Existing !" }
+  }
+}
+
+let deleteContractByFlcId = async (contract) => {
+  let contracExisted = await checkFlcAppliedJob(contract);
+  if (contracExisted.code == 400) {
+   await ContractModel.deleteOne(
+      {
+        $and: [
+          { jobId: contract.jobId },
+          { flcId: contract.flcId },
+          { contractStatus: "APPLIED" }
+        ]
+      }
+    ).exec()
+    return {code: GLOBAL.SUCCESS_CODE, message: "delete success!"}
   }else{
-    return {code: GLOBAL.BAD_REQUEST_CODE, contract: found}
+    return {code: GLOBAL.BAD_REQUEST_CODE, message: "delete faild!"}
   }
 }
 
@@ -758,6 +780,7 @@ module.exports = {
   getContractsByCondition,
   createNewContractAtSituation,
   deleteContractById,
+  deleteContractByFlcId,
   flcJoinQueryWithJobOrEmployer,
   getFollowsOfEmpForFlc,
   getContractsByJobIdAndContractStatus,

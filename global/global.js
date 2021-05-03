@@ -23,9 +23,9 @@ const GLOBAL = {
   PASSWORD_REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
   VNPHONE_REGEX: /((09|03|07|08|05)+([0-9]{8})\b)/g,
   SALT_ROUNDS: 10,
-  SERVICE_ID: "VA9fb49002f0c6108d585bf37148e754f6",
+  SERVICE_ID: "VAaadf6280aa71fe104709dd0129ae214d",
   ACCOUNTS_ID: "AC0ce24f1befd3b080315fdf2342babbac",
-  AUTH_TOKEN: "8996186c7d3cb2a6b82b0c5957f912a9",
+  AUTH_TOKEN: "3d341f06651ab68bb1b173a0efd37b70",
   API_KEY_MAIL:
     "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",
   EMAIL_ADMIN: "cauhuyso000@gmail.com",

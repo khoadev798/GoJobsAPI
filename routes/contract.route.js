@@ -48,6 +48,13 @@ route.delete(
   contractController.deleteContractById
 );
 
+route.delete(
+  "/deletedContractWithFLcId",
+  authMiddleware.isAuth,
+  dbConn.conn,
+  contractController.deleteContractByFlcId
+)
+
 // Khác biệt giữa 2 trường hợp COMPLETED và CANCELLED là
 // cho phép COMPLETED cùng lúc nhiều contracts
 route.put(

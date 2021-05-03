@@ -41,6 +41,15 @@ let deleteContractById = async (req, res) => {
   res.status(deleteResult.code).send(deleteResult.messsage);
 };
 
+let deleteContractByFlcId = async (req, res) =>{
+  let {flcId, jobId} = req.query;
+  let deleteResult = await contractService.deleteContractByFlcId({
+    flcId,
+    jobId
+  });
+  res.status(deleteResult.code).send(deleteResult.message);
+}
+
 let getContractsByStatusOfFlc = async (req, res) => {
   let { flcId } = req.query;
   let queryResult = await contractService.flcJoinQueryWithJobOrEmployer({
@@ -123,6 +132,7 @@ module.exports = {
   getContractsByStatusOfFlc,
   addNewContract,
   deleteContractById,
+  deleteContractByFlcId,
   getFollowOfEmpForFlc,
   getContractsByJobIdAndContractStatus,
   updateContractStatusById,
