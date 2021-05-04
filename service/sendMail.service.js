@@ -103,59 +103,135 @@ let adminUpdatePassword = async (admin) => {
 let sendMailRePasswordFlc = async (freelancer) => {
   let flcUpdatePasswordResult = await flcUpdatePassword(freelancer);
   if (flcUpdatePasswordResult.code == 200) {
-    const msg = {
-      to: freelancer.flcEmail,
-      from: {
-        name: "Gojobs Việt Nam",
-        email: GLOBAL.EMAIL_ADMIN,
-      },
-      subject: "Gojobs - Lấy lại mật khẩu",
-      text: "Mật khẩu mới của bạn là: " + flcUpdatePasswordResult.newPassword,
-      html: "Mật khẩu mới của bạn là: " + flcUpdatePasswordResult.newPassword,
-    };
-    sgMail
-      .send(msg)
-      .then(() => console.log("sent Mail!"))
-      .catch((error) => console.log("Error: " + error));
-    return {
-      code: GLOBAL.SUCCESS_CODE,
-      message: "Sent Mail!",
-    };
-  } else {
-    return {
-      code: GLOBAL.NOT_FOUND_CODE,
-      message: `Freelancer${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
-    };
+  //   const msg = {
+  //     to: freelancer.flcEmail,
+  //     from: {
+  //       name: "Gojobs Việt Nam",
+  //       email: GLOBAL.EMAIL_ADMIN,
+  //     },
+  //     subject: "Gojobs - Lấy lại mật khẩu",
+  //     text: "Mật khẩu mới của bạn là: " + flcUpdatePasswordResult.newPassword,
+  //     html: "Mật khẩu mới của bạn là: " + flcUpdatePasswordResult.newPassword,
+  //   };
+  //   sgMail
+  //     .send(msg)
+  //     .then(() => console.log("sent Mail!"))
+  //     .catch((error) => console.log("Error: " + error));
+  //   return {
+  //     code: GLOBAL.SUCCESS_CODE,
+  //     message: "Sent Mail!",
+  //   };
+  // } else {
+  //   return {
+  //     code: GLOBAL.NOT_FOUND_CODE,
+  //     message: `Freelancer${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+  //   };
+  var smtpTransport = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "gojobsvietnam@gmail.com",
+      pass: "admin123~A",
+    },
+  });
+  let mailOptions = {
+    to: freelancer.flcEmail,
+    from: "gojobsvn@gmail.com",
+    subject: "Mật khẩu mới từ GoJobsVN",
+    text:
+      "Bạn nhận được email này chứa thông tin mật khẩu mới.\n\nVui lòng không chia sẻ với bất kỳ ai\n" +
+      "Mật khẩu mới của bạn là:\n" +
+      flcUpdatePasswordResult.newPassword +
+      "\n\nTrân trọng,\n\nGoJobsVN Team.",
+  };
+  await smtpTransport.sendMail(mailOptions, function (err) {
+    if (err) {
+      return {
+        code: 400,
+        message: "Lỗi gửi email! " + err,
+      };
+    } else {
+      console.log(
+        "Email for resetting password sent to " + flcUpdatePasswordResult.message
+      );
+    }
+  });
+  return {
+    code: GLOBAL.SUCCESS_CODE,
+    message: "Sent Mail!",
+  };
+} else {
+  return {
+    code: GLOBAL.NOT_FOUND_CODE,
+    message: `Freelancer${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+  };
   }
 };
 
 let sendMailRePasswordEmp = async (employer) => {
   let empUpdatePasswordResult = await empUpdatePassword(employer);
   if (empUpdatePasswordResult.code == 200) {
-    const msg = {
-      to: "cauhuyso096@gmail.com",
-      from: {
-        name: "Gojobs Việt Nam",
-        email: GLOBAL.EMAIL_ADMIN,
-      },
-      subject: "Gojobs - Lấy lại mật khẩu",
-      text: "Mật khẩu mới của bạn là: " + empUpdatePasswordResult.newPassword,
-      html: "Mật khẩu mới của bạn là: " + empUpdatePasswordResult.newPassword,
-    };
+  //   const msg = {
+  //     to: "cauhuyso096@gmail.com",
+  //     from: {
+  //       name: "Gojobs Việt Nam",
+  //       email: GLOBAL.EMAIL_ADMIN,
+  //     },
+  //     subject: "Gojobs - Lấy lại mật khẩu",
+  //     text: "Mật khẩu mới của bạn là: " + empUpdatePasswordResult.newPassword,
+  //     html: "Mật khẩu mới của bạn là: " + empUpdatePasswordResult.newPassword,
+  //   };
 
-    sgMail
-      .send(msg)
-      .then((response) => console.log("sent Mail!"))
-      .catch((error) => console.log("Error: " + error.message));
-    return {
-      code: GLOBAL.SUCCESS_CODE,
-      message: "Sent Mail!",
-    };
-  } else {
-    return {
-      code: GLOBAL.NOT_FOUND_CODE,
-      message: `Employer${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
-    };
+  //   sgMail
+  //     .send(msg)
+  //     .then((response) => console.log("sent Mail!"))
+  //     .catch((error) => console.log("Error: " + error.message));
+  //   return {
+  //     code: GLOBAL.SUCCESS_CODE,
+  //     message: "Sent Mail!",
+  //   };
+  // } else {
+  //   return {
+  //     code: GLOBAL.NOT_FOUND_CODE,
+  //     message: `Employer${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+  //   };
+  var smtpTransport = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "gojobsvietnam@gmail.com",
+      pass: "admin123~A",
+    },
+  });
+  let mailOptions = {
+    to: employer.empEmail,
+    from: "gojobsvn@gmail.com",
+    subject: "Mật khẩu mới từ GoJobsVN",
+    text:
+      "Bạn nhận được email này chứa thông tin mật khẩu mới.\n\nVui lòng không chia sẻ với bất kỳ ai\n" +
+      "Mật khẩu mới của bạn là:\n" +
+      empUpdatePasswordResult.newPassword +
+      "\n\nTrân trọng,\n\nGoJobsVN Team.",
+  };
+  await smtpTransport.sendMail(mailOptions, function (err) {
+    if (err) {
+      return {
+        code: 400,
+        message: "Lỗi gửi email! " + err,
+      };
+    } else {
+      console.log(
+        "Email for resetting password sent to " + empUpdatePasswordResult.message
+      );
+    }
+  });
+  return {
+    code: GLOBAL.SUCCESS_CODE,
+    message: "Sent Mail!",
+  };
+} else {
+  return {
+    code: GLOBAL.NOT_FOUND_CODE,
+    message: `Freelancer${GLOBAL.NOT_EXISTED_MESSAGE_SUFFIX}`,
+  };
   }
 };
 
