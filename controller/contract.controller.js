@@ -41,14 +41,14 @@ let deleteContractById = async (req, res) => {
   res.status(deleteResult.code).send(deleteResult.messsage);
 };
 
-let deleteContractByFlcId = async (req, res) =>{
-  let {flcId, jobId} = req.query;
+let deleteContractByFlcId = async (req, res) => {
+  let { flcId, jobId } = req.query;
   let deleteResult = await contractService.deleteContractByFlcId({
     flcId,
-    jobId
+    jobId,
   });
   res.status(deleteResult.code).send(deleteResult.message);
-}
+};
 
 let getContractsByStatusOfFlc = async (req, res) => {
   let { flcId } = req.query;
@@ -119,14 +119,14 @@ let getJobByContractStatus = async (req, res) => {
     .send(getJobByContractStatusResult.jobs);
 };
 
-let checkFlcAppliedJob = async(req, res) =>{
-  let {jobId, flcId} = req.query;
+let checkFlcAppliedJob = async (req, res) => {
+  let { jobId, flcId } = req.query;
   let result = await contractService.checkFlcAppliedJob({
     jobId,
-    flcId
+    flcId,
   });
   res.status(result.code).send(result.contract);
-}
+};
 
 module.exports = {
   getContractsByStatusOfFlc,
@@ -140,5 +140,5 @@ module.exports = {
   markOneContractCancelled,
   getJobByContractStatus,
   getContractsByCondition,
-  checkFlcAppliedJob
+  checkFlcAppliedJob,
 };

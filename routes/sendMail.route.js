@@ -6,14 +6,12 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 route.post(
   "/sendEmailRePasswordFlc",
- 
   dbConn.conn,
   sendMailController.sendMailRePasswordFlc
 );
 
 route.post(
   "/sendEmailRePasswordEmp",
-  
   dbConn.conn,
   sendMailController.sendMailRePasswordEmp
 );
