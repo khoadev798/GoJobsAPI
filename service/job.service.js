@@ -229,7 +229,7 @@ let filForSearch =async (pagination) =>{
 let jobPaginationWithTime = async (pagination) => {
   let jobsWithConditions = await JobModel.find(
     { jobStatus: "Open" },
-    "_id empId jobTitle jobSalaryAfterDone jobField jobStart jobEnd jobStatus jobHeadCountTarget",
+    "_id empId jobTitle jobSalary jobPaymentType jobSalaryAfterDone jobField jobStart jobEnd jobStatus jobTotalSalaryPerHeadCount jobHeadCountTarget",
     {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
@@ -252,7 +252,7 @@ let jobPaginationWithAddress = async (pagination) => {
 
   let jobsWithConditions = await JobModel.find(
     query,
-    "_id empId jobAddress jobTitle jobDescription jobSalaryPerHour jobSalaryPerDay jobSalaryPerWeek jobSalaryAfterDone experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    "_id empId jobAddress jobTitle jobPaymentType jobTotalSalaryPerHeadCount jobDescription jobSalaryPerHour jobSalary experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
     {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
