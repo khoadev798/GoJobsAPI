@@ -109,17 +109,20 @@ let isFollowExisted = async (job) => {
       return doc;
     }
   );
+  console.log(found);
 
-  if (found == undefined) {
-    return {
-      code: GLOBAL.NOT_FOUND_CODE,
-      message: "Follow not found!",
-    };
-  } else {
+  if (found.length > 0) {
+
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "find success!",
       follow: found,
+    };
+   
+  } else {
+    return {
+      code: GLOBAL.NOT_FOUND_CODE,
+      message: "Follow not found!",
     };
   }
 };
