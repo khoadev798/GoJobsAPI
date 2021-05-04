@@ -103,7 +103,7 @@ let sendMailRePasswordEmp = async (employer) => {
   let empUpdatePasswordResult = await empUpdatePassword(employer);
   if (empUpdatePasswordResult.code == 200) {
     const msg = {
-      to: employer.empEmail,
+      to: "cauhuyso096@gmail.com",
       from: {
         name: "Gojobs Việt Nam",
         email: GLOBAL.EMAIL_ADMIN,
@@ -115,8 +115,8 @@ let sendMailRePasswordEmp = async (employer) => {
 
     sgMail
       .send(msg)
-      .then(() => console.log("sent Mail!"))
-      .catch((error) => console.log("Error: " + error));
+      .then((response) => console.log("sent Mail!"))
+      .catch((error) => console.log("Error: " + error.message));
     return {
       code: GLOBAL.SUCCESS_CODE,
       message: "Sent Mail!",

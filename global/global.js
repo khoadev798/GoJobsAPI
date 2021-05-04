@@ -28,6 +28,7 @@ const GLOBAL = {
   AUTH_TOKEN: "3d341f06651ab68bb1b173a0efd37b70",
   API_KEY_MAIL:
     "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",
+    
   EMAIL_ADMIN: "cauhuyso000@gmail.com",
 };
 
