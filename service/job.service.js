@@ -252,7 +252,7 @@ let jobPaginationWithAddress = async (pagination) => {
 
   let jobsWithConditions = await JobModel.find(
     query,
-    "_id empId jobAddress jobTitle jobPaymentType jobTotalSalaryPerHeadCount jobDescription jobSalaryPerHour jobSalary experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCount",
+    "_id empId jobAddress jobTitle jobPaymentType jobTotalSalaryPerHeadCount jobDescription jobSalaryPerHour jobSalary experienceRequired jobField jobStart jobEnd jobPublishDate jobStatus jobHeadCountTarget",
     {
       skip: (pagination.pageNumber - 1) * pagination.pageSize,
       limit: pagination.pageNumber * pagination.pageSize,
